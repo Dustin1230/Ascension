@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">Win32</Platform>
+    <ProductVersion>1.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>610d0f56-e3b9-49a9-a4d7-db7fc4978b2d</ProjectGuid>
+    <OutputType>UserMod</OutputType>
+    <ProjectType>UnrealScript</ProjectType>
+    <RootNamespace>Ascension</RootNamespace>
+    <AssemblyName>Ascension</AssemblyName>
+    <Name>Ascension</Name>
+    <TargetGame>UnrealEngine 3 Licensee</TargetGame>
+    <BaseContentPath>..\..\Engine\Content</BaseContentPath>
+    <GameContentPath>..\..\UDKGame\Content</GameContentPath>
+    <PackageExtensions>.upk;.udk</PackageExtensions>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <UccUseUnpublished>False</UccUseUnpublished>
+    <UseUnpublished>False</UseUnpublished>
+    <ForceWindowedMode>True</ForceWindowedMode>
+    <WindowWidth>1024</WindowWidth>
+    <WindowHeight>768</WindowHeight>
+    <ShowLogWindow>False</ShowLogWindow>
+    <LogToFile>False</LogToFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <UccUseUnpublished>False</UccUseUnpublished>
+    <UseUnpublished>False</UseUnpublished>
+    <ForceWindowedMode>False</ForceWindowedMode>
+    <ShowLogWindow>False</ShowLogWindow>
+    <LogToFile>False</LogToFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="*\Classes\*.uc" />
+    <Content Include="**\*.uci" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Ascension\" />
+    <Folder Include="Ascension\Classes\" />
+    <Folder Include="Core\" />
+    <Folder Include="Core\Classes\" />
+    <Folder Include="Engine\" />
+    <Folder Include="Engine\Classes\" />
+    <Folder Include="GameFramework\" />
+    <Folder Include="GameFramework\Classes\" />
+    <Folder Include="GFxUIEditor\" />
+    <Folder Include="GFxUIEditor\Classes\" />
+    <Folder Include="GFxUI\" />
+    <Folder Include="GFxUI\Classes\" />
+    <Folder Include="IpDrv\" />
+    <Folder Include="IpDrv\Classes\" />
+    <Folder Include="MercenaryAscension\" />
+    <Folder Include="MercenaryAscension\Classes\" />
+    <Folder Include="MyMod\" />
+    <Folder Include="MyMod\Classes\" />
+    <Folder Include="ObjectSort\" />
+    <Folder Include="ObjectSort\Classes\" />
+    <Folder Include="OnlineSubsystemGameCenter\" />
+    <Folder Include="OnlineSubsystemGameCenter\Classes\" />
+    <Folder Include="OnlineSubsystemPC\" />
+    <Folder Include="OnlineSubsystemPC\Classes\" />
+    <Folder Include="OnlineSubsystemSteamworks\" />
+    <Folder Include="OnlineSubsystemSteamworks\Classes\" />
+    <Folder Include="RoulettePlus\" />
+    <Folder Include="RoulettePlus\Classes\" />
+    <Folder Include="UDKBase\" />
+    <Folder Include="UDKBase\classes\" />
+    <Folder Include="UnrealEd\" />
+    <Folder Include="UnrealEd\Classes\" />
+    <Folder Include="UTEditor\" />
+    <Folder Include="UTEditor\Classes\" />
+    <Folder Include="UTGameContent\" />
+    <Folder Include="UTGameContent\Classes\" />
+    <Folder Include="UTGame\" />
+    <Folder Include="UTGame\Classes\" />
+    <Folder Include="XComGame\" />
+    <Folder Include="XComGame\Classes\" />
+    <Folder Include="XComMutator\" />
+    <Folder Include="XComMutator\Classes\" />
+    <Folder Include="XComStrategyGame\" />
+    <Folder Include="XComStrategyGame\Classes\" />
+  </ItemGroup>
+  <Import Condition="'$(MSBuildExtensionsPath32)' != ''" Project="$(MSBuildExtensionsPath32)\PixelMine\UnrealScript.targets" />
+  <Import Condition="'$(MSBuildExtensionsPath32)' == ''" Project="$(MSBuildExtensionsPath)\PixelMine\UnrealScript.targets" />
+</Project>
