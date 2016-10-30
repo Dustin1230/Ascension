@@ -442,7 +442,7 @@ function SetMercCreateSoldVars(int SoldierID)
 			newRank = Rand(4) + BARRACKS().HasOTSUpgrade(8) ? 2 : 1;
 			break;
 		case 3:
-			newRank = Rand(5) + BARRACKS().HasOTSUpgrade(8) ? 2 : 1;
+			newRank = Rand(BARRACKS().HasOTSUpgrade(8) ? 5 : 4) + BARRACKS().HasOTSUpgrade(8) ? 2 : 1;
 			break;
 		case 4:
 			if(BARRACKS().HasOTSUpgrade(9))
@@ -1393,7 +1393,7 @@ function SetFuryCreateSoldVars(int SoldierID)
 				newRank = Rand(4) + BARRACKS().HasOTSUpgrade(8) ? 2 : 1;
 				break;
 			case 3:
-				newRank = Rand(5) + BARRACKS().HasOTSUpgrade(8) ? 2 : 1;
+				newRank = Rand(BARRACKS().HasOTSUpgrade(8) ? 5 : 4) + BARRACKS().HasOTSUpgrade(8) ? 2 : 1;
 				break;
 			case 4:
 				if(BARRACKS().HasOTSUpgrade(9))
