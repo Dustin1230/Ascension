@@ -16,6 +16,8 @@ var localized array<string> arrStrNotMercMNicks;
 var localized array<string> arrStrNotMercFNicks;
 var localized string m_strMercClassName;
 var localized string m_strNotMercClassName;
+var localized string strFuryPopTitle;
+var localized string strFuryPopText;
 var config int m_iCostHireMerc;
 var config float m_fNotMerc;
 var config int m_iMercPay;
@@ -40,6 +42,11 @@ var localized string m_strSalaryDescription;
 var config string MercDesColor;
 var localized string m_strMercDescription; 
 var localized string m_strMercSalary;
+var config array<TMercRanks> FuryPerks;
+var config array<TStatProgression> FuryStatProgression;
+var config float m_fFuryChance;
+var config int iFuryCashCost;
+var config int iFuryMeldCost;
   
 function Mutate(string MutateString, PlayerController Sender) 
 {
@@ -50,51 +57,51 @@ function Mutate(string MutateString, PlayerController Sender)
   
   	if(MutateString == "MercMainMenu")
 	{
-		`Log("Mutate: Mercenary");
+		LogInternal("Mutate: Mercenary");
     	SetMercMainMenuVars();
     }
 	if(MutateString == "MercUpdateHiring")
     {
-		`Log("Mutate: Mercenary");
+		LogInternal("Mutate: Mercenary");
     	SetMercUpdateHiringVars();
     }
 	if(Left(MutateString, 14) == "MercCreateSold")
     {
-		`Log("Mutate: Mercenary");
+		LogInternal("Mutate: Mercenary");
       	arrMutateStr = SplitString(MutateString, "_", false);
     	SetMercCreateSoldVars(int(arrMutateStr[1]));
     }
 	if(Left(MutateString, 13) == "MercGetPerkCT")
     {
-		`Log("Mutate: Mercenary");
+		LogInternal("Mutate: Mercenary");
     	arrMutateStr = SplitString(MutateString, "_", false);
       	MercGetPerkCT(int(arrMutateStr[1]));
     }
 	if(MutateString == "GetMercPerks")
     {
-		`Log("Mutate: Mercenary");
+		LogInternal("Mutate: Mercenary");
     	//NotMercPerks();
     }
 	if(Left(MutateString, 11) == "MercGetNick")
     {
-		`Log("Mutate: Mercenary");
+		LogInternal("Mutate: Mercenary");
     	arrMutateStr = SplitString(MutateString, "_", false);
       	MercNicknames(int(arrMutateStr[1]));
     }
 	if(Left(MutateString, 13) == "MercGetSalary")
 	{
-		`Log("Mutate: Mercenary");
+		LogInternal("Mutate: Mercenary");
 		arrMutateStr = SplitString(MutateString, "_", false);
 		SetMercSalary(int(arrMutateStr[1]));
 	}
 	if(MutateString == "GetAllMercPay")
 	{
-		`Log("Mutate: Mercenary");
+		LogInternal("Mutate: Mercenary");
 		TotalMercSalary();
 	}
 	if(Left(MutateString, 15) == "MercLevelupStat")
 	{
-		`Log("Mutate: Mercenary");
+		LogInternal("Mutate: Mercenary");
 		if(len(MutateString) > 15)
 		{
 			arrMutateStr = SplitString(MutateString, "_", false);
@@ -107,27 +114,27 @@ function Mutate(string MutateString, PlayerController Sender)
 	}
 	if(MutateString == "MercPerkDescription")
 	{
-		`Log("Mutate: Mercenary");
+		LogInternal("Mutate: Mercenary");
 		MercPerkDescription();
 	}
 	
 	if(Left(MutateString, 18) == "ASCPerkDescription")
 	{
-		`Log("Mutate: ASCPerkDescription");
+		LogInternal("Mutate: ASCPerkDescription");
 		arrMutateStr = SplitString(MutateString, "_", false);
 		ASCPerkDescription(int(arrMutateStr[1]));
 	}
 	
 	if(Left(MutateString, 15) == "ASCLevelUpStats")
 	{
-		`Log("Mutate: ASCLevelUpStats");
+		LogInternal("Mutate: ASCLevelUpStats");
 		arrMutateStr = SplitString(MutateString, "_", false);
 		ASCLevelUpStats(int(arrMutateStr[1]));
 	}
 
 	if(MutateString == "SingleMercSalary")
 	{
-		`Log("Mutate: SingleMercSalary");
+		LogInternal("Mutate: SingleMercSalary");
 		SingleMercSalary();
 	}
 
@@ -135,7 +142,20 @@ function Mutate(string MutateString, PlayerController Sender)
 	{
 		ActivateAmnesia();
 	}
-	
+
+	if(Left(MutateString, 14) == "FuryCreateSold")
+    {
+		LogInternal("Mutate: Mercenary");
+      	arrMutateStr = SplitString(MutateString, "_", false);
+    	SetFuryCreateSoldVars(int(arrMutateStr[1]));
+    }
+
+	if(Left(MutateString, 11) == "MercSetFury")
+	{
+		LogInternal("Mutate: Mercenary");
+      	arrMutateStr = SplitString(MutateString, "_", false);
+    	FuryPrereqs(int(arrMutateStr[1]));
+	}
 	
 	if(MutateString ~= "TestMod")
 	{
@@ -211,6 +231,11 @@ function XComPerkManager PERKS()
 function XGFacility_Labs LABS()
 {
 	return HQ().m_kLabs;
+}
+
+function XGFacility_CyberneticsLab CYBERNETICSLAB()
+{
+	return BARRACKS().m_kCyberneticsLab;
 }
 
 function SetMercMainMenuVars()
@@ -408,25 +433,25 @@ function SetMercCreateSoldVars(int SoldierID)
 	switch(GetHighestUsedMedal())
 	{
 		case 0:
-			newRank = Rand(1) + BARRACKS().HasOTSUpgrade(8) ? 2 : 1;
-			break;
-		case 1:
 			newRank = Rand(2) + BARRACKS().HasOTSUpgrade(8) ? 2 : 1;
 			break;
-		case 2:
+		case 1:
 			newRank = Rand(3) + BARRACKS().HasOTSUpgrade(8) ? 2 : 1;
 			break;
-		case 3:
+		case 2:
 			newRank = Rand(4) + BARRACKS().HasOTSUpgrade(8) ? 2 : 1;
+			break;
+		case 3:
+			newRank = Rand(BARRACKS().HasOTSUpgrade(8) ? 5 : 4) + BARRACKS().HasOTSUpgrade(8) ? 2 : 1;
 			break;
 		case 4:
 			if(BARRACKS().HasOTSUpgrade(9))
 			{
-				newRank = Rand(1) + 4;
+				newRank = Rand(2) + 4;
 			}
 			else
 			{
-				newRank = Rand(BARRACKS().HasOTSUpgrade(8) ? 2 : 3) + BARRACKS().HasOTSUpgrade(8) ? 3 : 2;
+				newRank = Rand(BARRACKS().HasOTSUpgrade(8) ? 3 : 4) + BARRACKS().HasOTSUpgrade(8) ? 3 : 2;
 			}
 			break;
 		default:
@@ -559,7 +584,7 @@ function ASCLevelUpStats(optional int statsString)
     }
 	
 	
-	if(SOLDIER().m_iEnergy != 8 && SOLDIER().m_iEnergy != 9)
+	if(!(SOLDIER().m_iEnergy == 7 || SOLDIER().m_iEnergy == 8 || SOLDIER().m_iEnergy == 9))
 	{
 	
 	
@@ -638,33 +663,43 @@ function MercLevelupStat(optional int statsString)
 {
 	local int statOffense, statWill, statHealth, statDefence, I, pos;	
 	local bool bRand;
+	local array<TStatProgression> kStatProgression;
 	
 	//if(m_kAscensionMutate == none)
 	//{
 	//	createactor();
 	//}
 
+	if(SOLDIER().m_iEnergy == 7)
+	{
+		kStatProgression = FuryStatProgression;
+	}
+	if(SOLDIER().m_iEnergy == 8)
+	{
+		kStatProgression = MercStatProgression;
+	}
+
 	bRand = SOLDIER().IsOptionEnabled(3);
 
 	pos = ((statsString >> 8) & 255) == 0 ? 0 : ((((statsString >> 8) & 255) - 1) * 3) + statsString & 255;
 
-	for(I = 0; I < MercStatProgression.Length; I++)
+	for(I = 0; I < kStatProgression.Length; I++)
 	{
-		if(MercStatProgression[I].iRank == ((statsString >> 8) & 255))
+		if(kStatProgression[I].iRank == ((statsString >> 8) & 255))
 		{
 			if(bRand)
 			{
-				statWill = Rand(MercStatProgression[I].RandWill) + MercStatProgression[I].MinWill;
-				statHealth = PercentRoll(float(MercStatProgression[I].RandHP)) ? 1 : 0;
-				statOffense = Rand(MercStatProgression[I].RandAim) + MercStatProgression[I].MinAim;
-				statDefence = PercentRoll(float(MercStatProgression[I].RandDef)) ? 1 : 0;
+				statWill = Rand(kStatProgression[I].RandWill) + kStatProgression[I].MinWill;
+				statHealth = PercentRoll(float(kStatProgression[I].RandHP)) ? 1 : 0;
+				statOffense = Rand(kStatProgression[I].RandAim) + kStatProgression[I].MinAim;
+				statDefence = PercentRoll(float(kStatProgression[I].RandDef)) ? 1 : 0;
 			}
 			else
 			{
-				statWill = MercStatProgression[I].Will + Rand(class'XGTacticalGameCore'.default.iRandWillIncrease);
-				statHealth = MercStatProgression[I].HP;
-				statOffense = MercStatProgression[I].Aim;
-				statDefence = MercStatProgression[I].Def;
+				statWill = kStatProgression[I].Will + Rand(class'XGTacticalGameCore'.default.iRandWillIncrease);
+				statHealth = kStatProgression[I].HP;
+				statOffense = kStatProgression[I].Aim;
+				statDefence = kStatProgression[I].Def;
 			}
 		}
 	}
@@ -735,7 +770,7 @@ function MercLevelupStat(optional int statsString)
     SOLDIER().m_kChar.aStats[1] += statOffense;
     SOLDIER().m_kChar.aStats[2] += statDefence;
     SOLDIER().m_kChar.aStats[7] += statWill;
-	`Log("End of MercLevelupStat");
+	LogInternal("End of MercLevelupStat");
 }
 
 function ASCPerkDescription(int iCurrentView)
@@ -767,7 +802,7 @@ function ASCPerkDescription(int iCurrentView)
 	// End:0x3D4
 	if(((iCurrentView != 2) && !SOLDIERUI().IsOptionEnabled(4)))
 	{
-		if(SOLDIER().m_iEnergy != 8 && SOLDIER().m_iEnergy != 9)
+		if(!(SOLDIER().m_iEnergy == 7 || SOLDIER().m_iEnergy == 8 || SOLDIER().m_iEnergy == 9))
 		{
 			if((SOLDIERUI().GetAbilityTreeBranch()) > 1)
 			{
@@ -829,27 +864,37 @@ function MercPerkDescription()
 	local int aim, will, mob, critch, dmg, iPerk, pay, pos;
 	local string costcolor;
 	local bool bFtC;
+	local array<TMercRanks> kPerks;
+
+	if(SOLDIER().m_iEnergy == 7)
+	{
+		kPerks = FuryPerks;
+	}
+	if(SOLDIER().m_iEnergy == 8)
+	{
+		kPerks = MercPerks;
+	}
 
 	pos = SOLDIERUI().GetAbilityTreeBranch() == 0 ? 0 : (((SOLDIERUI().GetAbilityTreeBranch() - 1) * 3) + SOLDIERUI().GetAbilityTreeOption());
 	
 	bFtC = SOLDIER().HasPerk(178);
 
-	`log("MercPerkDes Branch: " $ SOLDIERUI().GetAbilityTreeBranch());
-	`log("MercPerkDes Option: " $ SOLDIERUI().GetAbilityTreeOption());
-	`log("MercPerkDes Pos?: " $ pos);
-	`log("MercPerkDes perk: " $ MercPerks[pos].iPerk);
-	`log("MercPerkDes title: " $ PERKS().m_arrPerks[MercPerks[pos].iPerk].strName[0]);
+	LogInternal("MercPerkDes Branch: " $ SOLDIERUI().GetAbilityTreeBranch());
+	LogInternal("MercPerkDes Option: " $ SOLDIERUI().GetAbilityTreeOption());
+	LogInternal("MercPerkDes Pos?: " $ pos);
+	LogInternal("MercPerkDes perk: " $ kPerks[pos].iPerk);
+	LogInternal("MercPerkDes title: " $ PERKS().m_arrPerks[kPerks[pos].iPerk].strName[0]);
 
-	pay = MercPerks[pos].iPay;
-	aim = MercPerks[pos].iStat[0];
-	will = MercPerks[pos].iStat[1];
-	if(MercPerks[pos].iStat[2] == -1)
+	pay = kPerks[pos].iPay;
+	aim = kPerks[pos].iStat[0];
+	will = kPerks[pos].iStat[1];
+	if(kPerks[pos].iStat[2] == -1)
 	{
 		mob = -1;
 	}
 	else
 	{
-		if(MercPerks[pos].iStat[2] == 1)
+		if(kPerks[pos].iStat[2] == 1)
 		{
 			mob = 1;
 		}
@@ -858,13 +903,13 @@ function MercPerkDescription()
 			mob = 0;
 		}
 	}
-	if(MercPerks[pos].iStat[3] == -1)
+	if(kPerks[pos].iStat[3] == -1)
 	{
 		critch = -1;
 	}
 	else
 	{
-		if(MercPerks[pos].iStat[3] == 1)
+		if(kPerks[pos].iStat[3] == 1)
 		{
 			critch = 1;
 		}
@@ -873,13 +918,13 @@ function MercPerkDescription()
 			critch = 0;
 		}
 	}
-	if(MercPerks[pos].iStat[4] == -1)
+	if(kPerks[pos].iStat[4] == -1)
 	{
 		dmg = -1;
 	}
 	else
 	{
-		if(MercPerks[pos].iStat[4] == 1)
+		if(kPerks[pos].iStat[4] == 1)
 		{
 			dmg = 1;
 		}
@@ -889,11 +934,11 @@ function MercPerkDescription()
 		}
 	}
 	
-	iPerk = MercPerks[pos].iPerk;
+	iPerk = kPerks[pos].iPerk;
 
 	if(pos == 1 && SOLDIER().m_iEnergy == 8)
 	{
-		if(!SOLDIER().HasPerk(MercPerks[pos].iPerk))
+		if(!SOLDIER().HasPerk(kPerks[pos].iPerk))
 		{
 			TAG().StrValue2 = "<font color='" $ MercDesColor $ "'>" $ m_strMercDescription $ "</font>";
 		}
@@ -960,7 +1005,7 @@ function TotalMercSalary()
 			}
 			for(I = 0; I < MercPerks.Length; I++)
 			{
-				`Log("SalaryCounterI= " $ I);
+				LogInternal("SalaryCounterI= " $ I);
 				if(MercPerks[I].iPay > 0)
 				{
 					if(kSoldier.HasPerk(MercPerks[I].iPerk))
@@ -968,15 +1013,15 @@ function TotalMercSalary()
 						if(bFtC)
 						{
 							Pay = (MercPerks[I].iPay / 2);
-							`Log("Pay2= " $ Pay);
+							LogInternal("Pay2= " $ Pay);
 						}
 						else
 						{
 							Pay = MercPerks[I].iPay;
-							`Log("Pay1= " $ Pay);
+							LogInternal("Pay1= " $ Pay);
 						}
 						mercCost += Pay;
-						`Log("mercCost= " $ mercCost);
+						LogInternal("mercCost= " $ mercCost);
 					}
 				}
 			}
@@ -984,7 +1029,7 @@ function TotalMercSalary()
 		}
 	}
 	totalCost += mercCost;
-	`Log("totalCost= " $ totalCost);
+	LogInternal("totalCost= " $ totalCost);
 	TAG().StrValue1 = string(totalCost);
 }
 
@@ -1015,7 +1060,7 @@ function SetMercSalary(int MercClass)
 			}
 			for(I = 0; I < MercPerks.Length; I++)
 			{
-				`Log("MercSalaryI= " $ I);
+				LogInternal("MercSalaryI= " $ I);
 				if(MercPerks[I].iPay > 0)
 				{
 					if(kSoldier.HasPerk(MercPerks[I].iPerk))
@@ -1023,19 +1068,19 @@ function SetMercSalary(int MercClass)
 						if(bFtC)
 						{
 							Pay = (MercPerks[I].iPay / 2);
-							`Log("MercPay2= " $ Pay);
+							LogInternal("MercPay2= " $ Pay);
 						}
 						else
 						{
 							Pay = MercPerks[I].iPay;
-							`Log("MercPay1= " $ Pay);
+							LogInternal("MercPay1= " $ Pay);
 						}
 						totalCost += Pay;
 					}
 				}
 			}
 			totalCost += basePay;
-			`Log("MercTotal= " $ totalCost);
+			LogInternal("MercTotal= " $ totalCost);
 			TAG().StrValue2 = ((MercClass == 8) ? m_strMercClassName : ((MercClass == 9) ? m_strNotMercClassName : "MercFuryMEC")) @ "x" @ string(iCount) $ "_-" $ class'XGScreenMgr'.static.ConvertCashToString(totalCost);
 		}
 	}
@@ -1130,15 +1175,24 @@ function MercGetPerkCT(int SoldierID)
   
   	kSoldier = BARRACKS().GetSoldierByID(SoldierID);
 	
-	`Log("MercGetPerkCT");
+	LogInternal("MercGetPerkCT");
   
-  	if(kSoldier.m_iEnergy == 8)
+  	if(kSoldier.m_iEnergy == 7)
+	{
+		for(I = 0; I < FuryPerks.Length; I++)
+		{
+			kSoldier.m_arrRandomPerks.additem(EPerkType(FuryPerks[I].iPerk));
+		}
+	}
+	
+	if(kSoldier.m_iEnergy == 8)
 	{
 		for(I = 0; I < MercPerks.Length; I++)
 		{
 			kSoldier.m_arrRandomPerks.additem(EPerkType(MercPerks[I].iPerk));
 		}
 	}
+	
   	/*if(kSoldier.m_iEnergy == 9)
 	{
 		for(I = 0; I < 21; I++)
@@ -1207,7 +1261,7 @@ function ActivateAmnesia()
 
 	if(SOLDIER().m_iEnergy == 8)
 	{
-		`Log("Mutate: Merc, ActivateAmnesia");
+		LogInternal("Mutate: Merc, ActivateAmnesia");
 
 		for(I = 0; I < MinStats.Length; I++)
 		{
@@ -1230,12 +1284,175 @@ function ActivateAmnesia()
 	}
 }
 
-
-defaultproperties 
+function FuryPrereqs(int iNum)
 {
-	NotMercMainWeapon = 231
-	NotMercArmorTint = 24
-	NotMercHelmet = -1
-	NotMercArmorDeco = 76
+	if(LABS().IsResearched(60) && HQ().HasFacility(22))
+    {
+    	if(((HQ().GetResource(0)) >= (CYBERNETICSLAB().m_iModCashCost * 0.75)) && (HQ().GetResource(7)) >= CYBERNETICSLAB().m_iModMeldCost)
+        {
+			if(CYBERNETICSLAB().m_arrPatients.Length < (TACTICAL().PSI_NUM_TRAINING_SLOTS - 1))
+			{
+				FuryPopUp(iNum);
+			}
+        }
+    }
+}
+
+function FuryPopUp(int iNum, optional bool bForce)
+{
+	local TDialogueBoxData kDialog;
+    local bool bMakeFury;
+    local int I;
+  
+  	//bMakeFury = bForce;
+    //(!(bMakeFury) || (I < iNum))
+	
+    for(I = 0; I < iNum; I++)
+    {
+      	bMakeFury = PercentRoll(m_fFuryChance);
+    }
+
+    if(bMakeFury)
+    {
+    	kDialog.eType = 0;
+    	//kDialog.strTitle = "ATTENTION: Recruitment opportunity" $ chr(10) $ chr(10) $ "This will cost: " $ class'UIUtilities'.static.GetHTMLColoredText(class'XGScreenMgr'.static.ConvertCashToString(CYBERNETICSLAB().m_iModCashCost * 0.75), 6) $ " " $ class'UIUtilities'.static.InjectHTMLImage("meld_orange", 32, 26, -5) $ class'UIUtilities'.static.GetHTMLColoredText(string(CYBERNETICSLAB().m_iModMeldCost), 12);
+        kDialog.strTitle = strFuryPopTitle $ class'UIUtilities'.static.GetHTMLColoredText(class'XGScreenMgr'.static.ConvertCashToString(iFuryCashCost), 6) $ " " $ class'UIUtilities'.static.InjectHTMLImage("meld_orange", 32, 26, -5) $ class'UIUtilities'.static.GetHTMLColoredText(string(iFuryMeldCost), 12);
+		//kDialog.strText = "While scouting for potential Mercenaries we have come across a unique individual.  Though they have not been so fortunate in battle they have a strong background in combat and might be a suitable candidate for our new MEC program. Would you like to hire and augment them or find a standard mercenary Commander?";
+    	kDialog.strText = strFuryPopText;
+		kDialog.strAccept = "Augment";
+    	kDialog.strCancel = "Mercenary";
+    	kDialog.fnCallback = FuryPopUpCallback;
+      	XComHQPresentationLayer(XComPlayerController(GetALocalPlayerController()).m_Pres).m_kSoldierPromote.SetInputState(0);
+		XComHQPresentationLayer(XComPlayerController(GetALocalPlayerController()).m_Pres).UIRaiseDialog(kDialog);
+    }
+  	else
+    {
+      	TAG().IntValue2 = 1;
+    }
+}
+
+function FuryPopUpCallback(EUIAction eAction)
+{
+  	if(eAction == 2)
+    {
+    	TAG().IntValue2 = 1;
+    }
+	if(eAction == 1)
+    {
+    	TAG().IntValue2 = 1;
+    }
+	if(eAction == 0)
+    {
+    	TAG().IntValue2 = 2;
+    	HQ().AddResource(0, -iFuryCashCost);
+        HQ().AddResource(7, -iFuryMeldCost);
+    }
+        
+    XComHQPresentationLayer(XComPlayerController(GetALocalPlayerController()).m_Pres).m_kSoldierPromote.SetInputState(1);
+    //return;    
+}
+
+
+function SetFuryCreateSoldVars(int SoldierID)
+{
+  	local XGStrategySoldier kSoldier;
+	local TCyberneticsLabPatient kPatient;
+	local int I, newRank;
+  	local TMinStats MinData;
+  
+    kSoldier = BARRACKS().GetSoldierByID(SoldierID);
+	kSoldier.m_iEnergy = 7;
+  
+  	MinData.Hp = 1;
+    MinData.Aim = 25;
+    MinData.Def = -15;
+    MinData.Mob = 5;
+    MinData.Will = 25;
+  
+    SetMinStats(SoldierID, MinData);
+  
+	//kNewLoadout = kSoldier.m_kChar.kInventory;
+	//kNewLoadout.iArmor = 192;
+
+	//if(m_kAscensionMutate == none)
+	//{
+	//	createactor();
+	//}
+
+	if(kSoldier.m_kChar.eClass == 6)
+    {
+		switch(GetHighestUsedMedal())
+		{
+			case 0:
+				newRank = Rand(2) + BARRACKS().HasOTSUpgrade(8) ? 2 : 1;
+				break;
+			case 1:
+				newRank = Rand(3) + BARRACKS().HasOTSUpgrade(8) ? 2 : 1;
+				break;
+			case 2:
+				newRank = Rand(4) + BARRACKS().HasOTSUpgrade(8) ? 2 : 1;
+				break;
+			case 3:
+				newRank = Rand(BARRACKS().HasOTSUpgrade(8) ? 5 : 4) + BARRACKS().HasOTSUpgrade(8) ? 2 : 1;
+				break;
+			case 4:
+				if(BARRACKS().HasOTSUpgrade(9))
+				{
+					newRank = Rand(2) + 4;
+				}
+				else
+				{
+					newRank = Rand(BARRACKS().HasOTSUpgrade(8) ? 3 : 4) + BARRACKS().HasOTSUpgrade(8) ? 3 : 2;
+				}
+				break;
+			default:
+				newRank = BARRACKS().HasOTSUpgrade(8) ? 2 : 1;
+				break;
+		}
+
+		kSoldier.m_kSoldier.iXP = TACTICAL().GetXPRequired(newRank);
+		lvlloop:
+		if(kSoldier.IsReadyToLevelUp())
+		{
+			kSoldier.LevelUp();
+			goto lvlloop;
+		}
+		
+		for(I = 0; I < MinStats.Length; I++)
+		{
+			if(MinStats[I].iClass == 7)
+			{
+				SetMinStats(SoldierID, MinStats[I]);
+				break;
+			}
+		}
+    
+		if(kSoldier.GetRank() >= 3)
+		{
+			MercNicknames(SoldierID);
+		}
+	
+		MercGetPerkCT(SoldierID);
+    }
+	else
+    {
+    	kPatient.m_kSoldier = kSoldier;
+        kPatient.m_iHoursLeft = ((CYBERNETICSLAB().m_iModDays * 24) * 0.75);
+        kPatient.m_kSoldier.m_iTurnsOut = kPatient.m_iHoursLeft;
+        kPatient.m_kSoldier.SetStatus(5);
+        CYBERNETICSLAB().m_arrPatients.AddItem(kPatient);
+        BARRACKS().ReorderRanks();
+        XComHQPresentationLayer(XComPlayerController(GetALocalPlayerController()).m_Pres).UINarrative(xcomnarrativemoment'MECaugment_Confirmed');
+    }
+}
+
+
+// Decompiled with UE Explorer.
+defaultproperties
+{
+    NotMercArmorTint=24
+    NotMercHelmet=-1
+    NotMercArmorDeco=76
+    NotMercMainWeapon=231
 }
 
