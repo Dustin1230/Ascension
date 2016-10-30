@@ -32,6 +32,14 @@ struct native TAppearance
     var int iArmorTint;
 };
 
+enum EGender
+{
+    eGender_None,
+    eGender_Male,
+    eGender_Female,
+    eGender_MAX
+};
+
 enum ESoldierRanks
 {
     eRank_Rookie,
@@ -411,6 +419,7 @@ var repnotify XGAbilityTree m_kAbilities;
 var config int NUM_STARTING_SOLDIERS;
 var config array<config TSoldierStatProgression> SoldierStatProgression;
 var config int iRandWillIncrease;
+var config float SW_MARATHON;
 
 
 native simulated function TCharacter GetTCharacter(int iCharacter);

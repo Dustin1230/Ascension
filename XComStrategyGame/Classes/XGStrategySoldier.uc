@@ -77,3 +77,7 @@ native function int GetCurrentStat(const int iStat);
 native function int GetMaxStat(const int iStat);
 
 native function bool IsInjured();
+
+function SetHQLocation(int iNewHQLocation, optional bool bForce, optional int SlotIdx, optional bool bForceNewPawn)
+{
+}

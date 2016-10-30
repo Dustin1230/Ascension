@@ -537,6 +537,34 @@ enum EEntityGraphic
     eEntityGraphic_MAX
 };
 
+struct TItem
+{
+    var string strName;
+    var string strNamePlural;
+    var int iItem;
+    var int iCash;
+    var int iElerium;
+    var int iAlloy;
+    var int iMeld;
+    var int iHours;
+    var int iMaxEngineers;
+    var int iTechReq;
+    var int iFTechReq;
+    var int iItemReq;
+    var int iStructureReq;
+    var string strBriefSummary;
+    var string strDeepSummary;
+    var int iCategory;
+    var int iImage;
+};
+
+struct TStaffOrder
+{
+    var int iNumStaff;
+    var int iStaffType;
+    var int iHours;
+};
+
 struct TMonthlySummary
 {
     var int iPanicChange;
@@ -646,6 +674,10 @@ function STAT_SetStat(ERecapStats eStat, int Value)
 {
 }
 
+function XGRecapSaveData GetRecapSaveData()
+{
+}
+
 function XGFacility_Labs LABS() 
 {
 	return ReturnValue;
@@ -666,3 +698,23 @@ function XComHQPresentationLayer PRES() {}
 function XGFacility_Lockers LOCKERS() {}
 
 function XGTacticalGameCore TACTICAL() {}
+
+function XGFacility_Barracks BARRACKS()
+{
+}
+
+function XGGeoscape GEOSCAPE()
+{
+}
+
+function XGStorage STORAGE()
+{
+}
+
+function TItem STAFF(int iStaffType)
+{
+}
+
+function XGFacility_Engineering ENGINEERING()
+{
+}
