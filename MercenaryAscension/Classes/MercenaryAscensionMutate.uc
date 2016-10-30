@@ -16,6 +16,8 @@ var localized array<string> arrStrNotMercMNicks;
 var localized array<string> arrStrNotMercFNicks;
 var localized string m_strMercClassName;
 var localized string m_strNotMercClassName;
+var localized string strFuryPopTitle;
+var localized string strFuryPopText;
 var config int m_iCostHireMerc;
 var config float m_fNotMerc;
 var config int m_iMercPay;
@@ -43,6 +45,8 @@ var localized string m_strMercSalary;
 var config array<TMercRanks> FuryPerks;
 var config array<TStatProgression> FuryStatProgression;
 var config float m_fFuryChance;
+var config int iFuryCashCost;
+var config int iFuryMeldCost;
   
 function Mutate(string MutateString, PlayerController Sender) 
 {
@@ -429,25 +433,25 @@ function SetMercCreateSoldVars(int SoldierID)
 	switch(GetHighestUsedMedal())
 	{
 		case 0:
-			newRank = Rand(1) + BARRACKS().HasOTSUpgrade(8) ? 2 : 1;
-			break;
-		case 1:
 			newRank = Rand(2) + BARRACKS().HasOTSUpgrade(8) ? 2 : 1;
 			break;
-		case 2:
+		case 1:
 			newRank = Rand(3) + BARRACKS().HasOTSUpgrade(8) ? 2 : 1;
 			break;
-		case 3:
+		case 2:
 			newRank = Rand(4) + BARRACKS().HasOTSUpgrade(8) ? 2 : 1;
+			break;
+		case 3:
+			newRank = Rand(5) + BARRACKS().HasOTSUpgrade(8) ? 2 : 1;
 			break;
 		case 4:
 			if(BARRACKS().HasOTSUpgrade(9))
 			{
-				newRank = Rand(1) + 4;
+				newRank = Rand(2) + 4;
 			}
 			else
 			{
-				newRank = Rand(BARRACKS().HasOTSUpgrade(8) ? 2 : 3) + BARRACKS().HasOTSUpgrade(8) ? 3 : 2;
+				newRank = Rand(BARRACKS().HasOTSUpgrade(8) ? 3 : 4) + BARRACKS().HasOTSUpgrade(8) ? 3 : 2;
 			}
 			break;
 		default:
@@ -1286,7 +1290,10 @@ function FuryPrereqs(int iNum)
     {
     	if(((HQ().GetResource(0)) >= (CYBERNETICSLAB().m_iModCashCost * 0.75)) && (HQ().GetResource(7)) >= CYBERNETICSLAB().m_iModMeldCost)
         {
-    		FuryPopUp(iNum);
+			if(CYBERNETICSLAB().m_arrPatients.Length < (TACTICAL().PSI_NUM_TRAINING_SLOTS - 1))
+			{
+				FuryPopUp(iNum);
+			}
         }
     }
 }
@@ -1297,9 +1304,10 @@ function FuryPopUp(int iNum, optional bool bForce)
     local bool bMakeFury;
     local int I;
   
-  	bMakeFury = bForce;
-      
-    for(I = 0; (!(bMakeFury) || (I < iNum)); I++)
+  	//bMakeFury = bForce;
+    //(!(bMakeFury) || (I < iNum))
+	
+    for(I = 0; I < iNum; I++)
     {
       	bMakeFury = PercentRoll(m_fFuryChance);
     }
@@ -1307,9 +1315,11 @@ function FuryPopUp(int iNum, optional bool bForce)
     if(bMakeFury)
     {
     	kDialog.eType = 0;
-    	kDialog.strTitle = "ATTENTION: Recruitment opportunity" $ chr(10) $ chr(10) $ "This will cost:" $ class'UIUtilities'.static.GetHTMLColoredText(class'XGScreenMgr'.static.ConvertCashToString(CYBERNETICSLAB().m_iModCashCost * 0.75), 6) $ "&" $ class'UIUtilities'.static.InjectHTMLImage("meld_orange", 32, 26, -5) $ class'UIUtilities'.static.GetHTMLColoredText(string(CYBERNETICSLAB().m_iModMeldCost), 12);
-        kDialog.strText = "While scouting for potential Mercenaries we have come across a unique individual.  Though they have not been so fortunate in battle they have a strong background in combat and might be a suitable candidate for our new MEC program. Would you like to hire and augment them or find a standard mercenary Commander?";
-    	kDialog.strAccept = "Augment";
+    	//kDialog.strTitle = "ATTENTION: Recruitment opportunity" $ chr(10) $ chr(10) $ "This will cost: " $ class'UIUtilities'.static.GetHTMLColoredText(class'XGScreenMgr'.static.ConvertCashToString(CYBERNETICSLAB().m_iModCashCost * 0.75), 6) $ " " $ class'UIUtilities'.static.InjectHTMLImage("meld_orange", 32, 26, -5) $ class'UIUtilities'.static.GetHTMLColoredText(string(CYBERNETICSLAB().m_iModMeldCost), 12);
+        kDialog.strTitle = strFuryPopTitle $ class'UIUtilities'.static.GetHTMLColoredText(class'XGScreenMgr'.static.ConvertCashToString(iFuryCashCost), 6) $ " " $ class'UIUtilities'.static.InjectHTMLImage("meld_orange", 32, 26, -5) $ class'UIUtilities'.static.GetHTMLColoredText(string(iFuryMeldCost), 12);
+		//kDialog.strText = "While scouting for potential Mercenaries we have come across a unique individual.  Though they have not been so fortunate in battle they have a strong background in combat and might be a suitable candidate for our new MEC program. Would you like to hire and augment them or find a standard mercenary Commander?";
+    	kDialog.strText = strFuryPopText;
+		kDialog.strAccept = "Augment";
     	kDialog.strCancel = "Mercenary";
     	kDialog.fnCallback = FuryPopUpCallback;
       	XComHQPresentationLayer(XComPlayerController(GetALocalPlayerController()).m_Pres).m_kSoldierPromote.SetInputState(0);
@@ -1325,7 +1335,7 @@ function FuryPopUpCallback(EUIAction eAction)
 {
   	if(eAction == 2)
     {
-    	FuryPopUp(0, true);
+    	TAG().IntValue2 = 1;
     }
 	if(eAction == 1)
     {
@@ -1334,8 +1344,8 @@ function FuryPopUpCallback(EUIAction eAction)
 	if(eAction == 0)
     {
     	TAG().IntValue2 = 2;
-    	HQ().AddResource(0, -(CYBERNETICSLAB().m_iModCashCost * 0.75));
-        HQ().AddResource(7, -CYBERNETICSLAB().m_iModMeldCost);
+    	HQ().AddResource(0, -iFuryCashCost);
+        HQ().AddResource(7, -iFuryMeldCost);
     }
         
     XComHQPresentationLayer(XComPlayerController(GetALocalPlayerController()).m_Pres).m_kSoldierPromote.SetInputState(1);
@@ -1374,25 +1384,25 @@ function SetFuryCreateSoldVars(int SoldierID)
 		switch(GetHighestUsedMedal())
 		{
 			case 0:
-				newRank = Rand(1) + BARRACKS().HasOTSUpgrade(8) ? 2 : 1;
-				break;
-			case 1:
 				newRank = Rand(2) + BARRACKS().HasOTSUpgrade(8) ? 2 : 1;
 				break;
-			case 2:
+			case 1:
 				newRank = Rand(3) + BARRACKS().HasOTSUpgrade(8) ? 2 : 1;
 				break;
-			case 3:
+			case 2:
 				newRank = Rand(4) + BARRACKS().HasOTSUpgrade(8) ? 2 : 1;
+				break;
+			case 3:
+				newRank = Rand(5) + BARRACKS().HasOTSUpgrade(8) ? 2 : 1;
 				break;
 			case 4:
 				if(BARRACKS().HasOTSUpgrade(9))
 				{
-					newRank = Rand(1) + 4;
+					newRank = Rand(2) + 4;
 				}
 				else
 				{
-					newRank = Rand(BARRACKS().HasOTSUpgrade(8) ? 2 : 3) + BARRACKS().HasOTSUpgrade(8) ? 3 : 2;
+					newRank = Rand(BARRACKS().HasOTSUpgrade(8) ? 3 : 4) + BARRACKS().HasOTSUpgrade(8) ? 3 : 2;
 				}
 				break;
 			default:
@@ -1434,7 +1444,6 @@ function SetFuryCreateSoldVars(int SoldierID)
         BARRACKS().ReorderRanks();
         XComHQPresentationLayer(XComPlayerController(GetALocalPlayerController()).m_Pres).UINarrative(xcomnarrativemoment'MECaugment_Confirmed');
     }
-    	
 }
 
 

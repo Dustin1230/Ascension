@@ -21,6 +21,10 @@ function string RecordHiredAdditionalSoldiers(int iQuantity)
 {
 }
 
+function bool HasFacility(int iFacility)
+{
+}
+
 function OrderStaff(int iType, int iQuantity)
 {
     local TStaffOrder kOrder;

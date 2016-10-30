@@ -420,6 +420,7 @@ var config int NUM_STARTING_SOLDIERS;
 var config array<config TSoldierStatProgression> SoldierStatProgression;
 var config int iRandWillIncrease;
 var config float SW_MARATHON;
+var config int PSI_NUM_TRAINING_SLOTS;
 
 
 native simulated function TCharacter GetTCharacter(int iCharacter);

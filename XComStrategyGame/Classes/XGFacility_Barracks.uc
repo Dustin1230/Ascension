@@ -19,6 +19,7 @@ var XGFacility_Lockers m_kLockers;
 var array<XGStrategySoldier> m_arrSoldiers;
 var XGCharacterGenerator m_kCharGen;
 var int m_iSoldierCounter;
+var XGFacility_CyberneticsLab m_kCyberneticsLab;
 
 function RandomizeStats(XGStrategySoldier kRecruit)
 {
@@ -41,6 +42,10 @@ function AddNewSoldiers(int iNumSoldiers, optional bool bCreatePawns)
 }
 
 function AddNewSoldier(XGStrategySoldier kSoldier, optional bool bSkipReorder, optional bool bBlueshirt)
+{
+}
+
+function ReorderRanks()
 {
 }
 

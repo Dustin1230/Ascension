@@ -12,3 +12,7 @@ var protectedwrite bool m_bAnimateOutro;
 var protectedwrite bool m_bDelayRemove;
 var protected int m_watchVar_OnCinematicMode;
 var array<UI_FxsPanel> panels;
+
+simulated function SetInputState(int eInputState)
+{
+}
