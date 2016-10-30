@@ -5,3 +5,7 @@ class XGStrategyActor extends XGStrategyActorNativeBase
 function AddResource(XGStrategyActorNativeBase.EResourceType eResource, int iAmount, optional bool bRefund)
 {
 }
+
+function int GetResource(XGStrategyActorNativeBase.EResourceType eResource)
+{
+}

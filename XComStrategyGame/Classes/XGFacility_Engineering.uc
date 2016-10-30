@@ -4,3 +4,7 @@ class XGFacility_Engineering extends XGFacility
     notplaceable;
 
 var array<int> m_arrFoundryHistory;
+
+function bool IsFoundryTechResearched(int iTech)
+{
+}
