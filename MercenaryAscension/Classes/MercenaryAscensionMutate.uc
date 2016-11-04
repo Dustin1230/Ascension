@@ -735,14 +735,10 @@ function MercLevelupStat(optional int statsString)
 								}
 								break;
 							case 3:
-								if(MercPerks[pos].iStat[I] == -1)
-								{
-									SOLDIER().m_kChar.aStats[13] -= 1;
-								}
-								if(MercPerks[pos].iStat[I] == 1)
-								{
-									SOLDIER().m_kChar.aStats[13] += 1;
-								}
+								 if(MercPerks[pos].iStat[I] > -4 || MercPerks[pos].iStat[I] < 4)
+								 {
+									SOLDIER().m_kChar.aStats[13] += MercPerks[pos].iStat[I];
+								 }
 								break;
 							case 4:
 								if(MercPerks[pos].iStat[I] == -1)
@@ -903,21 +899,14 @@ function MercPerkDescription()
 			mob = 0;
 		}
 	}
-	if(kPerks[pos].iStat[3] == -1)
-	{
-		critch = -1;
-	}
-	else
-	{
-		if(kPerks[pos].iStat[3] == 1)
-		{
-			critch = 1;
-		}
-		else
-		{
-			critch = 0;
-		}
-	}
+    if(kPerks[pos].iStat[3] > -4 && kPerks[pos].iStat[3] < 4)
+    {
+        critch = kPerks[pos].iStat[3];
+    }
+    else
+    {
+        critch = 0;
+    }
 	if(kPerks[pos].iStat[4] == -1)
 	{
 		dmg = -1;

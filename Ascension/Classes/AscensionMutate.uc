@@ -1378,7 +1378,7 @@ function XenocideCount()
 	{
 		if(SoldStor.SoldierID == XGCharacter_Soldier(m_kUnit.GetCharacter()).m_kSoldier.iID)
 		{
-			Count = SoldStor.XenocideCount;
+			Count = SoldStor.XenocideCount * 3;
 			bFound = true;
 			break;
 		}
@@ -1601,6 +1601,8 @@ function CurruptMessage(string strTarget)
 		}
 	}
 
+	XComTacticalGRI(WorldInfo.GRI).m_kBattle.m_kDesc.m_iDifficulty = 0;
+
 	CurruptWillTest = (25 + ((kTarget.RecordMoraleLoss(6) / 4) * XGCharacter_Soldier(kTarget.GetCharacter()).m_kSoldier.iRank));
 	UnitWill = m_kUnit.RecordMoraleLoss(7);
 	WillChance = m_kUnit.WillTestChance(CurruptWillTest, UnitWill, false, false,, 50);
@@ -1620,17 +1622,15 @@ function CurruptMessage(string strTarget)
 			msgStr = left(split(Class'XGTacticalGameCore'.default.m_aExpandedLocalizedStrings[4], "("), inStr(split(Class'XGTacticalGameCore'.default.m_aExpandedLocalizedStrings[4], "("), ")") + 1);
 		}
 
-		XComTacticalGRI(WorldInfo.GRI).m_kBattle.m_kDesc.m_iDifficulty = 0;
-
 		kMessage = XComPresentationLayer(XComPlayerController(GetALocalPlayerController()).m_Pres).GetWorldMessenger().Message(PERKS().m_arrPerks[189].strName[0] @ string(100 - WillChance) $ "%" @ msgStr, kTarget.GetLocation(), bPanic ? 3 : 4,,, kTarget.m_eTeamVisibilityFlags,,,, Class'XComUIBroadcastWorldMessage_UnexpandedLocalizedString');
 
 		if(kMessage != none)
 		{
 			XComUIBroadcastWorldMessage_UnexpandedLocalizedString(kMessage).Init_UnexpandedLocalizedString(0, kTarget.GetLocation(), bPanic ? 3 : 4, kTarget.m_eTeamVisibilityFlags);
 		}
-
-		XComTacticalGRI(WorldInfo.GRI).m_kBattle.m_kDesc.m_iDifficulty = XComGameReplicationInfo(WorldInfo.GRI).m_kGameCore.m_iDifficulty;
 	}
+
+	XComTacticalGRI(WorldInfo.GRI).m_kBattle.m_kDesc.m_iDifficulty = XComGameReplicationInfo(WorldInfo.GRI).m_kGameCore.m_iDifficulty;
 }
 
 function applyStats(optional int iStat) 
