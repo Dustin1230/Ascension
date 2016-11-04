@@ -1378,7 +1378,7 @@ function XenocideCount()
 	{
 		if(SoldStor.SoldierID == XGCharacter_Soldier(m_kUnit.GetCharacter()).m_kSoldier.iID)
 		{
-			Count = SoldStor.XenocideCount;
+			Count = SoldStor.XenocideCount * 3;
 			bFound = true;
 			break;
 		}

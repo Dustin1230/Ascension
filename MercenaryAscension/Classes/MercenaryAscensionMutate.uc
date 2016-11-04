@@ -16,6 +16,7 @@ var localized array<string> arrStrNotMercMNicks;
 var localized array<string> arrStrNotMercFNicks;
 var localized string m_strMercClassName;
 var localized string m_strNotMercClassName;
+var localized string m_strFuryClassName;
 var localized string strFuryPopTitle;
 var localized string strFuryPopText;
 var config int m_iCostHireMerc;
@@ -735,14 +736,10 @@ function MercLevelupStat(optional int statsString)
 								}
 								break;
 							case 3:
-								if(MercPerks[pos].iStat[I] == -1)
-								{
-									SOLDIER().m_kChar.aStats[13] -= 1;
-								}
-								if(MercPerks[pos].iStat[I] == 1)
-								{
-									SOLDIER().m_kChar.aStats[13] += 1;
-								}
+								if(MercPerks[pos].iStat[I] > -4 && MercPerks[pos].iStat[I] < 4)
+                                {
+                                    SOLDIER().m_kChar.aStats[12] += MercPerks[pos].iStat[I];
+                                }
 								break;
 							case 4:
 								if(MercPerks[pos].iStat[I] == -1)
@@ -903,20 +900,13 @@ function MercPerkDescription()
 			mob = 0;
 		}
 	}
-	if(kPerks[pos].iStat[3] == -1)
+	if(kPerks[pos].iStat[3] > -4 && kPerks[pos].iStat[3] < 4)
 	{
-		critch = -1;
+		critch = kPerks[pos].iStat[3];
 	}
 	else
 	{
-		if(kPerks[pos].iStat[3] == 1)
-		{
-			critch = 1;
-		}
-		else
-		{
-			critch = 0;
-		}
+		critch = 0;
 	}
 	if(kPerks[pos].iStat[4] == -1)
 	{
@@ -1179,8 +1169,10 @@ function MercGetPerkCT(int SoldierID)
   
   	if(kSoldier.m_iEnergy == 7)
 	{
+		LogInternal("FuryPerks");
 		for(I = 0; I < FuryPerks.Length; I++)
 		{
+			LogInternal("Perk: " $ (FuryPerks[I].iPerk));
 			kSoldier.m_arrRandomPerks.additem(EPerkType(FuryPerks[I].iPerk));
 		}
 	}
@@ -1288,7 +1280,7 @@ function FuryPrereqs(int iNum)
 {
 	if(LABS().IsResearched(60) && HQ().HasFacility(22))
     {
-    	if(((HQ().GetResource(0)) >= (CYBERNETICSLAB().m_iModCashCost * 0.75)) && (HQ().GetResource(7)) >= CYBERNETICSLAB().m_iModMeldCost)
+    	if(((HQ().GetResource(0)) >= iFuryCashCost) && (HQ().GetResource(7)) >= iFuryMeldCost)
         {
 			if(CYBERNETICSLAB().m_arrPatients.Length < (TACTICAL().PSI_NUM_TRAINING_SLOTS - 1))
 			{
@@ -1296,6 +1288,10 @@ function FuryPrereqs(int iNum)
 			}
         }
     }
+	else
+	{
+		TAG().IntValue2 = 1;
+	}
 }
 
 function FuryPopUp(int iNum, optional bool bForce)
@@ -1362,8 +1358,9 @@ function SetFuryCreateSoldVars(int SoldierID)
   
     kSoldier = BARRACKS().GetSoldierByID(SoldierID);
 	kSoldier.m_iEnergy = 7;
+	kSoldier.m_kSoldier.kClass.strName = m_strFuryClassName;
   
-  	MinData.Hp = 1;
+  	MinData.Hp = 2;
     MinData.Aim = 25;
     MinData.Def = -15;
     MinData.Mob = 5;
@@ -1414,7 +1411,7 @@ function SetFuryCreateSoldVars(int SoldierID)
 		lvlloop:
 		if(kSoldier.IsReadyToLevelUp())
 		{
-			kSoldier.LevelUp();
+			kSoldier.LevelUp(kSoldier.m_kChar.eClass);
 			goto lvlloop;
 		}
 		
