@@ -16,6 +16,7 @@ var localized array<string> arrStrNotMercMNicks;
 var localized array<string> arrStrNotMercFNicks;
 var localized string m_strMercClassName;
 var localized string m_strNotMercClassName;
+var localized string m_strFuryClassName;
 var localized string strFuryPopTitle;
 var localized string strFuryPopText;
 var config int m_iCostHireMerc;
@@ -47,6 +48,7 @@ var config array<TStatProgression> FuryStatProgression;
 var config float m_fFuryChance;
 var config int iFuryCashCost;
 var config int iFuryMeldCost;
+var config int m_iFuryPay;
   
 function Mutate(string MutateString, PlayerController Sender) 
 {
@@ -155,6 +157,12 @@ function Mutate(string MutateString, PlayerController Sender)
 		LogInternal("Mutate: Mercenary");
       	arrMutateStr = SplitString(MutateString, "_", false);
     	FuryPrereqs(int(arrMutateStr[1]));
+	}
+	
+	if(MutateString == "FuryCosts")
+	{
+		LogInternal("Mutate: Fury Costs");
+		TAG().strValue2 = string(iFuryCashCost) $ "_" $ string(iFuryMeldCost);
 	}
 	
 	if(MutateString ~= "TestMod")
@@ -735,10 +743,10 @@ function MercLevelupStat(optional int statsString)
 								}
 								break;
 							case 3:
-								 if(MercPerks[pos].iStat[I] > -4 || MercPerks[pos].iStat[I] < 4)
-								 {
-									SOLDIER().m_kChar.aStats[13] += MercPerks[pos].iStat[I];
-								 }
+								if(MercPerks[pos].iStat[I] > -4 && MercPerks[pos].iStat[I] < 4)
+                                {
+                                    SOLDIER().m_kChar.aStats[12] += MercPerks[pos].iStat[I];
+                                }
 								break;
 							case 4:
 								if(MercPerks[pos].iStat[I] == -1)
@@ -899,14 +907,14 @@ function MercPerkDescription()
 			mob = 0;
 		}
 	}
-    if(kPerks[pos].iStat[3] > -4 && kPerks[pos].iStat[3] < 4)
-    {
-        critch = kPerks[pos].iStat[3];
-    }
-    else
-    {
-        critch = 0;
-    }
+	if(kPerks[pos].iStat[3] > -4 && kPerks[pos].iStat[3] < 4)
+	{
+		critch = kPerks[pos].iStat[3];
+	}
+	else
+	{
+		critch = 0;
+	}
 	if(kPerks[pos].iStat[4] == -1)
 	{
 		dmg = -1;
@@ -953,13 +961,13 @@ function MercPerkDescription()
 	
 		(aim != 0 ? class'UIStrategyComponent_SoldierStats'.default.m_strStatOffense @ aim : "")
 			
-		$ (will != 0 ? "," @ class'UIStrategyComponent_SoldierStats'.default.m_strStatWill @ will : "")
-	
-		$ (mob != 0 ? "," @ Left(SOLDIERUI().m_strLabelMobility, Len(SOLDIERUI().m_strLabelMobility) - 1) $ ":" @ mob : "")
-	
-		$ (critch != 0 ? "," @ class'UIItemCards'.default.m_strBaseCriticalDamageLabel @ critch : "")
-	
-		$ (dmg != 0 ? "," @ class'UIItemCards'.default.m_strDamageLabel @ dmg : "")
+		$ (will != 0 ? (aim != 0 ? "," : "") @ class'UIStrategyComponent_SoldierStats'.default.m_strStatWill @ will : "")
+    
+        $ (mob != 0 ? ((will != 0 || aim != 0) ? "," : "") @ Left(SOLDIERUI().m_strLabelMobility, Len(SOLDIERUI().m_strLabelMobility) - 1) $ ":" @ mob : "")
+    
+        $ (critch != 0 ? ((mob != 0 || will != 0 || aim != 0) ? "," : "") @ class'UIItemCards'.default.m_strBaseCriticalDamageLabel @ critch : "")
+    
+        $ (dmg != 0 ? ((critch != 0 || mob != 0 || will != 0 || aim != 0) ? "," : "") @ class'UIItemCards'.default.m_strDamageLabel @ dmg : "")
 
 		@ ")"
 	
@@ -981,7 +989,7 @@ function TotalMercSalary()
 	mercCost = 0;
 	foreach BARRACKS().m_arrSoldiers(kSoldier)
 	{
-		if(kSoldier.m_iEnergy == 8)
+		if(kSoldier.m_iEnergy == 8 || kSoldier.m_iEnergy == 7)
 		{
 			bFtC = kSoldier.HasPerk(178);
 			if(bFtC)
@@ -990,7 +998,14 @@ function TotalMercSalary()
 			}
 			else
 			{
-				basePay = m_iMercPay;
+				if(kSoldier.m_iEnergy == 7)
+				{
+					basePay = m_iFuryPay;
+				}
+				if(kSoldier.m_iEnergy == 8)
+				{
+					basePay = m_iMercPay;
+				}
 			}
 			for(I = 0; I < MercPerks.Length; I++)
 			{
@@ -1045,7 +1060,14 @@ function SetMercSalary(int MercClass)
 			}
 			else
 			{
-				basePay = m_iMercPay;
+				if(kSoldier.m_iEnergy == 7)
+				{
+					basePay = m_iFuryPay;
+				}
+				if(kSoldier.m_iEnergy == 8)
+				{
+					basePay = m_iMercPay;
+				}
 			}
 			for(I = 0; I < MercPerks.Length; I++)
 			{
@@ -1090,7 +1112,14 @@ function SingleMercSalary()
 	}
 	else
 	{
-		total = m_iMercPay;
+		if(SOLDIER().m_iEnergy == 7)
+		{
+			total = m_iFuryPay;
+		}
+		if(SOLDIER().m_iEnergy == 8)
+		{
+			total = m_iMercPay;
+		}
 		costcolor = "#FF0000'>";
 	}
 
@@ -1168,8 +1197,10 @@ function MercGetPerkCT(int SoldierID)
   
   	if(kSoldier.m_iEnergy == 7)
 	{
+		LogInternal("FuryPerks");
 		for(I = 0; I < FuryPerks.Length; I++)
 		{
+			LogInternal("Perk: " $ (FuryPerks[I].iPerk));
 			kSoldier.m_arrRandomPerks.additem(EPerkType(FuryPerks[I].iPerk));
 		}
 	}
@@ -1277,7 +1308,7 @@ function FuryPrereqs(int iNum)
 {
 	if(LABS().IsResearched(60) && HQ().HasFacility(22))
     {
-    	if(((HQ().GetResource(0)) >= (CYBERNETICSLAB().m_iModCashCost * 0.75)) && (HQ().GetResource(7)) >= CYBERNETICSLAB().m_iModMeldCost)
+    	if(((HQ().GetResource(0) - (m_iCostHireMerc * iNum)) >= iFuryCashCost) && (HQ().GetResource(7)) >= iFuryMeldCost)
         {
 			if(CYBERNETICSLAB().m_arrPatients.Length < (TACTICAL().PSI_NUM_TRAINING_SLOTS - 1))
 			{
@@ -1285,6 +1316,10 @@ function FuryPrereqs(int iNum)
 			}
         }
     }
+	else
+	{
+		TAG().IntValue2 = 1;
+	}
 }
 
 function FuryPopUp(int iNum, optional bool bForce)
@@ -1296,7 +1331,7 @@ function FuryPopUp(int iNum, optional bool bForce)
   	//bMakeFury = bForce;
     //(!(bMakeFury) || (I < iNum))
 	
-    for(I = 0; I < iNum; I++)
+    for(I = 0; (!bMakeFury) || I < iNum; I++)
     {
       	bMakeFury = PercentRoll(m_fFuryChance);
     }
@@ -1333,8 +1368,8 @@ function FuryPopUpCallback(EUIAction eAction)
 	if(eAction == 0)
     {
     	TAG().IntValue2 = 2;
-    	HQ().AddResource(0, -iFuryCashCost);
-        HQ().AddResource(7, -iFuryMeldCost);
+    	//HQ().AddResource(0, -iFuryCashCost);
+        //HQ().AddResource(7, -iFuryMeldCost);
     }
         
     XComHQPresentationLayer(XComPlayerController(GetALocalPlayerController()).m_Pres).m_kSoldierPromote.SetInputState(1);
@@ -1351,8 +1386,9 @@ function SetFuryCreateSoldVars(int SoldierID)
   
     kSoldier = BARRACKS().GetSoldierByID(SoldierID);
 	kSoldier.m_iEnergy = 7;
+	kSoldier.m_kSoldier.kClass.strName = m_strFuryClassName;
   
-  	MinData.Hp = 1;
+  	MinData.Hp = 2;
     MinData.Aim = 25;
     MinData.Def = -15;
     MinData.Mob = 5;
@@ -1403,7 +1439,7 @@ function SetFuryCreateSoldVars(int SoldierID)
 		lvlloop:
 		if(kSoldier.IsReadyToLevelUp())
 		{
-			kSoldier.LevelUp();
+			kSoldier.LevelUp(kSoldier.m_kChar.eClass);
 			goto lvlloop;
 		}
 		

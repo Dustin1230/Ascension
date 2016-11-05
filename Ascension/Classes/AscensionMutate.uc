@@ -165,6 +165,8 @@ var config float m_fWepRngIcn;
 var config bool bAMedalWait;
 var config array<int> rookRandPerk;
 var string m_strChangeRandPerk;
+var localized string m_perkNames[255];
+var localized string m_perkDesc[255];
 //var MercenaryAscensionMutate m_kMerc;
 
 
@@ -1050,56 +1052,56 @@ function expandPerkarray()
 
 	
 	kPerkMan.BuildPerk(173, 0, "Unknown");
-	kPerkMan.m_arrPerks[173].strName[0] = AmnesiaPerkName;
-	kPerkMan.m_arrPerks[173].strDescription[0] = AmnesiaPerkDes;
+	kPerkMan.m_arrPerks[173].strName[0] = m_perkNames[173];
+	kPerkMan.m_arrPerks[173].strDescription[0] = m_perkDesc[173];
 	
 	kPerkMan.BuildPerk(174, 0, "RifleSuppression");
-	kPerkMan.m_arrPerks[174].strName[0] = "Weapon Specialist";
-	kPerkMan.m_arrPerks[174].strDescription[0] = "Allows the unit to receive an additional perk based off the weapon, armor, and items they bring into a mission.";
+	kPerkMan.m_arrPerks[174].strName[0] = m_perkNames[174];
+	kPerkMan.m_arrPerks[174].strDescription[0] = m_perkDesc[174];
 	
 	kPerkMan.BuildPerk(175, 0, "ExpandedStorage");
-	kPerkMan.m_arrPerks[175].strName[0] = "Item Jack";
-	kPerkMan.m_arrPerks[175].strDescription[0] = "GunslingerTest";
+	kPerkMan.m_arrPerks[175].strName[0] = m_perkNames[175];
+	kPerkMan.m_arrPerks[175].strDescription[0] = m_perkDesc[175];
 	
 	kPerkMan.BuildPerk(176, 0, "PoisonSpit");
-	kPerkMan.m_arrPerks[176].strName[0] = "Gun-Slinger";
-	kPerkMan.m_arrPerks[176].strDescription[0] = "Increases the pistol ammo by 1, first pistol shot requires no action and additional pistol shots cost 1 action.";
+	kPerkMan.m_arrPerks[176].strName[0] = m_perkNames[176];
+	kPerkMan.m_arrPerks[176].strDescription[0] = m_perkDesc[176];
 	
 	kPerkMan.BuildPerk(177, 0, "Launch");
-	kPerkMan.m_arrPerks[177].strName[0] = "This is the Life";
-	kPerkMan.m_arrPerks[177].strDescription[0] = "Reduces fatigue to 0 at the cost of increasing length injuries by 40% and increases XP gained from kills by 25%";
+	kPerkMan.m_arrPerks[177].strName[0] = m_perkNames[177];
+	kPerkMan.m_arrPerks[177].strDescription[0] = m_perkDesc[177];
 	
 	kPerkMan.BuildPerk(178, 0, "Bloodcall");
-	kPerkMan.m_arrPerks[178].strName[0] = "For the Cause";
-	kPerkMan.m_arrPerks[178].strDescription[0] = "Removes initial monthly cost of Mercenary soldiers and reduces monthly cost of future cost perks by 50%.";
+	kPerkMan.m_arrPerks[178].strName[0] = m_perkNames[178];
+	kPerkMan.m_arrPerks[178].strDescription[0] = m_perkDesc[178];
 	
 	kPerkMan.BuildPerk(179, 0, "UrbanDefense");
-	kPerkMan.m_arrPerks[179].strName[0] = "You Ain't Nothin'";
-	kPerkMan.m_arrPerks[179].strDescription[0] = "Adds a flat 10 to defense and also reduces the chance to be hit with a critical by 50%.";
+	kPerkMan.m_arrPerks[179].strName[0] = m_perkNames[179];
+	kPerkMan.m_arrPerks[179].strDescription[0] = m_perkDesc[179];
 	
 	kPerkMan.BuildPerk(180, 0, "Harden");
-	kPerkMan.m_arrPerks[180].strName[0] = "Xenocide";
-	kPerkMan.m_arrPerks[180].strDescription[0] = "With every kill the unit gains +1 Will & Crit Chance for the rest of the mission. Also increases Crit Damage by 2.";
+	kPerkMan.m_arrPerks[180].strName[0] = m_perkNames[180];
+	kPerkMan.m_arrPerks[180].strDescription[0] = m_perkDesc[180];
 	
 	kPerkMan.BuildPerk(181, 0, "Intimidate");
-	kPerkMan.m_arrPerks[181].strName[0] = "Resistance";
-	kPerkMan.m_arrPerks[181].strDescription[0] = "If the Fury is Mind Controlled they receive a penalty to Aim and Mobility.";
+	kPerkMan.m_arrPerks[181].strName[0] = m_perkNames[181];
+	kPerkMan.m_arrPerks[181].strDescription[0] = m_perkDesc[181];
 	
 	kPerkMan.BuildPerk(189, 0, "Disoriented");
-	kPerkMan.m_arrPerks[189].strName[0] = "Currupt";
-	kPerkMan.m_arrPerks[189].strDescription[0] = "When an enemy unit uses a psi attack against the Fury they suffer a panic check.";
+	kPerkMan.m_arrPerks[189].strName[0] = m_perkNames[189];
+	kPerkMan.m_arrPerks[189].strDescription[0] = m_perkDesc[189];
 	
 	kPerkMan.BuildPerk(190, 0, "ReactivePupils");
-	kPerkMan.m_arrPerks[190].strName[0] = "Weakpoint Analysis";
-	kPerkMan.m_arrPerks[190].strDescription[0] = "+10 aim, +10 crit and 1 DR piercing on mechanical units.";
+	kPerkMan.m_arrPerks[190].strName[0] = m_perkNames[190];
+	kPerkMan.m_arrPerks[190].strDescription[0] = m_perkDesc[190];
 	
 	kPerkMan.BuildPerk(191, 0, "Stun");
-	kPerkMan.m_arrPerks[191].strName[0] = "Incapacitation";
-	kPerkMan.m_arrPerks[191].strDescription[0] = "Uncovered or flanked enemies that are hit by primary fire suffer a mobility, defense and DR penalty.";	
+	kPerkMan.m_arrPerks[191].strName[0] = m_perkNames[191];
+	kPerkMan.m_arrPerks[191].strDescription[0] = m_perkDesc[191];	
 	
 	kPerkMan.BuildPerk(192, 0, "Stun");
-	kPerkMan.m_arrPerks[192].strName[0] = "Incapacitation Debuff";
-	kPerkMan.m_arrPerks[192].strDescription[0] = "Uncovered or flanked enemies that are hit by primary fire suffer a mobility, defense and DR penalty.";
+	kPerkMan.m_arrPerks[192].strName[0] = m_perkNames[192];
+	kPerkMan.m_arrPerks[192].strDescription[0] = m_perkDesc[192];
 	
 	
 	if(kPerkMan != PERKS())
@@ -1601,8 +1603,6 @@ function CurruptMessage(string strTarget)
 		}
 	}
 
-	XComTacticalGRI(WorldInfo.GRI).m_kBattle.m_kDesc.m_iDifficulty = 0;
-
 	CurruptWillTest = (25 + ((kTarget.RecordMoraleLoss(6) / 4) * XGCharacter_Soldier(kTarget.GetCharacter()).m_kSoldier.iRank));
 	UnitWill = m_kUnit.RecordMoraleLoss(7);
 	WillChance = m_kUnit.WillTestChance(CurruptWillTest, UnitWill, false, false,, 50);
@@ -1622,15 +1622,17 @@ function CurruptMessage(string strTarget)
 			msgStr = left(split(Class'XGTacticalGameCore'.default.m_aExpandedLocalizedStrings[4], "("), inStr(split(Class'XGTacticalGameCore'.default.m_aExpandedLocalizedStrings[4], "("), ")") + 1);
 		}
 
+		XComTacticalGRI(WorldInfo.GRI).m_kBattle.m_kDesc.m_iDifficulty = 0;
+
 		kMessage = XComPresentationLayer(XComPlayerController(GetALocalPlayerController()).m_Pres).GetWorldMessenger().Message(PERKS().m_arrPerks[189].strName[0] @ string(100 - WillChance) $ "%" @ msgStr, kTarget.GetLocation(), bPanic ? 3 : 4,,, kTarget.m_eTeamVisibilityFlags,,,, Class'XComUIBroadcastWorldMessage_UnexpandedLocalizedString');
 
 		if(kMessage != none)
 		{
 			XComUIBroadcastWorldMessage_UnexpandedLocalizedString(kMessage).Init_UnexpandedLocalizedString(0, kTarget.GetLocation(), bPanic ? 3 : 4, kTarget.m_eTeamVisibilityFlags);
 		}
-	}
 
-	XComTacticalGRI(WorldInfo.GRI).m_kBattle.m_kDesc.m_iDifficulty = XComGameReplicationInfo(WorldInfo.GRI).m_kGameCore.m_iDifficulty;
+		XComTacticalGRI(WorldInfo.GRI).m_kBattle.m_kDesc.m_iDifficulty = XComGameReplicationInfo(WorldInfo.GRI).m_kGameCore.m_iDifficulty;
+	}
 }
 
 function applyStats(optional int iStat) 
