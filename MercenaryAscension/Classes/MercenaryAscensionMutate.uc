@@ -48,6 +48,7 @@ var config array<TStatProgression> FuryStatProgression;
 var config float m_fFuryChance;
 var config int iFuryCashCost;
 var config int iFuryMeldCost;
+var config int m_iFuryPay;
   
 function Mutate(string MutateString, PlayerController Sender) 
 {
@@ -156,6 +157,12 @@ function Mutate(string MutateString, PlayerController Sender)
 		LogInternal("Mutate: Mercenary");
       	arrMutateStr = SplitString(MutateString, "_", false);
     	FuryPrereqs(int(arrMutateStr[1]));
+	}
+	
+	if(MutateString == "FuryCosts")
+	{
+		LogInternal("Mutate: Fury Costs");
+		TAG().strValue2 = string(iFuryCashCost) $ "_" $ string(iFuryMeldCost);
 	}
 	
 	if(MutateString ~= "TestMod")
@@ -954,13 +961,13 @@ function MercPerkDescription()
 	
 		(aim != 0 ? class'UIStrategyComponent_SoldierStats'.default.m_strStatOffense @ aim : "")
 			
-		$ (will != 0 ? "," @ class'UIStrategyComponent_SoldierStats'.default.m_strStatWill @ will : "")
-	
-		$ (mob != 0 ? "," @ Left(SOLDIERUI().m_strLabelMobility, Len(SOLDIERUI().m_strLabelMobility) - 1) $ ":" @ mob : "")
-	
-		$ (critch != 0 ? "," @ class'UIItemCards'.default.m_strBaseCriticalDamageLabel @ critch : "")
-	
-		$ (dmg != 0 ? "," @ class'UIItemCards'.default.m_strDamageLabel @ dmg : "")
+		$ (will != 0 ? (aim != 0 ? "," : "") @ class'UIStrategyComponent_SoldierStats'.default.m_strStatWill @ will : "")
+    
+        $ (mob != 0 ? ((will != 0 || aim != 0) ? "," : "") @ Left(SOLDIERUI().m_strLabelMobility, Len(SOLDIERUI().m_strLabelMobility) - 1) $ ":" @ mob : "")
+    
+        $ (critch != 0 ? ((mob != 0 || will != 0 || aim != 0) ? "," : "") @ class'UIItemCards'.default.m_strBaseCriticalDamageLabel @ critch : "")
+    
+        $ (dmg != 0 ? ((critch != 0 || mob != 0 || will != 0 || aim != 0) ? "," : "") @ class'UIItemCards'.default.m_strDamageLabel @ dmg : "")
 
 		@ ")"
 	
@@ -982,7 +989,7 @@ function TotalMercSalary()
 	mercCost = 0;
 	foreach BARRACKS().m_arrSoldiers(kSoldier)
 	{
-		if(kSoldier.m_iEnergy == 8)
+		if(kSoldier.m_iEnergy == 8 || kSoldier.m_iEnergy == 7)
 		{
 			bFtC = kSoldier.HasPerk(178);
 			if(bFtC)
@@ -991,7 +998,14 @@ function TotalMercSalary()
 			}
 			else
 			{
-				basePay = m_iMercPay;
+				if(kSoldier.m_iEnergy == 7)
+				{
+					basePay = m_iFuryPay;
+				}
+				if(kSoldier.m_iEnergy == 8)
+				{
+					basePay = m_iMercPay;
+				}
 			}
 			for(I = 0; I < MercPerks.Length; I++)
 			{
@@ -1046,7 +1060,14 @@ function SetMercSalary(int MercClass)
 			}
 			else
 			{
-				basePay = m_iMercPay;
+				if(kSoldier.m_iEnergy == 7)
+				{
+					basePay = m_iFuryPay;
+				}
+				if(kSoldier.m_iEnergy == 8)
+				{
+					basePay = m_iMercPay;
+				}
 			}
 			for(I = 0; I < MercPerks.Length; I++)
 			{
@@ -1091,7 +1112,14 @@ function SingleMercSalary()
 	}
 	else
 	{
-		total = m_iMercPay;
+		if(SOLDIER().m_iEnergy == 7)
+		{
+			total = m_iFuryPay;
+		}
+		if(SOLDIER().m_iEnergy == 8)
+		{
+			total = m_iMercPay;
+		}
 		costcolor = "#FF0000'>";
 	}
 
@@ -1280,7 +1308,7 @@ function FuryPrereqs(int iNum)
 {
 	if(LABS().IsResearched(60) && HQ().HasFacility(22))
     {
-    	if(((HQ().GetResource(0)) >= iFuryCashCost) && (HQ().GetResource(7)) >= iFuryMeldCost)
+    	if(((HQ().GetResource(0) - (m_iCostHireMerc * iNum)) >= iFuryCashCost) && (HQ().GetResource(7)) >= iFuryMeldCost)
         {
 			if(CYBERNETICSLAB().m_arrPatients.Length < (TACTICAL().PSI_NUM_TRAINING_SLOTS - 1))
 			{
@@ -1303,7 +1331,7 @@ function FuryPopUp(int iNum, optional bool bForce)
   	//bMakeFury = bForce;
     //(!(bMakeFury) || (I < iNum))
 	
-    for(I = 0; I < iNum; I++)
+    for(I = 0; (!bMakeFury) || I < iNum; I++)
     {
       	bMakeFury = PercentRoll(m_fFuryChance);
     }
@@ -1340,8 +1368,8 @@ function FuryPopUpCallback(EUIAction eAction)
 	if(eAction == 0)
     {
     	TAG().IntValue2 = 2;
-    	HQ().AddResource(0, -iFuryCashCost);
-        HQ().AddResource(7, -iFuryMeldCost);
+    	//HQ().AddResource(0, -iFuryCashCost);
+        //HQ().AddResource(7, -iFuryMeldCost);
     }
         
     XComHQPresentationLayer(XComPlayerController(GetALocalPlayerController()).m_Pres).m_kSoldierPromote.SetInputState(1);
