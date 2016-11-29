@@ -1,4 +1,4 @@
-Class MyMod extends XcomMod;
+Class VarBridge extends XcomMod;
 
 var string valStrValue0;
 var string valStrValue1;
@@ -15,9 +15,9 @@ simulated function StartMatch()
 	`Log("MyMod: StartMatch");
 }
 
-function string StrValue0(optional string str)
+function string StrValue0(optional string str, optional bool bForce)
 {
-	if(str == "")
+	if(str == "" && !bForce)
 	{
 		return valStrValue0;
 	}
@@ -28,9 +28,9 @@ function string StrValue0(optional string str)
 	}
 }
 
-function string StrValue1(optional string str)
+function string StrValue1(optional string str, optional bool bForce)
 {
-	if(str == "")
+	if(str == "" && !bForce)
 	{
 		return valStrValue1;
 	}
@@ -41,9 +41,9 @@ function string StrValue1(optional string str)
 	}
 }
 
-function string StrValue2(optional string str)
+function string StrValue2(optional string str, optional bool bForce)
 {
-	if(str == "")
+	if(str == "" && !bForce)
 	{
 		return valStrValue2;
 	}
@@ -54,9 +54,9 @@ function string StrValue2(optional string str)
 	}
 }
 
-function int IntValue0(optional int I)
+function int IntValue0(optional int I = -1, optional bool bForce)
 {
-	if(I == 0)
+	if((I == 0 || I == -1) && !bForce)
 	{
 		return valIntValue0;
 	}
@@ -67,9 +67,9 @@ function int IntValue0(optional int I)
 	}
 }
 
-function int IntValue1(optional int I)
+function int IntValue1(optional int I = -1, optional bool bForce)
 {
-	if(I == 0)
+	if((I == 0 || I == -1) && !bForce)
 	{
 		return valIntValue1;
 	}
@@ -80,9 +80,9 @@ function int IntValue1(optional int I)
 	}
 }
 
-function int IntValue2(optional int I)
+function int IntValue2(optional int I = -1, optional bool bForce)
 {
-	if(I == 0)
+	if((I == 0 || I == -1) && !bForce)
 	{
 		return valIntValue2;
 	}
@@ -93,9 +93,9 @@ function int IntValue2(optional int I)
 	}
 }
 
-function array<string> arrStrings(optional array<string> arrStr)
+function array<string> arrStrings(optional array<string> arrStr, optional bool bForce)
 {
-	if(arrStr.Length == 0)
+	if(arrStr.Length == 0 && !bForce)
 	{
 		return valArrStr;
 	}
@@ -107,9 +107,9 @@ function array<string> arrStrings(optional array<string> arrStr)
 
 }
 
-function array<int> arrInts(optional array<int> arrInt)
+function array<int> arrInts(optional array<int> arrInt, optional bool bForce)
 {
-	if(arrInt.Length == 0)
+	if(arrInt.Length == 0 && !bForce)
 	{
 		return valArrInt;
 	}

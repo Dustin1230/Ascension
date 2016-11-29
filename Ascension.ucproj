@@ -81,6 +81,8 @@
     <Folder Include="UTGameContent\Classes\" />
     <Folder Include="UTGame\" />
     <Folder Include="UTGame\Classes\" />
+    <Folder Include="VarBridge\" />
+    <Folder Include="VarBridge\Classes\" />
     <Folder Include="XComGame\" />
     <Folder Include="XComGame\Classes\" />
     <Folder Include="XComMutator\" />
