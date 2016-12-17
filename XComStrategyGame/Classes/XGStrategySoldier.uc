@@ -49,7 +49,7 @@ function XComPerkManager PERKS()
     //return ReturnValue;    
 }
 
-function GivePerk(EPerkType Perk) {}
+function GivePerk(int Perk) {}
 
 function EPerkType GetPerkInClassTree(int branch, int Option, optional bool bIsPsiTree) 
 {

@@ -16,45 +16,63 @@ exec function GivePerk(string strName)
 	kPres = XComHQPresentationLayer(PC.m_Pres);
     kSoldierUI = XGSoldierUI(kPres.GetMgr(class'XGSoldierUI',,, true));
     
-	if((kSoldierUI != none) && kSoldierUI.m_kSoldier != none) {
-		if(Left(strName, 5) ~= "clear") {
-			if(split(strName, "clear", true) ~= " true") {
+	if((kSoldierUI != none) && kSoldierUI.m_kSoldier != none)
+	{
+		if(Left(strName, 5) ~= "clear")
+		{
+			if(split(strName, "clear", true) ~= " true")
+			{
 				kSoldierUI.m_kSoldier.ClearPerks(true);
 			}
-			else {
+			else
+			{
 				kSoldierUI.m_kSoldier.ClearPerks();
 			}
 		}
 		
-		if(strName ~= "rolltree") {
+		if(strName ~= "rolltree")
+		{
 			kSoldierUI.m_kSoldier.AssignRandomPerks();
 		}
 		
-		if(Left(strName, 4) ~= "stat") {
-			if(Left(Mid(strName, 5), InStr(Mid(strName, 5), " ")) ~= "hp") {
+		if(Left(strName, 4) ~= "stat")
+		{
+			if(Left(Mid(strName, 5), InStr(Mid(strName, 5), " ")) ~= "hp")
+			{
 				kSoldierUI.m_kSoldier.m_kChar.aStats[0] += int(Split(Mid(strName, 5), " ", true));
 			}
-			else {
-				if(Left(Mid(strName, 5), InStr(Mid(strName, 5), " ")) ~= "def") {
+			else
+			{
+				if(Left(Mid(strName, 5), InStr(Mid(strName, 5), " ")) ~= "def")
+				{
 					kSoldierUI.m_kSoldier.m_kChar.aStats[2] += int(Split(Mid(strName, 5), " ", true));
 				}
-				else {
-					if(Left(Mid(strName, 5), InStr(Mid(strName, 5), " ")) ~= "aim") {
+				else
+				{
+					if(Left(Mid(strName, 5), InStr(Mid(strName, 5), " ")) ~= "aim")
+					{
 						kSoldierUI.m_kSoldier.m_kChar.aStats[1] += int(Split(Mid(strName, 5), " ", true));
 					}
-					else {
-						if(Left(Mid(strName, 5), InStr(Mid(strName, 5), " ")) ~= "will") {
+					else
+					{
+						if(Left(Mid(strName, 5), InStr(Mid(strName, 5), " ")) ~= "will")
+						{
 							kSoldierUI.m_kSoldier.m_kChar.aStats[7] += int(Split(Mid(strName, 5), " ", true));
 						}
-						else {
-							if(Left(Mid(strName, 5), InStr(Mid(strName, 5), " ")) ~= "dr") {
+						else
+						{
+							if(Left(Mid(strName, 5), InStr(Mid(strName, 5), " ")) ~= "dr")
+							{
 								kSoldierUI.m_kSoldier.m_kChar.aStats[4] += int(Split(Mid(strName, 5), " ", true));
 							}
-							else {
-								if(Left(Mid(strName, 5), InStr(Mid(strName, 5), " ")) ~= "mob") {
+							else
+							{
+								if(Left(Mid(strName, 5), InStr(Mid(strName, 5), " ")) ~= "mob")
+								{
 									kSoldierUI.m_kSoldier.m_kChar.aStats[3] += int(Split(Mid(strName, 5), " ", true));
 								}
-								else {
+								else
+								{
 									kSoldierUI.m_kSoldier.m_kChar.aStats[int(Left(Mid(strName, 5), InStr(Mid(strName, 5), " ")))] += int(Split(Mid(strName, 5), " ", true));
 
 								}
@@ -64,7 +82,8 @@ exec function GivePerk(string strName)
 				}
 			}
 			
-			if(Left(Mid(strName, 5), 4) ~= "roll") {
+			if(Left(Mid(strName, 5), 4) ~= "roll")
+			{
 				kSoldierUI.m_kSoldier.m_kChar.aStats[0] = int(class'UIUtilities'.static.InjectHTMLImage("GetSoldierStatDefaults HP"));
 				kSoldierUI.m_kSoldier.m_kChar.aStats[1] = int(class'UIUtilities'.static.InjectHTMLImage("GetSoldierStatDefaults AIM"));
 				kSoldierUI.m_kSoldier.m_kChar.aStats[2] = int(class'UIUtilities'.static.InjectHTMLImage("GetSoldierStatDefaults DEF"));
@@ -73,7 +92,8 @@ exec function GivePerk(string strName)
 				XComHeadquartersGame(class'Engine'.static.GetCurrentWorldInfo().Game).GetGameCore().GetHQ().m_kBarracks.RandomizeStats(kSoldierUI.m_kSoldier);
 			}
 			
-			if(Left(Mid(strName, 5), 7) ~= "default") {
+			if(Left(Mid(strName, 5), 7) ~= "default") 
+			{
 				kSoldierUI.m_kSoldier.m_kChar.aStats[0] = int(class'UIUtilities'.static.InjectHTMLImage("GetSoldierStatDefaults HP"));
 				kSoldierUI.m_kSoldier.m_kChar.aStats[1] = int(class'UIUtilities'.static.InjectHTMLImage("GetSoldierStatDefaults AIM"));
 				kSoldierUI.m_kSoldier.m_kChar.aStats[2] = int(class'UIUtilities'.static.InjectHTMLImage("GetSoldierStatDefaults DEF"));
@@ -81,41 +101,53 @@ exec function GivePerk(string strName)
 				kSoldierUI.m_kSoldier.m_kChar.aStats[7] = int(class'UIUtilities'.static.InjectHTMLImage("GetSoldierStatDefaults WILL"));
 			}
 			
-			if(Split(strName, " ", true) ~= "levelup") {
+			if(Split(strName, " ", true) ~= "levelup")
+			{
 				kSoldierUI.m_kSoldier.LevelUpStats();
 			}
 		}
 		
-		if(Left(strName, 3) ~= "xp ") {
+		if(Left(strName, 3) ~= "xp ")
+		{
 			kSoldierUI.m_kSoldier.m_kSoldier.iXP += int(Mid(strName, 3));
 			lvl:
-			if(kSoldierUI.m_kSoldier.IsReadyToLevelUp()) {
+			if(kSoldierUI.m_kSoldier.IsReadyToLevelUp())
+			{
 				kSoldierUI.m_kSoldier.LevelUp();
 				goto lvl;
 			}
 		}
 		
-		if(Left(strName, 6) ~= "kills ") {
+		if(Left(strName, 6) ~= "kills ")
+		{
 			kSoldierUI.m_kSoldier.m_kSoldier.iNumKills += int(Mid(strName, 6));
 		}
 		
-		if(Left(strName, 9) ~= "missions ") {
+		if(Left(strName, 9) ~= "missions ")
+		{
 			kSoldierUI.m_kSoldier.m_iNumMissions += int(Mid(strName, 9));
 		}
 		
-		if(Left(strName, 6) ~= "gender") {
-			if(Mid(strName, 7) ~= "m" || Mid(strName, 7) ~= "male") {
+		if(Left(strName, 6) ~= "gender")
+		{
+			if(Mid(strName, 7) ~= "m" || Mid(strName, 7) ~= "male" || Mid(strName, 7) ~= "1" || Mid(strName, 7) ~= "b" || Mid(strName, 7) ~= "boy" || Mid(strName, 7) ~= "man")
+			{
 				kSoldierUI.m_kSoldier.m_kSoldier.kAppearance.iGender = 1;
 			}
-			else {
-				if(Mid(strName, 7) ~= "f" || Mid(strName, 7) ~= "female") {
+			else
+			{
+				if(Mid(strName, 7) ~= "f" || Mid(strName, 7) ~= "female" || Mid(strName, 7) ~= "2" || Mid(strName, 7) ~= "g" || Mid(strName, 7) ~= "girl" || Mid(strName, 7) ~= "w" || Mid(strName, 7) ~= "woman")
+				{
 					kSoldierUI.m_kSoldier.m_kSoldier.kAppearance.iGender = 2;
 				}
-				else {
-					if(kSoldierUI.m_kSoldier.m_kSoldier.kAppearance.iGender == 1) {
+				else
+				{
+					if(kSoldierUI.m_kSoldier.m_kSoldier.kAppearance.iGender == 1)
+					{
 						kSoldierUI.m_kSoldier.m_kSoldier.kAppearance.iGender = 2;
 					}
-					else {
+					else
+					{
 						kSoldierUI.m_kSoldier.m_kSoldier.kAppearance.iGender = 1;
 					}
 				}
@@ -130,18 +162,24 @@ exec function GivePerk(string strName)
 			kSoldierUI.m_kSoldier.m_kSoldier.kAppearance.iArmorDeco = XComHumanPawn(kSoldierUI.m_kSoldier.m_kPawn).PossibleArmorKits[0];
 			XComHumanPawn(kSoldierUI.m_kSoldier.m_kPawn).SetVoice(XComHumanPawn(kSoldierUI.m_kSoldier.m_kPawn).PossibleVoices[0]);
 			kSoldierUI.m_kSoldier.m_kSoldier.kAppearance.iVoice = XComHumanPawn(kSoldierUI.m_kSoldier.m_kPawn).PossibleVoices[0];
-			if(XGCustomizeUI(XComHQPresentationLayer(XComPlayerController(Outer.GetALocalPlayerController()).m_Pres).GetMgr(class'XGCustomizeUI',,, true)) != none) {
+			if(XGCustomizeUI(XComHQPresentationLayer(XComPlayerController(Outer.GetALocalPlayerController()).m_Pres).GetMgr(class'XGCustomizeUI',,, true)) != none)
+			{
 				XGCustomizeUI(XComHQPresentationLayer(XComPlayerController(Outer.GetALocalPlayerController()).m_Pres).GetMgr(class'XGCustomizeUI',,, true)).SetActiveSoldier(kSoldierUI.m_kSoldier);
 				XGCustomizeUI(XComHQPresentationLayer(XComPlayerController(Outer.GetALocalPlayerController()).m_Pres).GetMgr(class'XGCustomizeUI',,, true)).UpdateMainMenu;
 			}
 			kSoldierUI.SetActiveSoldier(kSoldierUI.m_kSoldier);
+			kSoldierUI.UpdateDoll();
+			kSoldierUI.UpdateView();
 		}
 		
-		if(Left(strName, 8) ~= "country ") {
-			if(int(Mid(strName, 8)) > 0) {
+		if(Left(strName, 8) ~= "country ") 
+		{
+			if(int(Mid(strName, 8)) > 0)
+			{
 				kSoldierUI.m_kSoldier.m_kSoldier.iCountry = int(Mid(strName, 8));
 			}
-			else {
+			else
+			{
 				if(Mid(strName, 8) ~= "USA" || Mid(strName, 8) ~= "US" || Mid(strName, 8) ~= "UnitedStates" || Mid(strName, 8) ~= "United States") {
 					kSoldierUI.m_kSoldier.m_kSoldier.iCountry = 0;
 					kSoldierUI.m_kSoldier.m_kSoldier.kAppearance.iFlag = 0;
@@ -653,11 +691,12 @@ exec function GivePerk(string strName)
 			}
 			kSoldierUI.UpdateDoll();
 			kSoldierUI.SetActiveSoldier(kSoldierUI.m_kSoldier);
+			kSoldierUI.UpdateView();
 		}
 		
 
 		
-			outer.WorldInfo.Game.Mutate("ASCAscensionVersion", GetALocalPlayerController());
+			outer.WorldInfo.Game.Mutate("ASCAscensionVersion", outer.GetALocalPlayerController());
 			iIndex = 0;
 			J0xA9:
 			// End:0x148 [Loop If]
@@ -665,7 +704,7 @@ exec function GivePerk(string strName)
 			{
 				if(int(strName) > 172)
 				{
-					outer.WorldInfo.Game.Mutate("ASCPerks" $ "_" $ "GivePerk" $ "_" $ string(kSoldierUI.m_kSoldier.m_kSoldier.iID) $ "_" $ strName, WorldInfo.GetALocalPlayerController());
+					outer.WorldInfo.Game.Mutate("ASCPerks" $ "_" $ "GivePerk" $ "_" $ string(kSoldierUI.m_kSoldier.m_kSoldier.iID) $ "_" $ strName, outer.GetALocalPlayerController());
 					goto eperks;
 				}
 				else
@@ -676,7 +715,7 @@ exec function GivePerk(string strName)
 					}
 					else
 					{
-						goto endloop;
+						goto endloop1;
 					}
 				}
 			}
@@ -688,7 +727,7 @@ exec function GivePerk(string strName)
 				}
 				else
 				{
-					goto endloop;
+					goto endloop1;
 				}
 			}
 				innerloop:
@@ -698,13 +737,13 @@ exec function GivePerk(string strName)
 				{
 					bFound = true;
 					// [Explicit Break]
-					goto endloop;
+					goto endloop1;
 				}
 				++ iIndex;
 				// [Loop Continue]
 				goto J0xA9;
 				
-				endloop:
+				endloop1:
 			// End:0x3D2
 			if(!bFound)
 			{
@@ -732,36 +771,60 @@ exec function GivePerk(string strName)
 			// End:0x586
 			if(bFound)
 			{
-				kSoldierUI.m_kSoldier.GivePerk(EPerkType(iIndex));
+				kSoldierUI.m_kSoldier.GivePerk(iIndex);
 			}
-			else {
-			
-				if(Left(strName, 1) == "-") {
+			else 
+			{
+				
+				if(Left(strName, 1) == "-")
+				{
+					outer.WorldInfo.Game.Mutate("ASCAscensionVersion", outer.GetALocalPlayerController());
 					iIndex = 0;
 					loopstart:
-					if(iIndex < 172) {
-						strPerkName = kPerkMan.GetPerkName(iIndex);
-						// End:0x13A
-						if(((Mid(strName, 1) != "") && Mid(strName, 1) != "NONE") && strPerkName ~= Mid(strName, 1))
+					if(0 < int(XGParamTag(XComEngine(class'Engine'.static.GetEngine()).LocalizeContext.FindTag("XGParam")).StrValue2) && int(XGParamTag(XComEngine(class'Engine'.static.GetEngine()).LocalizeContext.FindTag("XGParam")).StrValue2) < 3)
+					{
+						if(iIndex < 255)
 						{
-							bFound = true;
-							// [Explicit Break]
+							goto innerloop2;
+						}
+						else
+						{
 							goto endloop;
 						}
-						++ iIndex;
-						// [Loop Continue]
-						goto loopstart;
-						
-						endloop:
 					}
+					else
+					{		
+						if(iIndex < 172)
+						{
+							goto innerloop2;
+						}
+						else
+						{
+							goto endloop;
+						}
+					}
+						innerloop2:
+							strPerkName = kPerkMan.GetPerkName(iIndex);
+							// End:0x13A
+							if(((Mid(strName, 1) != "") && Mid(strName, 1) != "NONE") && strPerkName ~= Mid(strName, 1))
+							{
+								bFound = true;
+								// [Explicit Break]
+								goto endloop;
+							}
+							++ iIndex;
+							// [Loop Continue]
+							goto loopstart;
+						
+							endloop:
+						}
 					
 					if(bFound)
 					{
 						kSoldierUI.m_kSoldier.m_kChar.aUpgrades[iIndex] = 0;
 					}
 				}
-			}
-eperks:
+	eperks:
 		kSoldierUI.m_kSoldier.onLoadoutChange();
 		XComHeadquartersGame(class'Engine'.static.GetCurrentWorldInfo().Game).GetGameCore().GetHQ().PRES().m_kSoldierSummary.SetSoldier(kSoldierUI.m_kSoldier);
 		XComHeadquartersGame(class'Engine'.static.GetCurrentWorldInfo().Game).GetGameCore().GetHQ().PRES().m_kSoldierPromote.GetMgr().UpdateView();
@@ -771,8 +834,10 @@ eperks:
 	}
 	if((XGHangarUI(XComHQPresentationLayer(XComPlayerController(Outer.GetALocalPlayerController()).m_Pres).GetMgr(class'XGHangarUI',,, true)) != none) && XGShip_Interceptor(XGHangarUI(XComHQPresentationLayer(XComPlayerController(Outer.GetALocalPlayerController()).m_Pres).GetMgr(class'XGHangarUI',,, true)).m_kShip) != none) {
 		
-		if(Left(strName, 4) ~= "ship") {
-			if(Mid(strName, 5, 4) ~= "name") {
+		if(Left(strName, 4) ~= "ship")
+		{
+			if(Mid(strName, 5, 4) ~= "name")
+			{
 				if(Left(class'XComLocalizer'.static.ExpandString(class'XGLocalizedData'.default.ShipWeaponFlavorTxt[11]), 4) == "F.O.")
 				{
 					XGShip_Interceptor(XGHangarUI(XComHQPresentationLayer(XComPlayerController(Outer.GetALocalPlayerController()).m_Pres).GetMgr(class'XGHangarUI',,, true)).m_kShip).m_strCallsign = Left(XGShip_Interceptor(XGHangarUI(XComHQPresentationLayer(XComPlayerController(Outer.GetALocalPlayerController()).m_Pres).GetMgr(class'XGHangarUI',,, true)).m_kShip).m_strCallsign, InStr(XGShip_Interceptor(XGHangarUI(XComHQPresentationLayer(XComPlayerController(Outer.GetALocalPlayerController()).m_Pres).GetMgr(class'XGHangarUI',,, true)).m_kShip).m_strCallsign, " ")) @ Mid(strName, 10);
@@ -796,7 +861,7 @@ eperks:
 	}
 	if(XComHeadquartersGame(class'Engine'.static.GetCurrentWorldInfo().Game).GetGameCore().GetHQ().m_kBase != none)
 	{
-		if(strName ~= BaseRoll)
+		if(strName ~= "BaseRoll")
 		{
 			XComHeadquartersGame(class'Engine'.static.GetCurrentWorldInfo().Game).GetGameCore().GetHQ().m_kBase.GenerateTiles();
 		}
