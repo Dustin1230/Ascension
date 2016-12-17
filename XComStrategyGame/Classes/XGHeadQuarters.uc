@@ -5,6 +5,7 @@ var XGFacility_Barracks m_kBarracks;
 var XGFacility_Labs m_kLabs;
 var XGFacility_Engineering m_kEngineering;
 var array<TStaffOrder> m_arrHiringOrders;
+var XGBase m_kBase;
 
 
 function XGFacility_Barracks GetBarracks() 

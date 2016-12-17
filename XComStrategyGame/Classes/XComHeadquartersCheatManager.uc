@@ -655,31 +655,56 @@ exec function GivePerk(string strName)
 			kSoldierUI.SetActiveSoldier(kSoldierUI.m_kSoldier);
 		}
 		
-		if(int(strName) > 172)
-		{
-			WorldInfo.Game.Mutate("ASCPerks" $ "_" $ "GivePerk" $ "_" $ string(kSoldierUI.m_kSoldier.m_kSoldier.iID) $ "_" $ strName, WorldInfo.GetALocalPlayerController());
-		}
-		else
-		{		
+
+		
+			outer.WorldInfo.Game.Mutate("ASCAscensionVersion", GetALocalPlayerController());
 			iIndex = 0;
 			J0xA9:
 			// End:0x148 [Loop If]
-			if(iIndex < 172)
+			if(0 < int(XGParamTag(XComEngine(class'Engine'.static.GetEngine()).LocalizeContext.FindTag("XGParam")).StrValue2) && int(XGParamTag(XComEngine(class'Engine'.static.GetEngine()).LocalizeContext.FindTag("XGParam")).StrValue2) < 3)
 			{
+				if(int(strName) > 172)
+				{
+					outer.WorldInfo.Game.Mutate("ASCPerks" $ "_" $ "GivePerk" $ "_" $ string(kSoldierUI.m_kSoldier.m_kSoldier.iID) $ "_" $ strName, WorldInfo.GetALocalPlayerController());
+					goto eperks;
+				}
+				else
+				{
+					if(iIndex < 255)
+					{
+						goto innerloop;
+					}
+					else
+					{
+						goto endloop;
+					}
+				}
+			}
+			else
+			{
+				if(iIndex < 172)
+				{
+					goto innerloop;
+				}
+				else
+				{
+					goto endloop;
+				}
+			}
+				innerloop:
 				strPerkName = kPerkMan.GetPerkName(iIndex);
 				// End:0x13A
 				if(((strName != "") && strName != "NONE") && strPerkName ~= strName)
 				{
 					bFound = true;
 					// [Explicit Break]
-					goto J0x148;
+					goto endloop;
 				}
 				++ iIndex;
 				// [Loop Continue]
 				goto J0xA9;
 				
-				J0x148:
-			}
+				endloop:
 			// End:0x3D2
 			if(!bFound)
 			{
@@ -736,7 +761,7 @@ exec function GivePerk(string strName)
 					}
 				}
 			}
-		}
+eperks:
 		kSoldierUI.m_kSoldier.onLoadoutChange();
 		XComHeadquartersGame(class'Engine'.static.GetCurrentWorldInfo().Game).GetGameCore().GetHQ().PRES().m_kSoldierSummary.SetSoldier(kSoldierUI.m_kSoldier);
 		XComHeadquartersGame(class'Engine'.static.GetCurrentWorldInfo().Game).GetGameCore().GetHQ().PRES().m_kSoldierPromote.GetMgr().UpdateView();
@@ -748,7 +773,14 @@ exec function GivePerk(string strName)
 		
 		if(Left(strName, 4) ~= "ship") {
 			if(Mid(strName, 5, 4) ~= "name") {
-				XGShip_Interceptor(XGHangarUI(XComHQPresentationLayer(XComPlayerController(Outer.GetALocalPlayerController()).m_Pres).GetMgr(class'XGHangarUI',,, true)).m_kShip).m_strCallsign = Left(XGShip_Interceptor(XGHangarUI(XComHQPresentationLayer(XComPlayerController(Outer.GetALocalPlayerController()).m_Pres).GetMgr(class'XGHangarUI',,, true)).m_kShip).m_strCallsign, InStr(XGShip_Interceptor(XGHangarUI(XComHQPresentationLayer(XComPlayerController(Outer.GetALocalPlayerController()).m_Pres).GetMgr(class'XGHangarUI',,, true)).m_kShip).m_strCallsign, " ")) @ Mid(strName, 10);
+				if(Left(class'XComLocalizer'.static.ExpandString(class'XGLocalizedData'.default.ShipWeaponFlavorTxt[11]), 4) == "F.O.")
+				{
+					XGShip_Interceptor(XGHangarUI(XComHQPresentationLayer(XComPlayerController(Outer.GetALocalPlayerController()).m_Pres).GetMgr(class'XGHangarUI',,, true)).m_kShip).m_strCallsign = Left(XGShip_Interceptor(XGHangarUI(XComHQPresentationLayer(XComPlayerController(Outer.GetALocalPlayerController()).m_Pres).GetMgr(class'XGHangarUI',,, true)).m_kShip).m_strCallsign, InStr(XGShip_Interceptor(XGHangarUI(XComHQPresentationLayer(XComPlayerController(Outer.GetALocalPlayerController()).m_Pres).GetMgr(class'XGHangarUI',,, true)).m_kShip).m_strCallsign, " ")) @ Mid(strName, 10);
+				}
+				else
+				{
+					XGShip_Interceptor(XGHangarUI(XComHQPresentationLayer(XComPlayerController(Outer.GetALocalPlayerController()).m_Pres).GetMgr(class'XGHangarUI',,, true)).m_kShip).m_strCallsign = Mid(strName, 10);
+				}
 			}
 			if(Mid(strName, 5, 5) ~= "kills") {
 				XGShip_Interceptor(XGHangarUI(XComHQPresentationLayer(XComPlayerController(Outer.GetALocalPlayerController()).m_Pres).GetMgr(class'XGHangarUI',,, true)).m_kShip).m_iConfirmedKills += int(Mid(strName, 11));
@@ -759,6 +791,15 @@ exec function GivePerk(string strName)
 		}
 		XComHeadquartersGame(class'Engine'.static.GetCurrentWorldInfo().Game).GetGameCore().GetHQ().PRES().m_kShipSummary.OnInit();
 		XComHeadquartersGame(class'Engine'.static.GetCurrentWorldInfo().Game).GetGameCore().GetHQ().PRES().m_kShipSummary.UpdateData();
+		XComHeadquartersGame(class'Engine'.static.GetCurrentWorldInfo().Game).GetGameCore().GetHQ().PRES().m_kShipList.OnInit();
+		XComHeadquartersGame(class'Engine'.static.GetCurrentWorldInfo().Game).GetGameCore().GetHQ().PRES().m_kShipList.UpdateData();
+	}
+	if(XComHeadquartersGame(class'Engine'.static.GetCurrentWorldInfo().Game).GetGameCore().GetHQ().m_kBase != none)
+	{
+		if(strName ~= BaseRoll)
+		{
+			XComHeadquartersGame(class'Engine'.static.GetCurrentWorldInfo().Game).GetGameCore().GetHQ().m_kBase.GenerateTiles();
+		}
 	}
 	
     //return;    
