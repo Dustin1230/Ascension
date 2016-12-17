@@ -358,6 +358,11 @@ function Mutate(String MutateString, PlayerController Sender)
 		CurruptMessage(arrMutateStr[3] $ "_" $ arrMutateStr[4]);
 	}
 
+	if(MutateString == "ASCAscensionVersion")
+	{
+		TAG().StrValue2 = "2";
+	}
+
 	
 	/*if(Left(MutateString, 18) == "ASCPerkDescription")
 	{
