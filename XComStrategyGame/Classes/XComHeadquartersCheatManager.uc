@@ -103,7 +103,14 @@ exec function GivePerk(string strName)
 			
 			if(Split(strName, " ", true) ~= "levelup")
 			{
-				kSoldierUI.m_kSoldier.LevelUpStats();
+				if(int(Mid(strName, 13)) > 0)
+				{
+					kSoldierUI.m_kSoldier.LevelUpStats(int(Mid(strName, 13)) << 8);
+				}
+				else
+				{
+					kSoldierUI.m_kSoldier.LevelUpStats(kSoldierUI.m_kSoldier.GetRank() << 8);
+				}
 			}
 		}
 		
@@ -125,7 +132,14 @@ exec function GivePerk(string strName)
 		
 		if(Left(strName, 9) ~= "missions ")
 		{
-			kSoldierUI.m_kSoldier.m_iNumMissions += int(Mid(strName, 9));
+			if(Mid(strName, 9, 8) ~= "officer ")
+			{
+				kSoldierUI.m_kSoldier.m_iNumMissions += int(Mid(strName, 17)) << 16;
+			}
+			else
+			{
+				kSoldierUI.m_kSoldier.m_iNumMissions += int(Mid(strName, 9));
+			}
 		}
 		
 		if(Left(strName, 6) ~= "gender")
