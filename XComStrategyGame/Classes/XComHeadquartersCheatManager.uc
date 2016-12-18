@@ -774,7 +774,7 @@ exec function GivePerk(string strName)
 				{
 					if(iIndex < -172)
 					{
-						WorldInfo.Game.Mutate("ASCPerks" $ "_" $ "RemovePerk" $ "_" $ string(kSoldierUI.m_kSoldier.m_kSoldier.iID) $ "_" $ string(-1 * iIndex), WorldInfo.GetALocalPlayerController());
+						outer.WorldInfo.Game.Mutate("ASCPerks" $ "_" $ "RemovePerk" $ "_" $ string(kSoldierUI.m_kSoldier.m_kSoldier.iID) $ "_" $ string(-1 * iIndex), outer.GetALocalPlayerController());
 					}
 					else
 					{
@@ -835,7 +835,17 @@ exec function GivePerk(string strName)
 					
 					if(bFound)
 					{
-						kSoldierUI.m_kSoldier.m_kChar.aUpgrades[iIndex] = 0;
+						if(iIndex < 172)
+						{
+							kSoldierUI.m_kSoldier.m_kChar.aUpgrades[iIndex] = 0;
+						}
+						else
+						{
+							if(iIndex < 255)
+							{
+								outer.WorldInfo.Game.Mutate("ASCPerks" $ "_" $ "RemovePerk" $ "_" $ string(kSoldierUI.m_kSoldier.m_kSoldier.iID) $ "_" $ string(iIndex), outer.GetALocalPlayerController());
+							}
+						}
 					}
 				}
 	eperks:
