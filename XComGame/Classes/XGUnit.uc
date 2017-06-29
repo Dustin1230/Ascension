@@ -5,6 +5,8 @@ var int m_iWillCheatBonus;
 var int m_iCovertOpKills;
 var export editinline StaticMeshComponent m_kDiscMesh;
 var export editinline StaticMeshComponent m_kFlyingRing;
+var export editinline StaticMeshComponent m_kSightRing;
+var array<XGUnit> m_arrCloseCombatShots;
 
 function InitBehavior() {}
 

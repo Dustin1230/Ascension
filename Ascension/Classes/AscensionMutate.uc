@@ -1204,9 +1204,13 @@ function DrawWeaponRangeLines(Vector cursorLoc)
 			kTarget = kSquad.GetMemberAt(I);
 			if(!kTarget.IsMoving() && !kTarget.IsHiding() && kTarget.IsVisible() && kTarget.IsAliveAndWell())
 			{
-				if(VSize(cursorLoc - kTarget.GetPawn().Location) <= (float(ActiveUnit.GetInventory().GetActiveWeapon().m_kTWeapon.iRange) * 64 ))
+				/*if(VSize(cursorLoc - kTarget.GetPawn().Location) <= (float(ActiveUnit.GetInventory().GetActiveWeapon().m_kTWeapon.iRange) * 64 ))
 				{
 					kTarget.GetPawn().AttachRangeIndicator(fRadius, kTarget.m_kDiscMesh.StaticMesh);
+				}*/
+				if(kTarget.m_kCharacter.HasUpgrade(40) && (kTarget.m_arrCloseCombatShots.Find(ActiveUnit) == -1))
+				{
+					kTarget.GetPawn().AttachRangeIndicator(6.0 * 128, kTarget.m_kSightRing.StaticMesh);
 				}
 				else
 				{

@@ -57,10 +57,12 @@
     <Folder Include="GFxUI\Classes\" />
     <Folder Include="IpDrv\" />
     <Folder Include="IpDrv\Classes\" />
+    <Folder Include="LWRebalance\Classes" />
     <Folder Include="MercenaryAscension\" />
     <Folder Include="MercenaryAscension\Classes\" />
     <Folder Include="MyMod\" />
     <Folder Include="MyMod\Classes\" />
+    <Folder Include="LWRebalance" />
     <Folder Include="ObjectSort\" />
     <Folder Include="ObjectSort\Classes\" />
     <Folder Include="OnlineSubsystemGameCenter\" />
@@ -81,8 +83,8 @@
     <Folder Include="UTGameContent\Classes\" />
     <Folder Include="UTGame\" />
     <Folder Include="UTGame\Classes\" />
-    <Folder Include="VarBridge\" />
-    <Folder Include="VarBridge\Classes\" />
+    <Folder Include="XComModBridge" />
+    <Folder Include="XComModBridge\Classes" />
     <Folder Include="XComGame\" />
     <Folder Include="XComGame\Classes\" />
     <Folder Include="XComMutator\" />

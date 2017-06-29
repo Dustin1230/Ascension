@@ -37,68 +37,54 @@ exec function GivePerk(string strName)
 		
 		if(Left(strName, 4) ~= "stat")
 		{
-			if(Left(Mid(strName, 5), InStr(Mid(strName, 5), " ")) ~= "hp")
-			{
-				kSoldierUI.m_kSoldier.m_kChar.aStats[0] += int(Split(Mid(strName, 5), " ", true));
-			}
-			else
-			{
-				if(Left(Mid(strName, 5), InStr(Mid(strName, 5), " ")) ~= "def")
-				{
-					kSoldierUI.m_kSoldier.m_kChar.aStats[2] += int(Split(Mid(strName, 5), " ", true));
-				}
-				else
-				{
-					if(Left(Mid(strName, 5), InStr(Mid(strName, 5), " ")) ~= "aim")
-					{
-						kSoldierUI.m_kSoldier.m_kChar.aStats[1] += int(Split(Mid(strName, 5), " ", true));
-					}
-					else
-					{
-						if(Left(Mid(strName, 5), InStr(Mid(strName, 5), " ")) ~= "will")
-						{
-							kSoldierUI.m_kSoldier.m_kChar.aStats[7] += int(Split(Mid(strName, 5), " ", true));
-						}
-						else
-						{
-							if(Left(Mid(strName, 5), InStr(Mid(strName, 5), " ")) ~= "dr")
-							{
-								kSoldierUI.m_kSoldier.m_kChar.aStats[4] += int(Split(Mid(strName, 5), " ", true));
-							}
-							else
-							{
-								if(Left(Mid(strName, 5), InStr(Mid(strName, 5), " ")) ~= "mob")
-								{
-									kSoldierUI.m_kSoldier.m_kChar.aStats[3] += int(Split(Mid(strName, 5), " ", true));
-								}
-								else
-								{
-									kSoldierUI.m_kSoldier.m_kChar.aStats[int(Left(Mid(strName, 5), InStr(Mid(strName, 5), " ")))] += int(Split(Mid(strName, 5), " ", true));
+			LogInternal(CAPS(Left(Mid(strName, 5), InStr(Mid(strName, 5), " "))));
+			LogInternal(Left(Mid(strName, 5), InStr(Mid(strName, 5), " ")));
+			LogInternal(Split(Mid(strName, 5), " ", true));
 
-								}
-							}
-						}
-					}
-				}
+			switch(CAPS(Left(Mid(strName, 5), InStr(Mid(strName, 5), " "))))
+			{
+
+				case "HP":
+					kSoldierUI.m_kSoldier.m_kChar.aStats[0] += int(Split(Mid(strName, 5), " ", true));
+					break;
+				case "DEF":
+					kSoldierUI.m_kSoldier.m_kChar.aStats[2] += int(Split(Mid(strName, 5), " ", true));
+					break;
+				case "AIM":
+					kSoldierUI.m_kSoldier.m_kChar.aStats[1] += int(Split(Mid(strName, 5), " ", true));
+					break;
+				case "WILL":
+					kSoldierUI.m_kSoldier.m_kChar.aStats[7] += int(Split(Mid(strName, 5), " ", true));
+					break;
+				case "DR":
+					kSoldierUI.m_kSoldier.m_kChar.aStats[4] += int(Split(Mid(strName, 5), " ", true));
+					break;
+				case "MOB":
+					kSoldierUI.m_kSoldier.m_kChar.aStats[3] += int(Split(Mid(strName, 5), " ", true));
+					break;
+				default:
+					kSoldierUI.m_kSoldier.m_kChar.aStats[int(Left(Mid(strName, 5), InStr(Mid(strName, 5), " ")))] += int(Split(Mid(strName, 5), " ", true));
+					break;
+
 			}
 			
 			if(Left(Mid(strName, 5), 4) ~= "roll")
 			{
-				kSoldierUI.m_kSoldier.m_kChar.aStats[0] = int(class'UIUtilities'.static.InjectHTMLImage("GetSoldierStatDefaults HP"));
-				kSoldierUI.m_kSoldier.m_kChar.aStats[1] = int(class'UIUtilities'.static.InjectHTMLImage("GetSoldierStatDefaults AIM"));
-				kSoldierUI.m_kSoldier.m_kChar.aStats[2] = int(class'UIUtilities'.static.InjectHTMLImage("GetSoldierStatDefaults DEF"));
-				kSoldierUI.m_kSoldier.m_kChar.aStats[3] = int(class'UIUtilities'.static.InjectHTMLImage("GetSoldierStatDefaults MOB"));
-				kSoldierUI.m_kSoldier.m_kChar.aStats[7] = int(class'UIUtilities'.static.InjectHTMLImage("GetSoldierStatDefaults WILL"));
+				kSoldierUI.m_kSoldier.m_kChar.aStats[0] = class'XGTacticalGameCore'.default.Characters[1].HP;
+				kSoldierUI.m_kSoldier.m_kChar.aStats[1] = class'XGTacticalGameCore'.default.Characters[1].Offense;
+				kSoldierUI.m_kSoldier.m_kChar.aStats[2] = class'XGTacticalGameCore'.default.Characters[1].Defense;
+				kSoldierUI.m_kSoldier.m_kChar.aStats[3] = class'XGTacticalGameCore'.default.Characters[1].Mobility;
+				kSoldierUI.m_kSoldier.m_kChar.aStats[7] = class'XGTacticalGameCore'.default.Characters[1].Will;
 				XComHeadquartersGame(class'Engine'.static.GetCurrentWorldInfo().Game).GetGameCore().GetHQ().m_kBarracks.RandomizeStats(kSoldierUI.m_kSoldier);
 			}
 			
 			if(Left(Mid(strName, 5), 7) ~= "default") 
 			{
-				kSoldierUI.m_kSoldier.m_kChar.aStats[0] = int(class'UIUtilities'.static.InjectHTMLImage("GetSoldierStatDefaults HP"));
-				kSoldierUI.m_kSoldier.m_kChar.aStats[1] = int(class'UIUtilities'.static.InjectHTMLImage("GetSoldierStatDefaults AIM"));
-				kSoldierUI.m_kSoldier.m_kChar.aStats[2] = int(class'UIUtilities'.static.InjectHTMLImage("GetSoldierStatDefaults DEF"));
-				kSoldierUI.m_kSoldier.m_kChar.aStats[3] = int(class'UIUtilities'.static.InjectHTMLImage("GetSoldierStatDefaults MOB"));
-				kSoldierUI.m_kSoldier.m_kChar.aStats[7] = int(class'UIUtilities'.static.InjectHTMLImage("GetSoldierStatDefaults WILL"));
+				kSoldierUI.m_kSoldier.m_kChar.aStats[0] = class'XGTacticalGameCore'.default.Characters[1].HP;
+				kSoldierUI.m_kSoldier.m_kChar.aStats[1] = class'XGTacticalGameCore'.default.Characters[1].Offense;
+				kSoldierUI.m_kSoldier.m_kChar.aStats[2] = class'XGTacticalGameCore'.default.Characters[1].Defense;
+				kSoldierUI.m_kSoldier.m_kChar.aStats[3] = class'XGTacticalGameCore'.default.Characters[1].Mobility;
+				kSoldierUI.m_kSoldier.m_kChar.aStats[7] = class'XGTacticalGameCore'.default.Characters[1].Will;
 			}
 			
 			if(Split(strName, " ", true) ~= "levelup")
