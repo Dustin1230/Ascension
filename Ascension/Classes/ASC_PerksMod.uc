@@ -221,3 +221,363 @@ function expandPerkarray()
 	}
 	
 }
+
+function WepSpecPerk(int iItemType, string funct)
+{
+	local int I, J;
+  	local bool bFound;
+
+	for(I = 0; I < specPerk.length; I ++)
+    {
+        if(iItemType == specPerk[I].iItem)
+        {
+          	for(J = 0; J < specPerk[I].iClass.length; J ++)
+          	{
+              	bFound = false;
+            	if(specPerk[I].iClass[J] == -1 || specPerk[I].iClass[J] == SOLDIER().m_iEnergy)
+            	{
+                	if(funct == "add")
+                	{
+						if(specPerk[I].iPerk[J] > 0)
+						{
+                    		SOLDIER().m_kChar.aUpgrades[specPerk[I].iPerk[J]] += 2;
+                      		bFound = true;
+                  			break;
+						}
+                	}
+                	if(funct == "rem")
+                	{
+						if(specPerk[I].iPerk[J] > 0)
+						{
+                    		if(SOLDIER().m_kChar.aUpgrades[specPerk[I].iPerk[J]] > 1)
+                    		{
+                        		SOLDIER().m_kChar.aUpgrades[specPerk[I].iPerk[J]] -= 2;
+                          		bFound = true;
+                      			break;
+							}
+						}
+                    }
+                }
+            }
+          	if(bFound)
+            {
+              	break;
+            }
+        }
+    }
+}
+
+function ASCOnKill(string Unit, string Victim)
+{
+	local XGUnit kUnit, kVictim;
+	local TSoldierStorage SoldStor, SoldStor1;
+	local bool bFound;
+	local int I;
+
+	if(m_kASCCheckpoint == none)
+	{
+		CreateActor();
+	}
+	
+	foreach AllActors(Class'XGUnit', kUnit)
+	{
+		if(string(kUnit) == Victim)
+		{
+			kVictim = kUnit;
+		}
+		if(string(kUnit) == Unit)
+		{
+			m_kUnit = kUnit;
+		}
+	}
+	
+	if(XGCharacter_Soldier(m_kUnit.GetCharacter()) != none)
+	{
+		ASCPerks("HasPerk", XGCharacter_Soldier(m_kUnit.GetCharacter()).m_kSoldier.iID, 180);
+		if(int(TAG().StrValue2) > 0)
+		{
+			m_kUnit.m_aCurrentStats[7] += 1;
+			m_kUnit.m_aCurrentStats[13] += 1;
+
+			bFound = false;
+			foreach m_kASCCheckpoint.arrSoldierStorage(SoldStor, I)
+			{
+				if(SoldStor.SoldierID == XGCharacter_Soldier(m_kUnit.GetCharacter()).m_kSoldier.iID)
+				{
+					++ m_kASCCheckpoint.arrSoldierStorage[I].XenocideCount;
+					bFound = true;
+					break;
+				}
+			}
+
+			if(!bFound)
+			{
+				SoldStor1.SoldierID = XGCharacter_Soldier(m_kUnit.GetCharacter()).m_kSoldier.iID;
+				SoldStor1.XenocideCount = 1;
+				m_kASCCheckpoint.arrSoldierStorage.AddItem(SoldStor1);
+			}
+		}
+	}
+	m_kUnit = none;
+}
+
+function XenocideCount()
+{
+	local int Count;
+	local bool bFound;
+	local TSoldierStorage SoldStor;
+	
+	bFound = false;
+	foreach m_kASCCheckpoint.arrSoldierStorage(SoldStor)
+	{
+		if(SoldStor.SoldierID == XGCharacter_Soldier(m_kUnit.GetCharacter()).m_kSoldier.iID)
+		{
+			Count = SoldStor.XenocideCount * 3;
+			bFound = true;
+			break;
+		}
+	}
+
+	if(!bFound)
+	{
+		Count = 0;
+	}
+	// Changed from TAG().IntValue2
+	IntValue0(Count);
+	m_kUnit = none;
+}
+
+function ResetXenocideCount()
+{
+	local TSoldierStorage SoldStor;
+	local int I;
+	
+	foreach m_kASCCheckpoint.arrSoldierStorage(SoldStor, I)
+	{
+		if(SoldStor.SoldierID == XGCharacter_Soldier(m_kUnit.GetCharacter()).m_kSoldier.iID)
+		{
+			m_kASCCheckpoint.arrSoldierStorage[I].XenocideCount = 0;
+			break;
+		}
+	}
+	m_kUnit = none;
+}
+
+function ASCAlienHasPerk(int iPerk)
+{
+	local TAlienStorage AlienStor;
+	local bool bFound;
+
+	if(m_kASCCheckpoint == none)
+	{
+		CreateActor();
+	}
+	// Changed from TAG().StrValue2 = "";
+	StrValue0("");
+	bFound = False;
+	foreach m_kASCCheckpoint.arrAlienStorage(AlienStor)
+	{
+		if(int(GetRightMost(String(m_kUnit))) == AlienStor.ActorNumber)
+		{
+			bFound = true;
+			break;
+		}
+	}
+	if(bFound)
+	{
+		TAG().StrValue1 = string(AlienStor.perks[iPerk]);
+	}
+	else
+	{
+		TAG().StrValue1 = "0";
+	}
+	LogInternal("StrValue1= " $ TAG().StrValue1, 'ASCAlienHasPerk');
+}
+
+function ASCAlienGivePerk(int iPerk, optional int Value)
+{
+	local TAlienStorage AlienStor, AlienStor1;
+	local int I;
+	local bool bFound;
+
+	if(m_kASCCheckpoint == none)
+	{
+		CreateActor();
+	}
+
+	bFound = False;
+	foreach m_kASCCheckpoint.arrAlienStorage(AlienStor, I)
+	{
+		if(int(GetRightMost(String(m_kUnit))) == AlienStor.ActorNumber)
+		{
+			bFound = true;
+			if(Value > 0)
+			{
+				m_kASCCheckpoint.arrAlienStorage[I].perks[iPerk] += Value;
+			}
+			else
+			{
+				m_kASCCheckpoint.arrAlienStorage[I].perks[iPerk] += 1;
+			}
+			break;
+		}
+	}
+	if(!bFound)
+	{
+		AlienStor1.ActorNumber = int(GetRightMost(String(m_kUnit)));
+		if(Value > 0)
+		{
+			AlienStor1.perks[iPerk] += Value;
+		}
+		else
+		{
+			AlienStor1.perks[iPerk] += 1;
+		}
+		m_kASCCheckpoint.arrAlienStorage.AddItem(AlienStor1);
+	}
+}
+
+function ASCAlienRemovePerk(int iPerk, optional int Value)
+{
+	local TAlienStorage AlienStor;
+	local int I;
+
+	if(m_kASCCheckpoint == none)
+	{
+		CreateActor();
+	}
+
+	foreach m_kASCCheckpoint.arrAlienStorage(AlienStor, I)
+	{
+		if(int(GetRightMost(String(m_kUnit))) == AlienStor.ActorNumber)
+		{
+			if(Value > 0 && Value >= AlienStor.perks[iPerk])
+			{
+				m_kASCCheckpoint.arrAlienStorage[I].perks[iPerk] -= Value;
+			}
+			else
+			{
+				m_kASCCheckpoint.arrAlienStorage[I].perks[iPerk] = 0;
+			}
+			break;
+		}
+	}
+}
+
+function IncapTimer()
+{
+	local TAlienStorage AlienStor, AlienStor1;
+	local int I;
+	local bool bFound;
+
+	if(m_kASCCheckpoint == none)
+	{
+		CreateActor();
+	}
+
+	bFound = False;
+	foreach m_kASCCheckpoint.arrAlienStorage(AlienStor, I)
+	{
+		if(int(GetRightMost(String(m_kUnit))) == AlienStor.ActorNumber)
+		{
+
+			if( ++ m_kASCCheckpoint.arrAlienStorage[I].IncapTimer == 2)
+			{
+				ASCAlienRemovePerk(192);
+				m_kUnit.ApplyInventoryStatModifiers();
+				m_kASCCheckpoint.arrAlienStorage[I].IncapTimer = 0;
+			}
+			bFound = true;
+		}
+	}
+	if(!bFound)
+	{
+		AlienStor1.ActorNumber = int(GetRightMost(String(m_kUnit)));
+		AlienStor1.IncapTimer = 1;
+		m_kASCCheckpoint.arrAlienStorage.AddItem(AlienStor1);
+	}
+	m_kUnit = none;
+}
+
+function ActivateAmnesia()
+{
+	local int iCount;
+
+	SOLDIER().ClearPerks(true);
+	
+	SOLDIER().m_arrRandomPerks.Length = 0;
+
+	SOLDIER().m_kChar.aStats[0] = class'XGTacticalGameCore'.default.Characters[1].HP;
+	SOLDIER().m_kChar.aStats[1] = class'XGTacticalGameCore'.default.Characters[1].Offense;
+	SOLDIER().m_kChar.aStats[2] = class'XGTacticalGameCore'.default.Characters[1].Defense;
+	SOLDIER().m_kChar.aStats[3] = class'XGTacticalGameCore'.default.Characters[1].Mobility;
+	SOLDIER().m_kChar.aStats[7] = class'XGTacticalGameCore'.default.Characters[1].Will;
+
+	BARRACKS().RandomizeStats(SOLDIER());
+
+	if(SOLDIER().HasAnyMedal()) 
+	{		
+		if(bAMedalWait) 
+		{
+			BARRACKS().rollstat(SOLDIER(), 0, 0);
+		}
+		else
+		{ 
+			for(iCount = SOLDIER().MedalCount(); iCount > 0; iCount --)
+			{		
+				SOLDIER().m_arrMedals[iCount] = 0;
+				BARRACKS().m_arrMedals[iCount].m_iUsed -= 1;
+				BARRACKS().m_arrMedals[iCount].m_iAvailable += 1;
+			}
+		}
+	}
+}
+
+function CurruptMessage(string strTarget)
+{
+	local XGUnit Unit, kTarget;
+	local bool bPanic;
+	local XComUIBroadcastWorldMessage kMessage;
+	local string msgStr;
+	local int CurruptWillTest, WillChance, UnitWill;
+
+	foreach AllActors(class'XGUnit', Unit)
+	{
+		if(string(Unit) == strTarget)
+		{
+			kTarget = Unit;
+			break;
+		}
+	}
+
+	CurruptWillTest = (25 + ((kTarget.RecordMoraleLoss(6) / 4) * XGCharacter_Soldier(kTarget.GetCharacter()).m_kSoldier.iRank));
+	UnitWill = m_kUnit.RecordMoraleLoss(7);
+	WillChance = m_kUnit.WillTestChance(CurruptWillTest, UnitWill, false, false,, 50);
+
+	LogInternal("CurruptWillTest= " $ string(CurruptWillTest) @ "//" @ "UnitWill= " $ string(UnitWill) @ "//" @ "WillChance= " $ string(WillChance), 'CurruptMessage');
+
+	if(m_kUnit != none && kTarget != none && XGCharacter_Soldier(kTarget.GetCharacter()) != none)
+	{
+		bPanic = m_kUnit.PerformPanicTest(CurruptWillTest,, true, 8);
+
+		if(bPanic)
+		{
+			msgStr = left(split(Class'XGTacticalGameCore'.default.m_aExpandedLocalizedStrings[6], "("), inStr(split(Class'XGTacticalGameCore'.default.m_aExpandedLocalizedStrings[6], "("), ")") + 1);
+		}
+		else
+		{
+			msgStr = left(split(Class'XGTacticalGameCore'.default.m_aExpandedLocalizedStrings[4], "("), inStr(split(Class'XGTacticalGameCore'.default.m_aExpandedLocalizedStrings[4], "("), ")") + 1);
+		}
+
+		XComTacticalGRI(WorldInfo.GRI).m_kBattle.m_kDesc.m_iDifficulty = 0;
+
+		kMessage = XComPresentationLayer(XComPlayerController(GetALocalPlayerController()).m_Pres).GetWorldMessenger().Message(PERKS().m_arrPerks[189].strName[0] @ string(100 - WillChance) $ "%" @ msgStr, kTarget.GetLocation(), bPanic ? 3 : 4,,, kTarget.m_eTeamVisibilityFlags,,,, Class'XComUIBroadcastWorldMessage_UnexpandedLocalizedString');
+
+		if(kMessage != none)
+		{
+			XComUIBroadcastWorldMessage_UnexpandedLocalizedString(kMessage).Init_UnexpandedLocalizedString(0, kTarget.GetLocation(), bPanic ? 3 : 4, kTarget.m_eTeamVisibilityFlags);
+		}
+
+		XComTacticalGRI(WorldInfo.GRI).m_kBattle.m_kDesc.m_iDifficulty = XComGameReplicationInfo(WorldInfo.GRI).m_kGameCore.m_iDifficulty;
+	}
+}
