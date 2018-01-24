@@ -115,6 +115,47 @@ simulated function StartMatch()
 		ASCSetUnit(functparas);
 		m_kASC_SoldierMod.GiveRandomPerk();
 	}
+	
+	if(functionName == "CheckRandomPerk")
+	{
+		m_kASC_SoldierMod.CheckRandomPerk(int(functparas));
+	}
+	
+	if(functionName == "SoldLevelupStat")
+	{
+		if(functparas != "")
+		{
+			m_kASC_SoldierMod.SoldLevelupStat(int(functparas));	
+		}
+		else
+		{
+			m_kASC_SoldierMod.SoldLevelupStat();
+		}
+	}
+	
+	if(functionName == "SoldGetPerkCT")
+    {
+		ASCSetUnit(functparas);
+		m_kASC_SoldierMod.SoldGetPerkCT();
+    }
+	
+	if(functionName == "ASCRandomiseStats")
+	{
+		ASCSetUnit(functparas);
+		m_kASC_SoldierMod.GetRookieRandomStats();
+	}
+	
+	if(functionName == "ASCStats") 
+    {
+		if(functparas != "") 
+		{
+			m_kASC_SoldierMod.applyStats(int(functparas));
+		}
+		else
+		{
+			m_kASC_SoldierMod.applyStats();
+		}
+	}
 }
 
 function ModInit()

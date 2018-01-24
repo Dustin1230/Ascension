@@ -79,7 +79,7 @@ struct TSoldPerkStats
 // starting stat assignment Variables
 var config array<ASCTStats> Stats;
 var ASCTStats m_kTotalStats;
-var config array<TRandStats> RandStats;
+var config TRandStats RandStats;
 var config array<TMinStats> MinStats;
 // Variables used with Rookie Random Perk System
 var config array<int> rookRandPerk;
@@ -313,13 +313,13 @@ function SoldLevelupStat(optional int statsString)
 	LogInternal("End of MercLevelupStat");
 }
 
-function SoldGetPerkCT(int SoldierID)
+function SoldGetPerkCT()
 {
   	local XGStrategySoldier kSoldier;
 	local TSoldTree kTree;
   	local int I;
   
-  	kSoldier = BARRACKS().GetSoldierByID(SoldierID);
+  	kSoldier = m_kStratSoldier;
 	
 	LogInternal("MercGetPerkCT");
 	
@@ -335,13 +335,19 @@ function SoldGetPerkCT(int SoldierID)
 	}
 }
 
-function ASCRandomiseStats(int SoldierID, TRandStats RandData)
+function GetRookieRandomStats()
+{
+	SetMinStats(MinStats);
+	ASCRandomiseStats(RandStats);
+}
+
+function ASCRandomiseStats(TRandStats RandData)
 {
 	local int I, J, iRand, iPos, pointsused;
 	local array<int> list, weight, list2, weight2;
 	local XGStrategySoldier kSoldier;
 	
-	kSoldier = BARRACKS().GetSoldierByID(SoldierID);
+	kSoldier = m_kStratSoldier;
 
 	J = 0;
 	pointsused = 0;
@@ -455,11 +461,11 @@ function ASCRandomiseStats(int SoldierID, TRandStats RandData)
 	
 }
 
-function SetMinStats(int SoldierID, TMinStats MinData)
+function SetMinStats(TMinStats MinData)
 {
 	local XGStrategySoldier kSoldier;
 	
-	kSoldier = BARRACKS().GetSoldierByID(SoldierID);
+	kSoldier = m_kStratSoldier;
 	
 	kSoldier.m_kChar.aStats[0] = MinData.HP;
 	kSoldier.m_kChar.aStats[1] = MinData.Aim;
