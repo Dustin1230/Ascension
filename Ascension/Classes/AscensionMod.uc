@@ -156,6 +156,42 @@ simulated function StartMatch()
 			m_kASC_SoldierMod.applyStats();
 		}
 	}
+	
+	if(functionName == "DrawWeaponRangeLines")
+	{
+		if(functparas != "") 
+		{
+			m_kASC_ItemMod.DrawWeaponRangeLines(vector(functparas));
+		}
+		else
+		{
+			m_kASC_ItemMod.DrawWeaponRangeLines(vector("0.0,0.0,0.0"));
+		}
+	}
+	
+	if(functionName == "FlushAlienPerks")
+	{
+		m_kASC_PerksMod.FlushAlienPerks();
+	}
+	
+	if(functionName == "ASCPerkDescription")
+	{
+		m_kASC_PerksMod.ASCPerkDescription(int(functparas));
+	}
+	
+	if(functionName == "ASCPerks") 
+    {
+		`Log("Mutate: ASCPerks");
+		arrMutateStr = SplitString(MutateString, "_", false);
+		if(arrMutateStr.Length > 4) 
+        {
+			ASCPerks(arrMutateStr[1], int(arrMutateStr[2]), int(arrMutateStr[3]), int(arrMutateStr[4]));
+		}
+		else 
+        {
+			ASCPerks(arrMutateStr[1], int(arrMutateStr[2]), int(arrMutateStr[3]));
+		}
+	}
 }
 
 function ModInit()
