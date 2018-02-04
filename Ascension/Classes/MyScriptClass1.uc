@@ -130,7 +130,7 @@ function XComClassChooser(XGStrategySoldier Soldier)
 
 		if(kClassStats == emptyClassStats)
 		{
-			break;
+			continue;
 		}
 
 		//times each of the soldier's stats with the points that they are worth determined from the info collected from the config
