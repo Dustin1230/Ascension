@@ -1,4 +1,12 @@
-class MyMod extends XComMod;
+class MyMod extends XComMod
+	config(MyMod);
+
+struct TStruct
+{
+	var array<int> iVal;
+};
+
+var config TStruct Test;
 
 simulated function StartMatch()
 {

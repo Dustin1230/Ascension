@@ -125,7 +125,7 @@ var array<byte> KismetData;
 var array<name> ActorNames;
 var array<name> ClassNames;
 var array<ActorTemplateInfo> ActorTemplates;
-var config array< class<Actor> > ActorClassesToRecord;
+var const array< class<Actor> > ActorClassesToRecord;
 var const array< class<Actor> > ActorClassesToDestroy;
 var const array< class<Actor> > ActorClassesNotToDestroy;
 var const bool IsMapSave;
