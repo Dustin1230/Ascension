@@ -336,6 +336,8 @@ function XComClassChooser(XGStrategySoldier Soldier)
 		iNum = class'XComEngine'.static.SyncRand(classWgtPer.Length + 1, "");
 		arrRandClassWgt.InsertItem(iNum, classWgtPer[i]);
 		arrRandClassNum.InsertItem(iNum, NumPos[i]);
+		arrRandClassWgt.RemoveItem(0);
+		arrRandClassNum.RemoveItem(0);
 	}
 
 	//remove any blank entries
