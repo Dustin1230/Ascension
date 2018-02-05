@@ -205,7 +205,7 @@ function XComClassChooser(XGStrategySoldier Soldier)
 	
 
 	//Compare each class amount number to the highest value see if the difference is within threshold and apply appropriate bonus points to class
-	//if isMultiplier is set then bonus points is a multiplier of the highest previous class point value otherwise it is an amount between fminGain and fmaxGain depending on how close the difference is to minDif or MaxDif
+	//if isMultiplier is set then bonus points is a multiplier of the highest previous class point value otherwise it is an amount between fminGain and fmaxGain depending on how close the difference is to minDif or maxDif
 
 	for(i=0; i<NumSorted.Length; i++)
 	{
@@ -355,7 +355,7 @@ function XComClassChooser(XGStrategySoldier Soldier)
 
 	class'XComEngine'.static.SetRandomSeeds(soldierSeed);
 
-	iNum = round(class'XComEngine'.static.SyncRand(100, ""));
+	iNum = class'XComEngine'.static.SyncRand(100, "");
 	if(iNum > (100 - arrRandClassWgt[arrRandClassWgt.Length - 1]))
 	{
 		kSoldier.m_iEnergy = arrRandClassNum[arrRandClassWgt.Length - 1];
