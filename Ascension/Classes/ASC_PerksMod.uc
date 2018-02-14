@@ -49,14 +49,14 @@ function ASCPerkDescription(int iCurrentView)
             // End:0x127
             if((SOLDIER().m_kChar.aUpgrades[71] & 254) == 0)
             {
-				TAG().StrValue2 = SOLDIERUI().m_strLockedPsiAbilityDescription;
+				StrValue2(SOLDIERUI().m_strLockedPsiAbilityDescription);
                 //return m_strLockedPsiAbilityDescription;
             }
         }
 		// End:0x187
 		if(!LABS().IsResearched(PERKS().GetPerkInTreePsi(iPerk | (1 << 8), 0)))
 		{
-			TAG().StrValue2 = SOLDIERUI().m_strLockedPsiAbilityDescription;
+			StrValue2(SOLDIERUI().m_strLockedPsiAbilityDescription);
 			//return m_strLockedPsiAbilityDescription;
 		}
     }
@@ -84,7 +84,7 @@ function ASCPerkDescription(int iCurrentView)
 			
 				LogInternal("before output", 'ASCPerkDescription');
 			
-				TAG().StrValue2 =
+				StrValue2(
 			
 				Left(class'XComLocalizer'.static.ExpandString(SOLDIERUI().m_strLockedAbilityDescription), InStr(class'XComLocalizer'.static.ExpandString(SOLDIERUI().m_strLockedAbilityDescription), ":") + 1) $ "(" @
 			
@@ -94,7 +94,9 @@ function ASCPerkDescription(int iCurrentView)
 			
 				$ (TAG().IntValue0 != 0 ? "," @ Left(SOLDIERUI().m_strLabelMobility, Len(SOLDIERUI().m_strLabelMobility) - 1) $ ":" @ TAG().IntValue0 : "")
 			
-				@ class'XComLocalizer'.static.ExpandString(")\\n") $ PERKS().GetBriefSummary(iPerk);
+				@ class'XComLocalizer'.static.ExpandString(")\\n") $ PERKS().GetBriefSummary(iPerk)
+
+				);
 			
 				//return class'XComLocalizer'.static.ExpandString(m_strLockedAbilityDescription) $ PERKS().GetBriefSummary(iPerk);
 			}
@@ -105,9 +107,12 @@ function ASCPerkDescription(int iCurrentView)
 		}
 		else
 		{
-			LogInternal("before merc", 'ASCPerkDescription');
-			MercPerkDescription();
-			LogInternal("after merc", 'ASCPerkDescription');
+			if(m_kASC_MercenariesMod != none)
+			{
+				LogInternal("before merc", 'ASCPerkDescription');
+				m_kASC_MercenariesMod.MercPerkDescription();
+				LogInternal("after merc", 'ASCPerkDescription');
+			}
 			//super.Mutate("MercPerkDescription", m_kSender);
 		}
 	}
@@ -115,30 +120,80 @@ function ASCPerkDescription(int iCurrentView)
 	else
 	{		
 		otherelse:
-		TAG().StrValue2 = PERKS().GetBriefSummary(iPerk);
+		StrValue2(PERKS().GetBriefSummary(iPerk));
 		//return PERKS().GetBriefSummary(iPerk);
 	}  
 }
 
-function ASCPerks(string funct, int SID, int perk, optional int value = 1)
+function ASCPerks(string funct, int perk, optional int value = 1)
 {
 	
-	if(m_kASCCheckpoint == none)
+	local int I, SID;
+	local bool bFound;
+
+	if(isStrategy())
 	{
-		CreateActor();
+		SID = m_kStratSoldier.m_kSoldier.iID;
+	}
+	else
+	{
+		SID = XGCharacter_Soldier(m_kUnit.GetCharacter()).m_kSoldier.iID;
 	}
 
 	if(funct == "HasPerk")
     {
-		m_kASCCheckpoint.HasPerkASC(SID, perk);
+		IntValue0(0, true);
+		for(I=0; I<m_kASCCheckpoint.arrSoldierStorage.Length; I++)
+		{
+			if(SID == m_kASCCheckpoint.arrSoldierStorage[I].SoldierID)
+			{
+				if(m_kASCCheckpoint.arrSoldierStorage[I].perks[perk] > 0)
+				{
+					IntValue0(m_kASCCheckpoint.arrSoldierStorage[I].perks[perk], true);
+				}
+			}
+				
+		}
+		
 	}
+
 	if(funct == "GivePerk")
     {
-		m_kASCCheckpoint.GivePerkASC(SID, perk, value);
+		bFound = false;
+		IntValue0(0, true);
+		for(I=0; I<m_kASCCheckpoint.arrSoldierStorage.Length; I++)
+		{
+			if(SID == m_kASCCheckpoint.arrSoldierStorage[I].SoldierID)
+			{
+				if(m_kASCCheckpoint.arrSoldierStorage[I].perks[perk] > 0)
+				{
+					bFound = true;
+					m_kASCCheckpoint.arrSoldierStorage[I].perks[perk] += value;
+				}
+			}
+		}
+
+		if(!bFound)
+		{
+			m_kASCCheckpoint.arrSoldierStorage.Add(1);
+			m_kASCCheckpoint.arrSoldierStorage[m_kASCCheckpoint.arrSoldierStorage.Length-1].SoldierID = SID;
+			m_kASCCheckpoint.arrSoldierStorage[m_kASCCheckpoint.arrSoldierStorage.Length-1].perks[perk] = value;
+		}
+		
 	}
 	if(funct == "RemovePerk")
     {
-		m_kASCCheckpoint.RemovePerkASC(SID, perk, value);
+		IntValue0(0, true);
+		for(I=0; I<m_kASCCheckpoint.arrSoldierStorage.Length; I++)
+		{
+			if(SID == m_kASCCheckpoint.arrSoldierStorage[I].SoldierID)
+			{
+				if(m_kASCCheckpoint.arrSoldierStorage[I].perks[perk] > 0)
+				{
+					m_kASCCheckpoint.arrSoldierStorage[I].perks[perk] -= value;
+				}
+			}
+		}
 	}
 }
 
@@ -273,11 +328,6 @@ function ASCOnKill(string Unit, string Victim)
 	local TSoldierStorage SoldStor, SoldStor1;
 	local bool bFound;
 	local int I;
-
-	if(m_kASCCheckpoint == none)
-	{
-		CreateActor();
-	}
 	
 	foreach AllActors(Class'XGUnit', kUnit)
 	{
@@ -373,7 +423,7 @@ function ASCAlienHasPerk(int iPerk)
 		CreateActor();
 	}
 	// Changed from TAG().StrValue2 = "";
-	StrValue0("");
+	IntValue2(0,  true);
 	bFound = False;
 	foreach m_kASCCheckpoint.arrAlienStorage(AlienStor)
 	{
@@ -385,13 +435,13 @@ function ASCAlienHasPerk(int iPerk)
 	}
 	if(bFound)
 	{
-		TAG().StrValue1 = string(AlienStor.perks[iPerk]);
+		IntValue2(AlienStor.perks[iPerk], true);
 	}
 	else
 	{
-		TAG().StrValue1 = "0";
+		IntValue2(0, true);
 	}
-	LogInternal("StrValue1= " $ TAG().StrValue1, 'ASCAlienHasPerk');
+	LogInternal("IntValue2= " $ IntValue2(), 'ASCAlienHasPerk');
 }
 
 function ASCAlienGivePerk(int iPerk, optional int Value)
@@ -399,11 +449,6 @@ function ASCAlienGivePerk(int iPerk, optional int Value)
 	local TAlienStorage AlienStor, AlienStor1;
 	local int I;
 	local bool bFound;
-
-	if(m_kASCCheckpoint == none)
-	{
-		CreateActor();
-	}
 
 	bFound = False;
 	foreach m_kASCCheckpoint.arrAlienStorage(AlienStor, I)
@@ -529,6 +574,83 @@ function ActivateAmnesia()
 				BARRACKS().m_arrMedals[iCount].m_iUsed -= 1;
 				BARRACKS().m_arrMedals[iCount].m_iAvailable += 1;
 			}
+		}
+	}
+}
+
+function SetSoldierStates(string sstate)
+{
+	local TSoldierStorage SS;
+	local int I, SID;
+
+	if(isStrategy())
+	{
+		SID = m_kStratSoldier.m_kSoldier.iID;
+	}
+	else
+	{
+		SID = XGCharacter_Soldier(m_kUnit.GetCharacter()).m_kSoldier.iID;
+	}
+
+	foreach m_kASCCheckpoint.arrSoldierStorage(SS, I)
+	{
+		if(SS.SoldierID == SID)
+		{
+			if(sstate == "Gunslinger")
+			{
+				m_kASCCheckpoint.arrSoldierStorage[I].GunslingerState = true;
+				break;
+			}
+		}
+	}
+}
+
+function ResetSoldierStates()
+{
+	local TSoldierStorage SS;
+	local int I, SID;
+
+	if(isStrategy())
+	{
+		SID = m_kStratSoldier.m_kSoldier.iID
+	}
+	else
+	{
+		SID = XGCharacter_Soldier(m_kUnit.GetCharacter()).m_kSoldier.iID;
+	}
+
+	foreach m_kASCCheckpoint.arrSoldierStorage(SS, I)
+	{
+		if(SS.SoldierID == SID)
+		{
+			m_kASCCheckpoint.arrSoldierStorage[I].GunslingerState = false;
+			break;
+		}
+	}
+}
+
+
+function CheckSoldierStates()
+{
+	local TSoldierStorage SS;
+	local int SID;
+
+	if(isStrategy())
+	{
+		SID = m_kStratSoldier.m_kSoldier.iID;
+	}
+	else
+	{
+		SID = XGCharacter_Soldier(m_kUnit.GetCharacter()).m_kSoldier.iID;
+	}
+
+	foreach m_kASCCheckpoint.arrSoldierStorage(SS)
+	{
+		if(SS.SoldierID == SID)
+		{
+			LogInternal("Gunslinger:" @ string(SS.GunslingerState), 'CheckSoldierStates');
+			valStrValue1 = SS.GunslingerState ? "true" : "false";
+			break;
 		}
 	}
 }

@@ -80,40 +80,59 @@ function XComPresentationLayer PRES()
 	return XComPresentationLayer(XComPlayerController(GetALocalPlayerController()).m_Pres);
 }
 
+function bool isStrategy()
+{
+	return XComHeadquartersGame(XComGameInfo(class'Engine'.static.GetCurrentWorldInfo().Game)) != none;
+}
+
+function bool isTactical()
+{
+	return XComTacticalGame(XComGameInfo(class'Engine'.static.GetCurrentWorldInfo().Game)) != none;
+}
+
 simulated function StartMatch()
 {
 	//local string functionName;
 	//local string functParas;
+	local array<string> arrStr;
 	
 	LogInternal("StartMatch, functionName=" @ Chr(34) $ functionName $ Chr(34) @ "functParas=" @ Chr(34) $ functParas $ Chr(34), 'AscensionCore');
 	
 	if(functionName == "ModInit")
 	{
-		//spawncode here
-		ModRecordActor("Transport",  class'ASCCheckpoint');
-		
 		ModInit();
 	}
 	
 	if(functionName == "CheckSoldierStates")
 	{
-		CheckSoldierStates(IntValue1());
+		ASCSetUnit(StrValue0());
+		m_kASC_PerksMod.CheckSoldierStates();
+		m_kUnit = none;
+		m_kStratSoldier = none;
 	}
 	
 	if(functionName == "ResetSoldierStates")
 	{
-		ResetSoldierStates(IntValue1());
+		ASCSetUnit(StrValue0());
+		m_kASC_PerksMod.ResetSoldierStates();
+		m_kUnit = none;
+		m_kStratSoldier = none;
 	}
 	
 	if(functionName == "SetSoldierStates")
 	{
-		SetSoldierStates(IntValue1(), functparas);
+		ASCSetUnit(StrValue0());
+		m_kASC_PerksMod.SetSoldierStates(functparas);
+		m_kUnit = none;
+		m_kStratSoldier = none;
 	}
 	
 	if(functionName == "GiveRandomPerk")
 	{
 		ASCSetUnit(functparas);
 		m_kASC_SoldierMod.GiveRandomPerk();
+		m_kUnit = none;
+		m_kStratSoldier = none;
 	}
 	
 	if(functionName == "CheckRandomPerk")
@@ -137,12 +156,16 @@ simulated function StartMatch()
     {
 		ASCSetUnit(functparas);
 		m_kASC_SoldierMod.SoldGetPerkCT();
+		m_kUnit = none;
+		m_kStratSoldier = none;
     }
 	
 	if(functionName == "ASCRandomiseStats")
 	{
 		ASCSetUnit(functparas);
 		m_kASC_SoldierMod.GetRookieRandomStats();
+		m_kUnit = none;
+		m_kStratSoldier = none;
 	}
 	
 	if(functionName == "ASCStats") 
@@ -165,7 +188,7 @@ simulated function StartMatch()
 		}
 		else
 		{
-			m_kASC_ItemMod.DrawWeaponRangeLines(vector("0.0,0.0,0.0"));
+			m_kASC_ItemMod.DrawWeaponRangeLines(vect(0,0,0));
 		}
 	}
 	
@@ -181,27 +204,100 @@ simulated function StartMatch()
 	
 	if(functionName == "ASCPerks") 
     {
-		`Log("Mutate: ASCPerks");
-		arrMutateStr = SplitString(MutateString, "_", false);
-		if(arrMutateStr.Length > 4) 
+		arrStr = SplitString(functparas, "_", false);
+
+		ASCSetUnit(arrStr[0]);
+
+		if(arrStr.Length > 3) 
         {
-			ASCPerks(arrMutateStr[1], int(arrMutateStr[2]), int(arrMutateStr[3]), int(arrMutateStr[4]));
+			m_kASC_PerksMod.ASCPerks(arrStr[1], int(arrStr[2]), int(arrStr[3]));
 		}
 		else 
         {
-			ASCPerks(arrMutateStr[1], int(arrMutateStr[2]), int(arrMutateStr[3]));
+			m_kASC_PerksMod.ASCPerks(arrStr[1], int(arrStr[2]));
 		}
+		m_kUnit = none;
+		m_kStratSoldier = none;
 	}
+
+	if(functionName == "CurruptMessage")
+	{
+		ASCSetUnit(StrValue0());
+		m_kASC_PerksMod.CurruptMessage(StrValue1());
+	}
+
+	if(functionNamme == "AlienHasPerk")
+	{
+		ASCSetUnit(StrValue0());
+		m_kASC_PerksMod.ASCAlienHasPerk(int(functParas));
+		m_kUnit = none;
+	}
+
+	if(functionName == "GiveAlienPerk")
+	{
+		ASCSetUnit(StrValue0());
+
+		arrStr = SplitSting(functParas, "_", false);
+
+		if(arrStr.Length > 1)
+		{
+			m_kASC_PerksMod.ASCAlienGivePerk(int(arrStr[0]), int(arrStr[1]));
+		}
+		else
+		{
+			m_kASC_PerksMod.ASCAlienGivePerk(int(arrStr[0]));
+		}
+		m_kUnit = none;
+	}
+
+	if(functionName == "IncapTimer")
+	{
+		ASCSetUnit(StrValue0());
+		m_kASC_PerksMod.IncapTimer();
+		m_kUnit = none;
+	}
+
+	if(functionName == "ActivateAmnesia")
+	{
+		m_kASC_PerksMod.ActivateAmnesia();
+	}
+
+	if(functionName == "ResetXenocideCount")
+	{
+		ASCSetUnit(StrValue0());
+		m_kASC_PerksMod.ResetXenocideCount();
+		m_kUnit == none;
+	}
+
+	if(functionName == "XenocideCount")
+	{
+		ASCSetUnit(StrValue0());
+		m_kASC_PerksMod.XenocideCount();
+		m_kUnit = none;
+	}
+
+	if(functionName == "ASCOnKill")
+	{
+		m_kASC_PerksMod.ASCOnKill(StrValue0(), StrValue1());
+	}
+
+	if(functionName == "WepSpec")
+    {
+    	arrStr = SplitString(functParas, "_", false);
+    	m_kASC_PerksMod.WepSpecPerk(int(arrStr[0]), arrStr[1]);
+    }
+		
 }
 
 function ModInit()
 {
-	CreateActor()
-	m_kASC_PerksMod = ASC_PerksMod(CreateASCObj("Ascension.ASC_PerksMod");
-	m_kASC_SoldierMod = ASC_SoldierMod(CreateASCObj("Ascension.ASC_SoldierMod");
-	m_kASC_ItemMod = ASC_ItemMod(CreateASCObj("Ascension.ASC_ItemMod");
-	m_kASC_MercenariesMod = ASC_MercenariesMod(CreateASCObj("Ascension.ASC_MercenariesMod");
-	m_kASC_PerkMod.expandPerkarray()
+	CreateActor();
+	m_kASC_PerksMod = ASC_PerksMod(CreateASCObj("Ascension.ASC_PerksMod"));
+	m_kASC_SoldierMod = ASC_SoldierMod(CreateASCObj("Ascension.ASC_SoldierMod"));
+	m_kASC_ItemMod = ASC_ItemMod(CreateASCObj("Ascension.ASC_ItemMod"));
+	m_kASC_MercenariesMod = ASC_MercenariesMod(CreateASCObj("Ascension.ASC_MercenariesMod"));
+	m_kASC_PerkMod.expandPerkarray();
+	ModRecordActor("Transport",  class'ASCCheckpoint');
 }
 
 function AscensionMod CreateASCObj(string classname)
@@ -231,54 +327,6 @@ function CreateActor()
 	//m_kMerc = Spawn(class'MercenaryAscensionMutate', m_kSender);
 }
 
-function CheckSoldierStates(int SID)
-{
-	local TSoldierStorage SS;
-
-	foreach m_kASCCheckpoint.arrSoldierStorage(SS)
-	{
-		if(SS.SoldierID == SID)
-		{
-			LogInternal("Gunslinger:" @ string(SS.GunslingerState), 'CheckSoldierStates');
-			valStrValue1 = SS.GunslingerState ? "true" : "false";
-			break;
-		}
-	}
-}
-
-function ResetSoldierStates(int SID)
-{
-	local TSoldierStorage SS;
-	local int I;
-
-	foreach m_kASCCheckpoint.arrSoldierStorage(SS, I)
-	{
-		if(SS.SoldierID == SID)
-		{
-			m_kASCCheckpoint.arrSoldierStorage[I].GunslingerState = false;
-			break;
-		}
-	}
-}
-
-function SetSoldierStates(int SID, string state)
-{
-	local TSoldierStorage SS;
-	local int I;
-
-	foreach m_kASCCheckpoint.arrSoldierStorage(SS, I)
-	{
-		if(SS.SoldierID == SID)
-		{
-			if(state == "Gunslinger")
-			{
-				m_kASCCheckpoint.arrSoldierStorage[I].GunslingerState = true;
-				break;
-			}
-		}
-	}
-}
-
 function ASCSetUnit(string UnitName)
 {
 	local XGUnit Unit;
@@ -287,7 +335,7 @@ function ASCSetUnit(string UnitName)
 
 	LogInternal("UnitName=" @ UnitName, 'ASCSetUnit');
 
-	if(XComTacticalGame(XComGameInfo(class'Engine'.static.GetCurrentWorldInfo().Game)) != none)
+	if(isTactical())
 	{
 		foreach AllActors(class'XGUnit', Unit)
 		{
@@ -298,7 +346,7 @@ function ASCSetUnit(string UnitName)
 		}
 		m_kUnit = Unit;
 	}
-	else if(XComHeadquartersGame(XComGameInfo(class'Engine'.static.GetCurrentWorldInfo().Game)) != none)
+	else if(isStrategy())
 	{
 		foreach AllActors(class'XGStrategySoldier', Soldier)
 		{
@@ -312,15 +360,29 @@ function ASCSetUnit(string UnitName)
 	//m_kTotalStats = EmptyStat;
 }
 
-function bool PercentRoll(float percent)
+function bool PercentRoll(float percent, optional bool isSynced)
 {
-	if(RandRange(0.99991, 100.99991) * (100.00 / (101.00 - percent)) > 99.99)
+	if(isSynced)
 	{
-		return true;
+		if(((class'XComEngine'.static.SyncFRand("") * 100.00) + 1.0) * (100.00 / (101.00 - percent)) > 99.99)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 	else
 	{
-		return false;
+		if(RandRange(0.99991, 100.99991) * (100.00 / (101.00 - percent)) > 99.99)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 }
 

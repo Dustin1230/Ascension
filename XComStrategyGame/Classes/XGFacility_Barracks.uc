@@ -49,6 +49,10 @@ function ReorderRanks()
 {
 }
 
+function int GetNumSoldiersOfClass(XGTacticalGameCoreData.ESoldierClass eClass)
+{
+}
+
 function XGStrategySoldier CreateSoldier(XGTacticalGameCoreData.ESoldierClass eClass, int iSoldierLevel, int iCountry, optional bool bBlueshirt)
 {
     local XGStrategySoldier kSoldier;
