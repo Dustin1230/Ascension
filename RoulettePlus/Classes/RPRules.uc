@@ -1,4 +1,5 @@
 class RPRules extends object
+	DependsOn(RoulettePlus)
 	config(RPRules);
 
 var config array <string> IncompatiblePerks1;
@@ -15,5 +16,4 @@ var config array <TRequiredPerk> RequiredPerk2;
 var config array <int> RequiredPerkClass;
 var config array <TStaticPerks> StaticPerks;
 var config array <TSemiStatic> SemiStaticPerks;
-var config array <TPerkStats> PerkStats;
 var config array <TPerkChance> PerkChance;

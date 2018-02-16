@@ -163,48 +163,6 @@ function init()
 	super.Mutate("ASCAscensionVersion", GetALocalPlayerController());
 	ASCVer = int(TAG().StrValue2);
 
-	if(SplitConfig)
-	{
-		SniperPerks = class'RPPools'.default.SniperPerks;
-		ScoutPerks = class'RPPools'.default.ScoutPerks;
-		RocketeerPerks = class'RPPools'.default.RocketeerPerks;
-		GunnerPerks = class'RPPools'.default.GunnerPerks;
-		MedicPerks = class'RPPools'.default.MedicPerks;
-		EngineerPerks = class'RPPools'.default.EngineerPerks;
-		AssaultPerks = class'RPPools'.default.AssaultPerks;
-		InfantryPerks = class'RPPools'.default.InfantryPerks;
-		AllMECPerks = class'RPPools'.default.AllMECPerks;
-		AllBioPerks = class'RPPools'.default.AllBioPerks;
-		AllSoldierPerks = class'RPPools'.default.AllSoldierPerks;
-		JaegerPerks = class'RPPools'.default.JaegerPerks;
-		PathfinderPerks = class'RPPools'.default.PathfinderPerks;
-		ArcherPerks = class'RPPools'.default.ArcherPerks;
-		GoliathPerks = class'RPPools'.default.GoliathPerks;
-		GuardianPerks = class'RPPools'.default.GuardianPerks;
-		ShogunPerks = class'RPPools'.default.ShogunPerks;
-		MarauderPerks = class'RPPools'.default.MarauderPerks;
-		ValkyriePerks = class'RPPools'.default.ValkyriePerks;
-
-		IncompatiblePerks1 = class'RPRules'.default.IncompatiblePerks1;
-		IncompatiblePerks2 = class'RPRules'.default.IncompatiblePerks2;
-		ChainPerks1 = class'RPRules'.default.ChainPerks1;
-		ChainPerks2 = class'RPRules'.default.ChainPerks2;
-		ChoicePerks1 = class'RPRules'.default.ChoicePerks1;
-		ChoicePerks2 = class'RPRules'.default.ChoicePerks2;
-		MergePerk1 = class'RPRules'.default.MergePerk1;
-		MergePerk2 = class'RPRules'.default.MergePerk2;
-		MergePerkClass = class'RPRules'.default.MergePerkClass;
-		RequiredPerk1 = class'RPRules'.default.RequiredPerk1;
-		RequiredPerk2 = class'RPRules'.default.RequiredPerk2;
-		RequiredPerkClass = class'RPRules'.default.RequiredPerkClass;
-		StaticPerks = class'RPRules'.default.StaticPerks;
-		SemiStaticPerks = class'RPRules'.default.SemiStaticPerks;
-		PerkStats = class'RPRules'.default.PerkStats;
-		PerkChance = class'RPRules'.default.PerkChance;
-
-		PerkAliases = class'RPAliases'.default.PerkAliases;
-	}
-
 	initdone = true;
 
 }

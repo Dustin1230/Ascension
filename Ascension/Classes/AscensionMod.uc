@@ -15,9 +15,20 @@ var XGUnit m_kUnit;
 var localized string m_perkNames[255];
 var localized string m_perkDesc[255];
 
+
+function WorldInfo WORLDINFO()
+{
+	return class'Engine'.static.GetCurrentWorldInfo();
+}
+
+function PlayerController PLAYERCONTROLLER()
+{
+	return WORLDINFO().GetALocalPlayerController();
+}
+
 function XGSoldierUI SOLDIERUI()
 {
-	return XGSoldierUI(XComHQPresentationLayer(XComPlayerController(GetALocalPlayerController()).m_Pres).GetMgr(class'XGSoldierUI',,, true));
+	return XGSoldierUI(XComHQPresentationLayer(XComPlayerController(PLAYERCONTROLLER()).m_Pres).GetMgr(class'XGSoldierUI',,, true));
 }
 
 function XGStrategySoldier SOLDIER()
@@ -37,7 +48,7 @@ function XGParamTag TAG()
 
 function XGStrategy STRATEGY()
 {
-    return XComHeadquartersGame(class'Engine'.static.GetCurrentWorldInfo().Game).GetGameCore();   
+    return XComHeadquartersGame(WORLDINFO().Game).GetGameCore();   
 }
 
 function XGHeadQuarters HQ()
@@ -57,7 +68,7 @@ function XGFacility_Lockers LOCKERS()
 
 function XComGameReplicationInfo GRI()
 {
-	return XComGameReplicationInfo(class'Engine'.static.GetCurrentWorldInfo().GRI);
+	return XComGameReplicationInfo(WORLDINFO().GRI);
 }
 
 function XGTacticalGameCore TACTICAL()
@@ -77,17 +88,17 @@ function XGFacility_Labs LABS()
 
 function XComPresentationLayer PRES()
 {
-	return XComPresentationLayer(XComPlayerController(GetALocalPlayerController()).m_Pres);
+	return XComPresentationLayer(XComPlayerController(PLAYERCONTROLLER()).m_Pres);
 }
 
 function bool isStrategy()
 {
-	return XComHeadquartersGame(XComGameInfo(class'Engine'.static.GetCurrentWorldInfo().Game)) != none;
+	return XComHeadquartersGame(XComGameInfo(WORLDINFO().Game)) != none;
 }
 
 function bool isTactical()
 {
-	return XComTacticalGame(XComGameInfo(class'Engine'.static.GetCurrentWorldInfo().Game)) != none;
+	return XComTacticalGame(XComGameInfo(WORLDINFO().Game)) != none;
 }
 
 simulated function StartMatch()
@@ -322,7 +333,7 @@ function CreateActor()
     }    
     if(!foundActor)
     {
-        m_kASCCheckpoint = Spawn(class'ASCCheckpoint', m_kSender);
+        m_kASCCheckpoint = WORLDINFO().Spawn(class'ASCCheckpoint', PLAYERCONTROLLER());
     }
 	//m_kMerc = Spawn(class'MercenaryAscensionMutate', m_kSender);
 }
