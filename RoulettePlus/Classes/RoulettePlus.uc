@@ -90,7 +90,7 @@ var config array <TPerkChance> PerkChance;
 var config bool IsMECRandom;
 var config bool IsAugmentDiscounted;
 var config float AugmentDiscount;
-var config bool PoolPrioity;
+var config int PoolPrioity;
 var config string strMergePerkLabel;
 var config string strMergePerkDes;
 var config bool UseVanillaRolls;
@@ -102,3 +102,7 @@ var config bool bAMedalWait;
 var config bool MECxpLoss;
 var config bool MECChops;
 var config bool MECMedalWait;
+
+DefaultProperties
+{
+}

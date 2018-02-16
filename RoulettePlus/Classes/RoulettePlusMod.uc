@@ -187,6 +187,18 @@ function ChooseConfig()
 
 		PerkAliases = class'RoulettePlus'.default.PerkAliases;
 		PerkStats = class'RoulettePlus'.default.PerkStats;
+		
+		IsMECRandom = class'RoulettePlus'.default.IsMECRandom;
+		IsAugmentDiscounted = class'RoulettePlus'.default.IsAumentDiscounted;
+		AugmentDiscount = class'RoulettePlus'.default.AugmentDiscount;
+		PoolPrioity = class'RoulettePlus'.default.PoolPrioity;
+		strMergePerkLabel = class'RoulettePlus'.default.strMergePerkLabel;
+		strMergePerkDes = class'RoulettePlus'.default.strMergePerkDes;
+		UseVanillaRolls = class'RoulettePlus'.default.UseVanillaRolls;
+		bAMedalWait = class'RoulettePlus'.default.bAMedalWait;
+		MECxpLoss = class'RoulettePlus'.default.MECxpLoss;
+		MECChops = class'RoulettePlus'.default.MECChops;
+		MECMedalWait = class'RoulettePlus'.default.MECMedalWait;
 	}
 	else if(SplitConfig)
 	{
@@ -1325,35 +1337,7 @@ function createPerkArray()
 	}
 }
 
-function AugmentRestriction()
-{
-	if(MECxpLoss)
-	{
-		StrValue0("true");
-	}
-	else
-	{
-		StrValue0("false");
-	}
-
-	if(MECChops)
-	{
-		StrValue1("true");
-	}
-	else
-	{
-		StrValue1("false");
-	}
-
-	if(MECMedalWait)
-	{
-		StrValue2("true");
-	}
-	else
-	{
-		StrValue2("false");
-	}
-}
+ 
 
 function bool PercentRoll(float percent, optional bool isSynced)
 {
