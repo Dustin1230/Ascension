@@ -239,7 +239,7 @@ function XComClassChooser(XGStrategySoldier Soldier)
 
 
 
-	/*
+	/** 
 	for(i=0; i<NumSorted.Length; i++)
 	{
 		classPts[NumPos[i]] += (i + 1) * round(float(classNumWeight.max - classNumWeight.min) / float(NumSorted.Length + 1)); 
