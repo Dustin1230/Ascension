@@ -315,7 +315,7 @@ function AscensionMod CreateASCObj(string classname)
 {
     local class<AscensionMod> ModClass;
 	
-	ModClass = class<AscensionMod>(DynamiceLoadObject(classname, class'Class'));
+	ModClass = class<AscensionMod>(DynamicLoadObject(classname, class'Class'));
 	return new (self) ModClass;
 }
 

@@ -1,6 +1,13 @@
 Class ModBridge extends XComMod
  config(ModBridge);
 
+Struct TMBMods
+{
+	var array<ModBridge> arrMBMods;
+	var array<XComMod> arrXCMods;
+	var array<string> ModNames;
+};
+
 var string valStrValue0;
 var string valStrValue1;
 var string valStrValue2;
@@ -11,12 +18,24 @@ var array<string> valArrStr;
 var array<int> valArrInt;
 var string functionName;
 var string functParas;
-var config bool verboseLog;
 var string ModInitError;
+var TMBMods MBMods;
+var config bool verboseLog;
+var config array<string> ModList;
 
-simulated function array<XComMod> ModArray()
+static function class TCHECKPOINT()
 {
-	return XComGameInfo(Outer).Mods;
+	return class'Mod_Checkpoint_TacticalGame';
+}
+
+static function class STCHECKPOINT()
+{
+	return class'Mod_Checkpoint_StrategyTransport';
+}
+
+static function class SCHECKPOINT()
+{
+	return class'Mod_Checkpoint_StrategyGame';
 }
 
 
@@ -26,7 +45,7 @@ simulated function StartMatch()
 
 	functionName = "ModInit";
 
-
+	AssignMods();
 
 	if(verboseLog)
 	{
@@ -90,6 +109,8 @@ function ModError(string Error)
 
 function ModRecordActor(string Checkpoint, class<Actor> ActorClasstoRecord)
 {
+
+	/** 
 	if(Checkpoint ~= "Tactical")
 	{
 		if(verboseLog)
@@ -114,7 +135,93 @@ function ModRecordActor(string Checkpoint, class<Actor> ActorClasstoRecord)
 			LogInternal("Adding Actor Class" @ Chr(34) $ string(ActorClasstoRecord) $ Chr(34) @ "to StrategyGame Checkpoint", 'ModBridge');
 		}
 		class'Mod_Checkpoint_StrategyGame'.default.ActorClassesToRecord.AddItem(ActorClasstoRecord);
+	}*/
+}
+
+function AssignMods()
+{
+
+	local class<XComMod> Mod;
+	local XComMod XMod;
+	local string ModName;
+	local int i;
+	local bool bFound;
+
+	`Log("Started AssignMods", verboseLog, 'ModBridge');
+
+	foreach ModList(ModName, i)
+	{
+		Mod = class<XComMod>(DynamicLoadObject(ModName, class'Class'));
+		XMod = new (self) Mod;
+		if(ModBridge(XMod) != none)
+		{
+			`Log(Chr(34) $ ModName $ Chr(34) @ "detected as Child of ModBridge, adding to modlist", verboseLog, 'ModBridge');
+			MBMods.arrMBMods[i] = ModBridge(XMod);
+			MBMods.arrXCMods[i] = none;
+			MBMods.ModNames[i] = "ModBridge|" $ ModName;
+		}
+		else
+		{
+			`Log( "adding" @ Chr(34) $ ModName $ Chr(34) @ "to modlist as XComMod", verboseLog, 'ModBridge');
+			MBMods.arrMBMods[i] = none;
+			MBMods.arrXCMods[i] = XMod;
+			MBMods.ModNames[i] = "XComMod|" $ ModName;
+		}
 	}
+
+	for(i=0; i<XComGameInfo(outer).ModNames.Length; i++)
+	{
+		ModName = XComGameInfo(outer).ModNames[i];
+		`Log(ModName);
+		bFound = false;
+		foreach XComGameInfo(outer).Mods(XMod)
+		{
+			if(ModName == (string(XMod.Class.GetPackageName()) $ "." $ string(XMod.Class)))
+			{
+				bFound = true;
+				break;
+			}
+		}
+
+		if(!bFound)
+		{
+			`Log("removing" @ Chr(34) $ ModName $ Chr(34) @ "from XComGameInfo.ModNames", verboseLog, 'ModBridge');
+			XComGameInfo(outer).ModNames.Remove(i, 1);
+			-- i;
+		}
+
+	}
+
+	`Log("End of AssignMods", verboseLog, 'ModBridge');
+
+}
+
+function ModsStartMatch()
+{
+
+	local string Mod;
+	local int i;
+
+	foreach MBMods.ModNames(Mod, i)
+	{
+		if(InStr(Mod, "ModBridge|") != -1)
+		{
+			`Log("Executing StartMatch function in" @ Chr(34) $ Mod $ Chr(34), verboseLog, 'ModBridge');
+			MBMods.arrMBMods[i].StartMatch();
+		}
+		else if(InStr(Mod, "XComMod|") != -1)
+		{
+			`Log("Executing StartMatch function in" @ Chr(34) $ Mod $ Chr(34), verboseLog, 'ModBridge');
+			MBMods.arrXCMods[i].StartMatch();
+		}
+	}
+
+	for(i=1; i<XComGameInfo(outer).Mods.Length; I++)
+	{
+		`Log("Executing StartMatch function in" @ Chr(34) $ "XComGameInfo|" $ XComGameInfo(outer).ModNames[i] $ Chr(34), verboseLog, 'ModBridge');
+		XComGameInfo(outer).Mods[i].StartMatch();
+	}
+
 }
 
 function string StrValue0(optional string str, optional bool bForce)
@@ -285,7 +392,7 @@ function array<int> arrInts(optional array<int> arrInt, optional bool bForce)
 			{
 				if(sArray != "")
 				{
-					sArray $= ",";
+					sArray $= ", ";
 				}
 				sArray $= string(valArrInt[I]);
 			}
@@ -301,7 +408,7 @@ function array<int> arrInts(optional array<int> arrInt, optional bool bForce)
 			{
 				if(sArray != "")
 				{
-					sArray $= ",";
+					sArray $= ", ";
 				}
 				sArray $= string(arrInt[I]);
 			}
@@ -316,6 +423,11 @@ function array<int> arrInts(optional array<int> arrInt, optional bool bForce)
 
 function XComMod Mods(string ModName, optional string funtName, optional string paras)
 {
+
+	local int i;
+	local string mod;
+	local bool bFound;
+
 	if(verboseLog)
 	{
 		LogInternal("funtName=" @ Chr(34) $ funtName $ Chr(34) $ ", paras=" @ Chr(34) $ paras $ Chr(34), 'ModBridge');
@@ -329,27 +441,107 @@ function XComMod Mods(string ModName, optional string funtName, optional string 
 
 	if(verboseLog && (int(ModName) > 0))
 	{
-		LogInternal("Mod number" @ ModName @ "is" @ Chr(34) $ XComGameInfo(outer).ModNames[int(ModName)] $ Chr(34), 'ModBridge');
+		if(int(ModName) > MBMods.ModNames.Length)
+		{
+			mod = "XComGameInfo|" $ XComGameInfo(Outer).ModNames[int(ModName)-MBMods.ModNames.Length];
+		}
+		else
+		{
+			mod = MBMods.ModNames[int(ModName)];
+		}
+		`Log("Mod number" @ ModName @ "is" @ Chr(34) $ mod $ Chr(34), true, 'ModBridge');
 	}
 	else
 	{
-		
-		if(XComGameInfo(outer).ModNames.Find(ModName) == -1)
+		if(ModName == "AllMods")
 		{
-			LogInternal("Error, ModName" @ Chr(34) $ ModName $ Chr(34) @ "not found", 'ModBridge');
+			bFound = true;
+		}
+		else
+		{
+			foreach MBMods.ModNames(mod)
+			{
+				if(InStr(mod, ModName) != -1)
+				{
+					bFound = true;
+					break;
+				}
+			}
+		}
+
+		if(!bFound)
+		{
+			if(XComGameInfo(outer).ModNames.Find(ModName) != -1)
+			{
+				bFound = true;
+			}
+		}
+
+		if(!bFound)
+		{
+			`Log("Error, ModName" @ Chr(34) $ ModName $ Chr(34) @ "not found", true, 'ModBridge');
 			return returnvalue;
 		}
 
-		if(verboseLog)
+		if(verboseLog && ModName != "AllMods")
 		{
-			LogInternal("Mod" @ Chr(34) $ ModName $ Chr(34) @ "is mod number" @ string(XComGameInfo(outer).ModNames.Find(ModName)), 'ModBridge');
+			bFound = false;
+			foreach MBMods.ModNames(mod, i)
+			{
+				if(InStr(mod, ModName) != -1)
+				{
+					bFound = true;
+					break;
+				}
+			}
+			if(!bFound)
+			{
+				i = XComGameInfo(outer).ModNames.Find(ModName) + MBMods.ModNames.Length;
+			}
+
+			`Log("Mod" @ Chr(34) $ ModName $ Chr(34) @ "is mod number" @ string(i), true, 'ModBridge');
 		}
 
 		if(!(funtName == " " || funtName == ""))
 		{
 			functionName = funtName;
 			functParas = paras;
-			XComGameInfo(outer).Mods[XComGameInfo(outer).ModNames.Find(ModName)].StartMatch();
+			if(ModName == "AllMods")
+			{
+				`Log("Looping over all Mods", verboseLog, 'ModBridge');
+				ModsStartMatch();
+			}
+			else
+			{
+				bFound = false;
+				foreach MBMods.ModNames(mod, i)
+				{
+					if(InStr(mod, ModName) != -1)
+					{
+						bFound = true;
+						`Log("Executing" @ Chr(34) $ ModName $ Chr(34) $ ".StartMatch()", verboseLog, 'ModBridge');
+						if(InStr(mod, "ModBridge|") != -1)
+						{
+							MBMods.arrMBMods[i].StartMatch();
+							break;
+						}
+						else if(InStr(mod, "XComMod|") != -1)
+						{
+							MBMods.arrXCMods[i].StartMatch();
+							break;
+						}
+					}
+				}
+				if(!bFound)
+				{
+					if(XComGameInfo(outer).ModNames.Find(ModName) != -1)
+					{
+						`Log("Executing" @ Chr(34) $ "XComGameInfo|" $ ModName $ Chr(34) $ ".StartMatch()", verboseLog, 'ModBridge');
+						XComGameInfo(outer).Mods[XComGameInfo(outer).ModNames.Find(ModName)].StartMatch();
+					}
+				}
+			}
+			//XComGameInfo(outer).Mods[XComGameInfo(outer).ModNames.Find(ModName)].StartMatch();
 		}
 		else
 		{
