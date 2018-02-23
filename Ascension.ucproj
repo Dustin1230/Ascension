@@ -39,11 +39,12 @@
     <LogToFile>False</LogToFile>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="*\Classes\*.uc" />
     <Content Include="**\*.uci" />
+    <Content Include="**\*.uc" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Ascension\" />
+    <Folder Include="Ascension\Classes.old\" />
     <Folder Include="Ascension\Classes\" />
     <Folder Include="Core\" />
     <Folder Include="Core\Classes\" />
@@ -59,6 +60,7 @@
     <Folder Include="IpDrv\Classes\" />
     <Folder Include="LWRebalance\Classes" />
     <Folder Include="MercenaryAscension\" />
+    <Folder Include="MercenaryAscension\Classes.old\" />
     <Folder Include="MercenaryAscension\Classes\" />
     <Folder Include="MyMod\" />
     <Folder Include="MyMod\Classes\" />
@@ -91,6 +93,10 @@
     <Folder Include="XComMutator\Classes\" />
     <Folder Include="XComStrategyGame\" />
     <Folder Include="XComStrategyGame\Classes\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="RoulettePlus\Classes\RPCheckpoint.uc" />
+    <Compile Include="RoulettePlus\Classes\RPMisc.uc" />
   </ItemGroup>
   <Import Condition="'$(MSBuildExtensionsPath32)' != ''" Project="$(MSBuildExtensionsPath32)\PixelMine\UnrealScript.targets" />
   <Import Condition="'$(MSBuildExtensionsPath32)' == ''" Project="$(MSBuildExtensionsPath)\PixelMine\UnrealScript.targets" />

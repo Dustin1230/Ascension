@@ -67,13 +67,13 @@ struct TStatProgression
 struct TSoldTree
 {
 	var string iClass;
-	var int[7] iPerk;
+	var int iPerk[7];
 };
 
 struct TSoldPerkStats
 {
 	var string iClass;
-	var int[21] iVal;
+	var int iVal[21];
 };
 
 // starting stat assignment Variables
@@ -182,7 +182,7 @@ function changeDummyPerk(int perk)
 
 function SoldLevelupStat(optional int statsString)
 {
-	local int statOffense, statWill, statHealth, statDefence, statMobility, soldClass I, pos;	
+	local int statOffense, statWill, statHealth, statDefence, statMobility, soldClass, I, pos;	
 	local bool bRand;
 	local array<TStatProgression> kStatProgression;
 	local array<TMercRanks> kPerks;
