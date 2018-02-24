@@ -23,88 +23,89 @@ var TMBMods MBMods;
 var config bool verboseLog;
 var config array<string> ModList;
 
-static function class TCHECKPOINT()
-{
-	return class'Mod_Checkpoint_TacticalGame';
-}
-
-static function class STCHECKPOINT()
-{
-	return class'Mod_Checkpoint_StrategyTransport';
-}
-
-static function class SCHECKPOINT()
-{
-	return class'Mod_Checkpoint_StrategyGame';
-}
-
-
 simulated function StartMatch()
 {
 	local XComMod Mod;
+	local string ModName;
+	local int i;
+	local bool bFound;
 
 	functionName = "ModInit";
 
 	AssignMods();
 
-	if(verboseLog)
+	`Log("Start ModInit", verboseLog, 'ModBridge');
+
+
+	foreach MBMods.ModNames(ModName, i)
 	{
-		LogInternal("Start ModInit", 'ModBridge');
+		ModInitError = "";
+		bFound = false;
+		if(InStr(ModName, "ModBridge|") != -1)
+		{
+			`Log(ModName $ "ModInit attempt", verboseLog, 'ModBridge');
+
+			MBMods.arrMBMods[i].StartMatch();
+			bFound = true;
+		}
+		else if(InStr(ModName, "ModBridge|") != -1)
+		{
+			`Log(ModName $ "ModInit attempt", verboseLog, 'ModBridge');
+			
+			MBMods.arrXCMods[i].StartMatch();
+			bFound = true;
+		}
+			
+		`Log(ModName $ ", ModInitError=" @ Chr(34) $ ModInitError $ Chr(34), (bFound && (ModInitError != "")), 'ModBridge');
+		`Log(ModName @ "ModInit Successful", (bFound && (ModInitError == "")), 'ModBridge');
 	}
 
-	foreach XComGameInfo(Outer).Mods(Mod)
+	foreach XComGameInfo(Outer).Mods(Mod, i)
 	{
-		if(Mod != self)
+		foreach MBMods.ModNames(ModName)
 		{
-			if(verboseLog)
+			bFound = false;
+			if(InStr(ModName, XComGameInfo(outer).ModNames[i]) != -1)
 			{
-				LogInternal(string(Mod) @ "ModInit attempt", 'ModBridge');
+				bFound = true;
+				`Log("XComGameInfo|" $ XComGameInfo(outer).ModNames[i] @ "Found as:" @ ModName @ ", skipping ModInit", true, 'ModBridge');
+				break;
 			}
+		}
+
+		if((Mod != self) && (!bFound))
+		{
+			`Log("XComGameInfo|" $ XComGameInfo(outer).ModNames[i] @ "ModInit attempt", verboseLog, 'ModBridge');
+
 			ModInitError = "";
 			Mod.StartMatch();
-			if(ModInitError != "")
-			{
-				LogInternal(string(Mod) $ ", ModInitError=" @ Chr(34) $ ModInitError $ Chr(34), 'ModBridge');
-			}
-			else
-			{
-				if(verboseLog)
-				{
-					LogInternal(string(Mod) @ "ModInit Successful", 'ModBridge');
-				}
-			}
+
+			`Log("XComGameInfo|" $ XComGameInfo(outer).ModNames[i] $ ", ModInitError=" @ Chr(34) $ ModInitError $ Chr(34), (ModInitError != ""), 'ModBridge');
+			`Log("XComGameInfo|" $ XComGameInfo(outer).ModNames[i] @ "ModInit Successful", (verboseLog && (ModInitError == "")), 'ModBridge');
+
 		}
 	}
 
-	if(verboseLog)
-	{
-		LogInternal("Overwrite Checkpoint classes", 'ModBridge');
-	}
+	`Log("Overwrite Checkpoint classes", verboseLog, 'ModBridge');
+
 	XComGameInfo(Outer).TacticalSaveGameClass = class'Mod_Checkpoint_TacticalGame';
 	XComGameInfo(Outer).TransportSaveGameClass = class'Mod_Checkpoint_StrategyTransport';
 
 	if(XComHeadquartersGame(XComGameInfo(Outer)) != none)
 	{
-		if(verboseLog)
-		{
-			LogInternal("StrategyGame Detected, Checkpoint class overwrite", 'ModBridge');
-		}
+		`Log("StrategyGame Detected, Checkpoint class overwrite", verboseLog, 'ModBridge');
+
 		XComGameInfo(Outer).StrategySaveGameClass = class'Mod_Checkpoint_StrategyGame';
 	}
 
-
-
-	if(verboseLog)
-	{
-		LogInternal("End of StartMatch", 'ModBridge');
-	}
+	`Log("End of StartMatch", verboseLog, 'ModBridge');
 
 	functionName = "";
 }
 
 function ModError(string Error)
 {
-	LogInternal("ModError=" @ Error, 'ModBridge');
+	`Log("ModError=" @ Error, true, 'ModBridge');
 }
 
 function ModRecordActor(string Checkpoint, class<Actor> ActorClasstoRecord)
@@ -113,27 +114,21 @@ function ModRecordActor(string Checkpoint, class<Actor> ActorClasstoRecord)
 	/** 
 	if(Checkpoint ~= "Tactical")
 	{
-		if(verboseLog)
-		{
-			LogInternal("Adding Actor Class" @ Chr(34) $ string(ActorClasstoRecord) $ Chr(34) @ "to TacticalGame Checkpoint", 'ModBridge');
-		}
+		`Log("Adding Actor Class" @ Chr(34) $ string(ActorClasstoRecord) $ Chr(34) @ "to TacticalGame Checkpoint", verboseLog, 'ModBridge');
+
 		class'Mod_Checkpoint_TacticalGame'.default.ActorClassesToRecord.AddItem(ActorClasstoRecord);
 	}
 
 	if(Checkpoint ~= "Transport")
 	{
-		if(verboseLog)
-		{
-			LogInternal("Adding Actor Class" @ Chr(34) $ string(ActorClasstoRecord) $ Chr(34) @ "to StrategyTransport Checkpoint", 'ModBridge');
-		}
+		`Log("Adding Actor Class" @ Chr(34) $ string(ActorClasstoRecord) $ Chr(34) @ "to StrategyTransport Checkpoint", verboseLog, 'ModBridge');
+
 		class'Mod_Checkpoint_StrategyTransport'.default.ActorClassesToRecord.AddItem(ActorClasstoRecord);
 	}
 	if(Checkpoint ~= "Strategy")
 	{
-		if(verboseLog)
-		{
-			LogInternal("Adding Actor Class" @ Chr(34) $ string(ActorClasstoRecord) $ Chr(34) @ "to StrategyGame Checkpoint", 'ModBridge');
-		}
+		`Log("Adding Actor Class" @ Chr(34) $ string(ActorClasstoRecord) $ Chr(34) @ "to StrategyGame Checkpoint", verboseLog 'ModBridge');
+
 		class'Mod_Checkpoint_StrategyGame'.default.ActorClassesToRecord.AddItem(ActorClasstoRecord);
 	}*/
 }
@@ -228,18 +223,15 @@ function string StrValue0(optional string str, optional bool bForce)
 {
 	if(str == "" && !bForce)
 	{
-		if(verboseLog)
-		{
-			LogInternal("return StrValue0=" @ Chr(34) $ valStrValue0 $ Chr(34), 'ModBridge');
-		}
+		`Log("return StrValue0=" @ Chr(34) $ valStrValue0 $ Chr(34), verboseLog, 'ModBridge');
+
 		return valStrValue0;
 	}
 	else
 	{
-		if(verboseLog)
-		{
-			LogInternal("store StrValue0=" @ Chr(34) $ str $ Chr(34) $ ", bForce=" @ string(bForce), 'ModBridge');
-		}
+
+		`Log("store StrValue0=" @ Chr(34) $ str $ Chr(34) $ ", bForce=" @ string(bForce), verboseLog, 'ModBridge');
+
 		valStrValue0 = str;
 		return "";
 	}
@@ -249,18 +241,14 @@ function string StrValue1(optional string str, optional bool bForce)
 {
 	if(str == "" && !bForce)
 	{
-		if(verboseLog)
-		{
-			LogInternal("return StrValue1=" @ Chr(34) $ valStrValue1 $ Chr(34), 'ModBridge');
-		}
+		`Log("return StrValue1=" @ Chr(34) $ valStrValue1 $ Chr(34), verboseLog, 'ModBridge');
+
 		return valStrValue1;
 	}
 	else
 	{
-		if(verboseLog)
-		{
-			LogInternal("store StrValue1=" @ Chr(34) $ str $ Chr(34) $ ", bForce=" @ string(bForce), 'ModBridge');
-		}
+		`Log("store StrValue1=" @ Chr(34) $ str $ Chr(34) $ ", bForce=" @ string(bForce), verboseLog, 'ModBridge');
+
 		valStrValue1 = str;
 		return "";
 	}
@@ -270,18 +258,14 @@ function string StrValue2(optional string str, optional bool bForce)
 {
 	if(str == "" && !bForce)
 	{
-		if(verboseLog)
-		{
-			LogInternal("return StrValue2=" @ Chr(34) $ valStrValue2 $ Chr(34), 'ModBridge');
-		}
+		`Log("return StrValue2=" @ Chr(34) $ valStrValue2 $ Chr(34), verboseLog, 'ModBridge');
+
 		return valStrValue2;
 	}
 	else
 	{
-		if(verboseLog)
-		{
-			LogInternal("store StrValue2=" @ Chr(34) $ str $ Chr(34) $ ", bForce=" @ string(bForce), 'ModBridge');
-		}
+		`Log("store StrValue2=" @ Chr(34) $ str $ Chr(34) $ ", bForce=" @ string(bForce), verboseLog, 'ModBridge');
+
 		valStrValue2 = str;
 		return "";
 	}
@@ -291,18 +275,14 @@ function int IntValue0(optional int I = -1, optional bool bForce)
 {
 	if((I == 0 || I == -1) && !bForce)
 	{
-		if(verboseLog)
-		{
-			LogInternal("return IntValue0=" @ Chr(34) $ string(valIntValue0) $ Chr(34), 'ModBridge');
-		}
+		`Log("return IntValue0=" @ Chr(34) $ string(valIntValue0) $ Chr(34), verboseLog, 'ModBridge');
+
 		return valIntValue0;
 	}
 	else
 	{
-		if(verboseLog)
-		{
-			LogInternal("store IntValue0=" @ Chr(34) $ string(I) $ Chr(34) $ ", bForce=" @ string(bForce), 'ModBridge');
-		}
+		`Log("store IntValue0=" @ Chr(34) $ string(I) $ Chr(34) $ ", bForce=" @ string(bForce), verboseLog, 'ModBridge');
+
 		valIntValue0 = I;
 		return 0;
 	}
@@ -312,18 +292,13 @@ function int IntValue1(optional int I = -1, optional bool bForce)
 {
 	if((I == 0 || I == -1) && !bForce)
 	{
-		if(verboseLog)
-		{
-			LogInternal("return IntValue1=" @ Chr(34) $ string(valIntValue1) $ Chr(34), 'ModBridge');
-		}
+		`Log("return IntValue1=" @ Chr(34) $ string(valIntValue1) $ Chr(34), verboseLog, 'ModBridge');
 		return valIntValue1;
 	}
 	else
 	{
-		if(verboseLog)
-		{
-			LogInternal("store IntValue1=" @ Chr(34) $ string(I) $ Chr(34) $ ", bForce=" @ string(bForce), 'ModBridge');
-		}
+		`Log("store IntValue1=" @ Chr(34) $ string(I) $ Chr(34) $ ", bForce=" @ string(bForce), verboseLog, 'ModBridge');
+
 		valIntValue1 = I;
 		return 0;
 	}
@@ -333,18 +308,14 @@ function int IntValue2(optional int I = -1, optional bool bForce)
 {
 	if((I == 0 || I == -1) && !bForce)
 	{
-		if(verboseLog)
-		{
-			LogInternal("return IntValue2=" @ Chr(34) $ string(valIntValue2) $ Chr(34), 'ModBridge');
-		}
+		`Log("return IntValue2=" @ Chr(34) $ string(valIntValue2) $ Chr(34), verboseLog, 'ModBridge');
+
 		return valIntValue2;
 	}
 	else
 	{
-		if(verboseLog)
-		{
-			LogInternal("store IntValue2=" @ Chr(34) $ string(I) $ Chr(34) $ ", bForce=" @ string(bForce), 'ModBridge');
-		}
+		`Log("store IntValue2=" @ Chr(34) $ string(I) $ Chr(34) $ ", bForce=" @ string(bForce), verboseLog, 'ModBridge');
+
 		valIntValue2 = I;
 		return 0;
 	}
@@ -357,20 +328,16 @@ function array<string> arrStrings(optional array<string> arrStr, optional bool b
 
 	if(arrStr.Length == 0 && !bForce)
 	{
-		if(verboseLog)
-		{
-			JoinArray(valArrStr, sArray);
-			LogInternal("return arrStrings=" @ Chr(34) $ sArray $ Chr(34), 'ModBridge');
-		}
+		JoinArray(valArrStr, sArray);
+		`Log("return arrStrings=" @ Chr(34) $ sArray $ Chr(34), verboseLog, 'ModBridge');
+
 		return valArrStr;
 	}
 	else
 	{
-		if(verboseLog)
-		{
-			JoinArray(arrStr, sArray);
-			LogInternal("store arrStrings=" @ Chr(34) $ sArray $ Chr(34) $ ", bForce=" @ string(bForce), 'ModBridge');
-		}
+		JoinArray(arrStr, sArray);
+		`Log("store arrStrings=" @ Chr(34) $ sArray $ Chr(34) $ ", bForce=" @ string(bForce), verboseLog, 'ModBridge');
+
 		valArrStr = arrStr;
 		arrStr.Length = 0;
 		return arrStr;
@@ -396,7 +363,7 @@ function array<int> arrInts(optional array<int> arrInt, optional bool bForce)
 				}
 				sArray $= string(valArrInt[I]);
 			}
-			LogInternal("return arrInts=" @ Chr(34) $ sArray $ Chr(34), 'ModBridge');
+			`Log("return arrInts=" @ Chr(34) $ sArray $ Chr(34), true, 'ModBridge');
 		}
 		return valArrInt;
 	}
@@ -412,7 +379,7 @@ function array<int> arrInts(optional array<int> arrInt, optional bool bForce)
 				}
 				sArray $= string(arrInt[I]);
 			}
-			LogInternal("store arrInts=" @ Chr(34) $ sArray $ Chr(34) $ ", bForce=" @ string(bForce), 'ModBridge');
+			`Log("store arrInts=" @ Chr(34) $ sArray $ Chr(34) $ ", bForce=" @ string(bForce), true, 'ModBridge');
 		}
 		valArrInt = arrInt;
 		arrInt.Length = 0;
@@ -428,14 +395,13 @@ function XComMod Mods(string ModName, optional string funtName, optional string 
 	local string mod;
 	local bool bFound;
 
-	if(verboseLog)
-	{
-		LogInternal("funtName=" @ Chr(34) $ funtName $ Chr(34) $ ", paras=" @ Chr(34) $ paras $ Chr(34), 'ModBridge');
-	}
+
+	`Log("funtName=" @ Chr(34) $ funtName $ Chr(34) $ ", paras=" @ Chr(34) $ paras $ Chr(34), true, 'ModBridge');
+
 
 	if(ModName == "")
 	{
-		LogInternal("Error, ModName not specified", 'ModBridge');
+		`Log("Error, ModName not specified", true, 'ModBridge');
 		return returnvalue;
 	}
 
@@ -518,16 +484,18 @@ function XComMod Mods(string ModName, optional string funtName, optional string 
 				{
 					if(InStr(mod, ModName) != -1)
 					{
-						bFound = true;
-						`Log("Executing" @ Chr(34) $ ModName $ Chr(34) $ ".StartMatch()", verboseLog, 'ModBridge');
 						if(InStr(mod, "ModBridge|") != -1)
 						{
+							`Log("Executing" @ Chr(34) $ ModName $ Chr(34) $ ".StartMatch()", verboseLog, 'ModBridge');
 							MBMods.arrMBMods[i].StartMatch();
+							bFound = true;
 							break;
 						}
 						else if(InStr(mod, "XComMod|") != -1)
 						{
+							`Log("Executing" @ Chr(34) $ ModName $ Chr(34) $ ".StartMatch()", verboseLog, 'ModBridge');
 							MBMods.arrXCMods[i].StartMatch();
+							bFound = true;
 							break;
 						}
 					}
@@ -541,16 +509,39 @@ function XComMod Mods(string ModName, optional string funtName, optional string 
 					}
 				}
 			}
-			//XComGameInfo(outer).Mods[XComGameInfo(outer).ModNames.Find(ModName)].StartMatch();
+			return returnvalue;
 		}
 		else
 		{
-			if(verboseLog)
+			foreach MBMods.ModNames(mod, i)
 			{
-				LogInternal("Return Mod," @ Chr(34) $ string(XComGameInfo(outer).Mods[XComGameInfo(outer).ModNames.Find(ModName)]), 'ModBridge');
+				if(InStr(mod, ModName) != -1)
+				{
+					if(InStr(mod, "ModBridge|") != -1)
+					{
+						`Log("Return Mod," @ Chr(34) $ mod $ Chr(34), verboseLog, 'ModBridge');
+
+						return MBMods.arrMBMods[i];
+					}
+					else if(InStr(mod, "XComMod|") != -1)
+					{
+						`Log("Return Mod," @ Chr(34) $ mod $ Chr(34), verboseLog, 'ModBridge');
+
+						return MBMods.arrXCMods[i];
+					}
+				}
 			}
-			return XComGameInfo(outer).Mods[XComGameInfo(outer).ModNames.Find(ModName)];
+
+			foreach XComGameInfo(outer).ModNames(mod, i)
+			{
+				if(ModName == mod)
+				{
+					`Log("Return Mod," @ Chr(34) $ "XComGameInfo|" $ mod $ Chr(34), verboseLog, 'ModBridge');
+
+					return XComGameInfo(outer).Mods[i];
+				}
+			}
 		}
 	}
-
+	`Log("Error: end of ModBridge.Mods function, this shouldn't appear, please contact ModBridge maintainer", true, 'ModBridge');
 }
