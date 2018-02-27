@@ -1,7 +1,7 @@
 Class RoulettePlus extends XComMutator
 	config(RoulettePlus);
 
-	
+// Deprecated: Old version of RoulettePlus, used for compatibility of older INI files for previous TRP versions
 struct TStaticPerks
 {
 	var string SPerk;

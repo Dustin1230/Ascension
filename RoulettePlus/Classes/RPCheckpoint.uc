@@ -1,5 +1,8 @@
 class RPCheckpoint extends Actor;
 
+// Class used for saving new perks and various additions to the game using external code
+
+// Storage of different variables for use with new perks
 struct TASCStorage
 {
 	var int perks[255];
@@ -9,6 +12,7 @@ struct TASCStorage
 	var int IncapTimer;
 };
 
+// Storage of stats related to perkstats
 struct TStatStorage
 {
 	var int aim;
@@ -19,6 +23,7 @@ struct TStatStorage
 	var float DR;
 };
 
+// Storage of new variables related to soldiers
 struct TSoldierStorage extends TASCStorage {
 	var int SoldierID;
 	var int RandomPerk;
@@ -28,10 +33,12 @@ struct TSoldierStorage extends TASCStorage {
 	var bool isNewType;
 };
 
+// Storage of the alien "spawn" IDs - Aliens are not assigned IDs but are given a number when spawned on a map
 struct TAlienStorage extends TASCStorage {
 	var int ActorNumber;
 };
 
+// Link to exsiting game save system "CheckpointRecord"
 struct CheckpointRecord
 {
 	var array<TSoldierStorage> arrSoldierStorage;
