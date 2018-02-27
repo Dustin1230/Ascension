@@ -17,6 +17,7 @@ struct TStatStorage
 	var int HP;
 	var int mob;
 	var float DR;
+	var int perk;
 };
 
 struct TSoldierStorage extends TASCStorage {

@@ -50,7 +50,6 @@ var config int PoolPrioity;
 var config string strMergePerkLabel;
 var config string strMergePerkDes;
 var config bool UseVanillaRolls;
-var config bool bAMedalWait;
 var config bool MECxpLoss;
 var config bool MECChops;
 var config bool MECMedalWait;
@@ -135,14 +134,55 @@ simulated function StartMatch()
 
 function init()
 {
+	local bool CC, MRA;
+
 	ChooseConfig();
 
 	m_kRPCheckpoint = WORLDINFO().Spawn(class'RPCheckpoint', PLAYERCONTROLLER());
 	m_kRPPerksMod = new (self) class<RPPerksMod>(DynamicLoadObject("RoulettePlus.RPPerksMod", class'Class'));
 	
-	ModRecordActor("Transport", class'RPCheckpoint');
+	MRA = ModRecordActor("Transport", class'RPCheckpoint');
 	
 	createPerkArray();
+
+	ChooseConfig();
+
+	CC = CheckConfig();
+
+	if(CC)
+	{
+		ModInitError = "Config has major error";
+	}
+	if(m_kRPCheckpoint == none)
+	{
+		if(ModInitError != "")
+			ModInitError $= ", ";
+
+		ModInitError $= "Checkpoint class not initalised";
+	}
+	if(m_kRPPerksMod == none)
+	{
+		if(ModInitError != "")
+			ModInitError $= ", ";
+
+		ModInitError $= "PerkMod class not initalised";
+	}
+	if(arrAlias.Length == 0)
+	{
+		if(ModInitError != "")
+			ModInitError $= ", ";
+
+		ModInitError $= "perk array not initalised";
+	}
+	if(!MRA)
+	{
+		if(ModInitError != "")
+			ModInitError $= ", ";
+
+		ModInitError $= "adding Checkpoint class to CheckpointRecord failed";
+	}
+	if(ModInitError != "")
+		ModInitError $= ".";
 }
 
 function ChooseConfig()
@@ -176,9 +216,6 @@ function ChooseConfig()
 		ChainPerks2 = class'RoulettePlus'.default.ChainPerks2;
 		ChoicePerks1 = class'RoulettePlus'.default.ChoicePerks1;
 		ChoicePerks2 = class'RoulettePlus'.default.ChoicePerks2;
-		MergePerk1 = class'RoulettePlus'.default.MergePerk1;
-		MergePerk2 = class'RoulettePlus'.default.MergePerk2;
-		MergePerkClass = class'RoulettePlus'.default.MergePerkClass;
 		RequiredPerk1 = class'RoulettePlus'.default.RequiredPerk1;
 		RequiredPerk2 = class'RoulettePlus'.default.RequiredPerk2;
 		RequiredPerkClass = class'RoulettePlus'.default.RequiredPerkClass;
@@ -188,6 +225,9 @@ function ChooseConfig()
 
 		PerkAliases = class'RoulettePlus'.default.PerkAliases;
 		PerkStats = class'RoulettePlus'.default.PerkStats;
+		MergePerk1 = class'RoulettePlus'.default.MergePerk1;
+		MergePerk2 = class'RoulettePlus'.default.MergePerk2;
+		MergePerkClass = class'RoulettePlus'.default.MergePerkClass;
 		
 		IsMECRandom = class'RoulettePlus'.default.IsMECRandom;
 		IsAugmentDiscounted = class'RoulettePlus'.default.IsAugmentDiscounted;
@@ -196,7 +236,6 @@ function ChooseConfig()
 		strMergePerkLabel = class'RoulettePlus'.default.strMergePerkLabel;
 		strMergePerkDes = class'RoulettePlus'.default.strMergePerkDes;
 		UseVanillaRolls = class'RoulettePlus'.default.UseVanillaRolls;
-		bAMedalWait = class'RoulettePlus'.default.bAMedalWait;
 		MECxpLoss = class'RoulettePlus'.default.MECxpLoss;
 		MECChops = class'RoulettePlus'.default.MECChops;
 		MECMedalWait = class'RoulettePlus'.default.MECMedalWait;
@@ -231,9 +270,6 @@ function ChooseConfig()
 		ChainPerks2 = class'RPRules'.default.ChainPerks2;
 		ChoicePerks1 = class'RPRules'.default.ChoicePerks1;
 		ChoicePerks2 = class'RPRules'.default.ChoicePerks2;
-		MergePerk1 = class'RPRules'.default.MergePerk1;
-		MergePerk2 = class'RPRules'.default.MergePerk2;
-		MergePerkClass = class'RPRules'.default.MergePerkClass;
 		RequiredPerk1 = class'RPRules'.default.RequiredPerk1;
 		RequiredPerk2 = class'RPRules'.default.RequiredPerk2;
 		RequiredPerkClass = class'RPRules'.default.RequiredPerkClass;
@@ -243,8 +279,203 @@ function ChooseConfig()
 
 		PerkAliases = class'RPMisc'.default.PerkAliases;
 		PerkStats = class'RPMisc'.default.PerkStats;
+		MergePerk1 = class'RPMisc'.default.MergePerk1;
+		MergePerk2 = class'RPMisc'.default.MergePerk2;
+		MergePerkClass = class'RPMisc'.default.MergePerkClass;
 	}
 }
+
+function bool CheckConfig()
+{
+	local int biopools, otherpools, rules, misc, settings;
+	local TStaticPerks blankstatic;
+	local TSemiStatic blanksemi;
+	local TPerkChance blankchance;
+	local TAlias blankalias;
+	local TPerkStats blankstats;
+
+	if(SniperPerks[0] == "")
+		++ biopools;
+
+	if(ScoutPerks[0] == "")
+		++ biopools;
+	
+	if(RocketeerPerks[0] == "")
+		++ biopools;
+
+	if(GunnerPerks[0] == "")
+		++ biopools;
+
+	if(MedicPerks[0] == "")
+		++ biopools;
+
+	if(EngineerPerks[0] == "")
+		++ biopools;
+
+	if(AssaultPerks[0] == "")
+		++ biopools;
+
+	if(InfrantryPerks[0] == "")
+		++ biopools;
+
+	if(AllMECPerks[0] == "")
+		++ otherpools;
+
+	if(AllBioPerks[0] == "")
+		++ otherpools;
+
+	if(AllSoldierPerks[0] == "")
+		++ otherpools;
+
+	if(JaegerPerks[0] == "")
+		++ otherpools;
+
+	if(PathfinderPerks[0] == "")
+		++ otherpools;
+
+	if(ArcherPerks[0] == "")
+		++ otherpools;
+
+	if(GoliathPerks[0] == "")
+		++ otherpools;
+
+	if(GuardianPerks[0] == "")
+		++ otherpools;
+
+	if(ShogunPerks[0] == "")
+		++ otherpools;
+
+	if(MarauderPerks[0] == "")
+		++ otherpools;
+
+	if(ValkyriePerks[0] == "")
+		++ otherpools;
+
+
+
+
+	if(IncompatiblePerks1[0] == "")
+		++ rules;
+
+	if(ChainPerks1[0] == "")
+		++ rules;
+
+	if(ChoicePerks1[0] == "")
+		++ rules;
+
+	if(RequiredPerk1[0] == "")
+		++ rules;
+
+	if(StaticPerks[0] == blankstatic)
+		++ rules;
+
+	if(SemiStaticPerks[0] == blanksemi)
+		++ rules;
+
+	if(PerkChance[0] == blankchance)
+		++ rules;
+
+
+
+	if(PerkAliases[0] == blankalias)
+		++ misc;
+
+	if(PerkStats[0] == blankstats)
+		++ misc;
+
+	if(MergePerk1[0] == "")
+		++ misc;
+
+
+
+	if(!IsMECRandom)
+		++ settings;
+
+	if(!IsAugmentDiscounted)
+		++ settings;
+
+	if(!UseVanillaRolls)
+		++ settings;
+
+	if(!MECxpLoss)
+		++ settings;
+
+	if(!MECChops)
+		++ settings;
+
+	if(!MECMedalWait)
+		++ settings;
+
+	if(!SplitConfig)
+		++ settings;
+
+	if(PoolPrioity == 0)
+		++ settings;
+
+
+	ModError("Test");
+
+	if(strMergePerkLabel == "" && strMergePerkDes == "")
+	{
+		ModError("Strings for MergePerk display not found");
+		if(settings == 8)
+			ModError("No settings have been found in config");
+	}
+	else if(strMergePerkLabel == "")
+	{
+		ModError("String for MergePerk label not found");
+	}
+	else if(strMergePerkDes == "")
+	{
+		ModError("String for merged perk description label not found");
+	}
+	else if(settings == 8)
+		ModError("No settings seem to have been set in config");
+
+
+
+	if(misc == 3)
+		ModError("No misc found in config");
+
+
+	if(rules == 7)
+	{
+		ModError("No rules found in config");
+	}
+	else if(rules > 2)
+		ModError("Some rules are missing in config");
+
+
+	if(otherpools == 11)
+		ModError("No secondary perk pools found in config");
+
+
+	if(biopools == 8)
+	{
+		if(AllBioPerks[0] == "" && AllSoldierPerks[0] == "")
+			ModError("All main perk pools and both main encompassing pools missing in config");
+		else
+			ModError("No main perk pools found in config");
+	}
+	else if(biopools > 0)
+	{
+		if(AllBioPerks[0] == "" && AllSoldierPerks[0] == "")
+			ModError(string(biopools) @ "main perk pools and both main encompassing pools missing in config");
+
+		else
+			ModError(string(biopools) @ "main perk pools missing in config");
+	}
+
+
+	if(biopools > 0 && otherpools > 10)
+		return false;
+
+
+	return true;
+
+}
+
+	
 
 function GetRandomPerk()
 {
@@ -344,6 +575,7 @@ function GetRandomPerk()
 
 		}
 	}
+	CreatePerkStats();
 	
 	m_kSold = none;
 }
@@ -833,7 +1065,8 @@ function array<string> NewPerkPool(array<string> OldPerkPool, bool isMEC)
 function CreatePerkStats()
 {
 
-	local int opt, PerkS, iClass, Pos;
+	local int opt, PerkS, iClass, Pos, mPerk, I;	
+	local string sPerk;
 	local bool isRank1;
 	local TPerkStats lPerkS;
 	local array<int> perktree;
@@ -877,6 +1110,20 @@ function CreatePerkStats()
 				iClass = kSold.m_iEnergy;
 			}
 
+			foreach MergePerk1(sPerk, I)
+			{
+				mPerk = 0;
+				if(SearchPerks(sPerk) == perktree[pos-1])
+				{
+					if(MergePerkClass[I] == -1 || MergePerkClass[I] == iClass)
+					{
+						mPerk = MergePerk2[I];
+						break;
+					}
+				}
+			}
+					
+
 			PerkS = -1;
 			if( (lPerkS.Rank == (Pos + 2) / 3) && ( (lPerkS.iClass == -1) || (lPerkS.iClass == iClass) ) )
 			{
@@ -887,17 +1134,17 @@ function CreatePerkStats()
 				(isRank1) && (kSold.GetClass() == lPerkS.iClass) && (lPerkS.Rank == 1) || (
 				lPerkS.Rank == (Pos + 2) / 3 ) ) )
 			{
-				Stats = MakePerkStats(lPerkS.hp, lPerkS.aim, lPerkS.def, lPerkS.mob, lPerkS.will);
+				Stats = MakePerkStats(lPerkS.hp, lPerkS.aim, lPerkS.def, lPerkS.mob, lPerkS.will, mPerk);
 				addPerkStats(kSold, Stats);
 			}
 			else if( PerkS > -1 && perktree[pos-1] == PerkS)
 			{
-				Stats = MakePerkStats(lPerkS.hp, lPerkS.aim, lPerkS.def, lPerkS.mob, lPerkS.will);
+				Stats = MakePerkStats(lPerkS.hp, lPerkS.aim, lPerkS.def, lPerkS.mob, lPerkS.will, mPerk);
 				addPerkStats(kSold, Stats);
 			}
 			else
 			{
-				Stats = MakePerkStats(0, 0, 0, 0, 0);
+				Stats = MakePerkStats(0, 0, 0, 0, 0, mPerk);
 				addPerkStats(kSold, Stats);
 			}
 
@@ -1215,7 +1462,7 @@ function TStatStorage GetPerkStats(XGStrategySoldier kSold, int index)
 	return m_kRPCheckpoint.arrSoldierStorage[FindSoldierInStorage(kSold.m_kSoldier.iID)].StatStorage[index];
 }
 
-function TStatStorage MakePerkStats(int HP, int aim, int def, int mob, int will)
+function TStatStorage MakePerkStats(int HP, int aim, int def, int mob, int will, int mPerk)
 {
 	
 	local TStatStorage stats;
@@ -1225,6 +1472,7 @@ function TStatStorage MakePerkStats(int HP, int aim, int def, int mob, int will)
 	stats.def = def;
 	stats.mob = mob;
 	stats.will = will;
+	stats.perk = mPerk;
 
 	return stats;
 }
@@ -1243,6 +1491,7 @@ function PerkMerge(int Perk)
 {
 
 	local int I, Perk1, Perk2;
+	local array<int> perktree;
 	local string mPerk;
 	local XGStrategySoldier kSold;
 
@@ -1257,20 +1506,33 @@ function PerkMerge(int Perk)
 
 	if(kSold.HasPerk(Perk))
 	{
-		foreach MergePerk1(mPerk, I)
+		if(IsSoldierNewType(kSold))
 		{
-			Perk1 = SearchPerks(mPerk);
-			Perk2 = SearchPerks(MergePerk2[I]);
+			perktree = NewRandomTree(kSold, -1);
 
-			if( ( (MergePerkClass[I] == -1) || (MergePerkClass[I] == SOLDIER().m_iEnergy) ) || (SOLDIERUI().GetAbilityTreeBranch() == 1) )
+			for(I=0; I<perktree.Length; I++)
 			{
-				if(Perk1 == Perk)
+				if(perktree[I] == Perk && GetPerkStats(kSold, I).perk > 0)
 				{
-					kSold.GivePerk(Perk2);
+					kSold.GivePerk(GetPerkStats(kSold, I).perk);
 				}
 			}
+		}
+		else
+		{
+			foreach MergePerk1(mPerk, I)
+			{
+				Perk1 = SearchPerks(mPerk);
+				Perk2 = SearchPerks(MergePerk2[I]);
 
-
+				if( ( (MergePerkClass[I] == -1) || (MergePerkClass[I] == SOLDIER().m_iEnergy) ) || (SOLDIERUI().GetAbilityTreeBranch() == 1) )
+				{
+					if(Perk1 == Perk)
+					{
+						kSold.GivePerk(Perk2);
+					}
+				}
+			}
 
 		}
 

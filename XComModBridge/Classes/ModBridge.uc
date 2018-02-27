@@ -105,32 +105,79 @@ simulated function StartMatch()
 
 function ModError(string Error)
 {
-	`Log("ModError=" @ Error, true, 'ModBridge');
+	`Log("Mod Class" @ Chr(34) $ string(default.class) $ Chr(34) @ "Error=" @ Error, true, 'ModBridge');
 }
 
-function ModRecordActor(string Checkpoint, class<Actor> ActorClasstoRecord)
+function bool ModRecordActor(string Checkpoint, class<Actor> ActorClasstoRecord)
 {
+
+	local int I;
+	local bool bFound;
 
 	/** 
 	if(Checkpoint ~= "Tactical")
 	{
 		`Log("Adding Actor Class" @ Chr(34) $ string(ActorClasstoRecord) $ Chr(34) @ "to TacticalGame Checkpoint", verboseLog, 'ModBridge');
 
-		class'Mod_Checkpoint_TacticalGame'.default.ActorClassesToRecord.AddItem(ActorClasstoRecord);
+		for(I=0, I<class'Mod_Checkpoint_TacticalGame'.default.ActorClassesToRecord.Length; I++)
+		{
+			if(class'Mod_Checkpoints_TacticalGame'.default.ActorClassesToRecord[I] == ActorClasstoRecord)
+			{
+				bFound = true;
+				break;
+			}
+		}
+
+		if(!bFound)
+			class'Mod_Checkpoint_TacticalGame'.default.ActorClassesToRecord.AddItem(ActorClasstoRecord);
+
+		if(bFound || class'Mod_Checkpoint_TacticalGame'.default.ActorClassesToRecord[class'Mod_Checkpoint_TacticalGame'.default.ActorClassesToRecord.Length-1] == ActorClasstoRecord)
+			return true;
+
 	}
 
 	if(Checkpoint ~= "Transport")
 	{
 		`Log("Adding Actor Class" @ Chr(34) $ string(ActorClasstoRecord) $ Chr(34) @ "to StrategyTransport Checkpoint", verboseLog, 'ModBridge');
 
-		class'Mod_Checkpoint_StrategyTransport'.default.ActorClassesToRecord.AddItem(ActorClasstoRecord);
+		for(I=0, I<class'Mod_Checkpoint_StrategyTransport'.default.ActorClassesToRecord.Length; I++)
+		{
+			if(class'Mod_Checkpoint_StrategyTransport'.default.ActorClassesToRecord[I] == ActorClasstoRecord)
+			{
+				bFound = true;
+				break;
+			}
+		}
+
+		if(!bFound)
+			class'Mod_Checkpoint_StrategyTransport'.default.ActorClassesToRecord.AddItem(ActorClasstoRecord);
+			                                                                                                
+		if(bFound || class'Mod_Checkpoint_StrategyTransport'.default.ActorClassesToRecord[class'Mod_Checkpoint_StrategyTransport'.default.ActorClassesToRecord.Length-1] == ActorClasstoRecord)
+			return true;
+
 	}
 	if(Checkpoint ~= "Strategy")
 	{
 		`Log("Adding Actor Class" @ Chr(34) $ string(ActorClasstoRecord) $ Chr(34) @ "to StrategyGame Checkpoint", verboseLog 'ModBridge');
 
-		class'Mod_Checkpoint_StrategyGame'.default.ActorClassesToRecord.AddItem(ActorClasstoRecord);
+		for(I=0, I<class'Mod_Checkpoint_StrategyGame'.default.ActorClassesToRecord.Length; I++)
+		{
+			if(class'Mod_Checkpoint_StrategyGame'.default.ActorClassesToRecord[I] == ActorClasstoRecord)
+			{
+				bFound = true;
+				break;
+			}
+		}
+
+		if(!bFound)
+			class'Mod_Checkpoint_StrategyGame'.default.ActorClassesToRecord.AddItem(ActorClasstoRecord);
+
+		if(bFound || class'Mod_Checkpoint_StrategyGame'.default.ActorClassesToRecord[class'Mod_Checkpoint_StrategyGame'.default.ActorClassesToRecord.Length-1] == ActorClasstoRecord)
+			return true;
+
 	}*/
+
+	return false;
 }
 
 function AssignMods()
@@ -396,7 +443,7 @@ function XComMod Mods(string ModName, optional string funtName, optional string 
 	local bool bFound;
 
 
-	`Log("funtName=" @ Chr(34) $ funtName $ Chr(34) $ ", paras=" @ Chr(34) $ paras $ Chr(34), true, 'ModBridge');
+	`Log("funtName=" @ Chr(34) $ funtName $ Chr(34) $ ", paras=" @ Chr(34) $ paras $ Chr(34), verboseMod, 'ModBridge');
 
 
 	if(ModName == "")
@@ -449,7 +496,7 @@ function XComMod Mods(string ModName, optional string funtName, optional string 
 			return returnvalue;
 		}
 
-		if(verboseLog && ModName != "AllMods")
+		if(verboseLog && (ModName != "AllMods"))
 		{
 			bFound = false;
 			foreach MBMods.ModNames(mod, i)
