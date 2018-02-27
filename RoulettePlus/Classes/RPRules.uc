@@ -1,7 +1,7 @@
 class RPRules extends object
 	DependsOn(RoulettePlus)
 	config(RPRules);
-
+// Dummy Class for config variables used in the DefaultRPRules.ini config file
 var config array <string> IncompatiblePerks1;
 var config array <string> IncompatiblePerks2;
 var config array <string> ChainPerks1;

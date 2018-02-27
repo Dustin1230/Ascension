@@ -1,6 +1,7 @@
 class RPPerksMod extends RoulettePlusMod
 	config(RPMisc);
 
+// Structure used for new perks, not used
 struct ASCTPerkInfo
 {
 	var string ID;
@@ -11,6 +12,7 @@ struct ASCTPerkInfo
 	
 };
 
+// Structure for information related to the Weapon Specialist Perk
 struct TSpecPerk
 {
   	var int iItem;
@@ -29,6 +31,7 @@ var XGStrategySoldier m_kStratSoldier;
 var localized string m_perkNames[255];
 var localized string m_perkDesc[255];
 
+// Functions used to access/check parts of the game code
 function bool isStrategy()
 {
 	return XComHeadquartersGame(XComGameInfo(WORLDINFO().Game)) != none;
@@ -59,6 +62,7 @@ function XGParamTag TAG()
 	return XGParamTag(XComEngine(class'Engine'.static.GetEngine()).LocalizeContext.FindTag("XGParam"));
 }
 
+// Part of the new XComModBridge system to decide which functions to access based on ModBridge calls
 simulated function StartMatch()
 {
 	
@@ -93,6 +97,7 @@ simulated function StartMatch()
 		m_kStratSoldier = none;
 	}
 
+	// Not related to Flush perk
 	if(functionName == "FlushAlienPerks")
 	{
 		FlushAlienPerks();
@@ -189,6 +194,7 @@ simulated function StartMatch()
     }
 }
 
+// Function to grab the spawn name of a soldier and checks for Strategy/Tactical to set appropriate variable to be used in other functions
 function ASCSetUnit(string UnitName)
 {
 	local XGUnit Unit;
@@ -218,12 +224,14 @@ function ASCSetUnit(string UnitName)
 	}
 }
 
+// Clears all aliens' perks
 function FlushAlienPerks()
 {
 
 	m_kRPCheckpoint.arrAlienStorage.Length = 0;
 }
 
+// Allows editing of perk descriptions on the Ability Screen
 function ASCPerkDescription(int iCurrentView)
 {
     local int iPerk, iRank;
@@ -317,6 +325,7 @@ function ASCPerkDescription(int iCurrentView)
 	}  
 }
 
+// Checks for, Adds, or Removes new perks(perks not from Long War)
 function ASCPerks(string funct, int perk, optional int value = 1)
 {
 	
@@ -389,6 +398,7 @@ function ASCPerks(string funct, int perk, optional int value = 1)
 	}
 }
 
+// This is where the magic happens, increases the number of perks that can be allowed in the game(increases size of array in PerkManager)
 function expandPerkarray()
 {
 	local XComPerkManager kPerkMan;
@@ -400,7 +410,7 @@ function expandPerkarray()
 	
 	LogInternal(String(kPerkMan), 'expandPerkarray');
 	
-	kPerkMan.BuildPerk(116, 0, "Evasion");
+	kPerkMan.BuildPerk(116, 0, "Evasion");								// Changing icons for existing perks
 	kPerkMan.BuildPerk(80, 1, "Flying");
 	kPerkMan.BuildPerk(83, 1, "Poisoned");
 	kPerkMan.BuildPerk(84, 1, "Poisoned");
@@ -408,9 +418,9 @@ function expandPerkarray()
     kPerkMan.BuildPerk(76, 0, "ReinforcedArmor");
 
 	
-	kPerkMan.BuildPerk(173, 0, "Unknown");
-	kPerkMan.m_arrPerks[173].strName[0] = m_perkNames[173];
-	kPerkMan.m_arrPerks[173].strDescription[0] = m_perkDesc[173];
+	kPerkMan.BuildPerk(173, 0, "Unknown");								// Assigns the icon
+	kPerkMan.m_arrPerks[173].strName[0] = m_perkNames[173];				// Assigns the name from a localized file
+	kPerkMan.m_arrPerks[173].strDescription[0] = m_perkDesc[173];		// assigns the description from a localized file
 	
 	kPerkMan.BuildPerk(174, 0, "RifleSuppression");
 	kPerkMan.m_arrPerks[174].strName[0] = m_perkNames[174];
@@ -469,6 +479,7 @@ function expandPerkarray()
 	
 }
 
+// Assigns and removes perks based on item(s) equipeed to a soldier
 function WepSpecPerk(int iItemType, string funct)
 {
 	local int I, J;
@@ -514,6 +525,7 @@ function WepSpecPerk(int iItemType, string funct)
     }
 }
 
+// Does things when a soldier or enemy is killed
 function ASCOnKill(string Unit, string Victim)
 {
 	local XGUnit kUnit, kVictim;
@@ -563,6 +575,7 @@ function ASCOnKill(string Unit, string Victim)
 	m_kUnit = none;
 }
 
+// Counter to keep track of kills for Xenocide perk
 function XenocideCount()
 {
 	local int Count;
@@ -589,6 +602,7 @@ function XenocideCount()
 	m_kUnit = none;
 }
 
+// Resets the Xenocide count for each soldier
 function ResetXenocideCount()
 {
 	local TSoldierStorage SoldStor;
@@ -605,13 +619,13 @@ function ResetXenocideCount()
 	m_kUnit = none;
 }
 
+// Checks if an alien has a perk
 function ASCAlienHasPerk(int iPerk)
 {
 
 	local TAlienStorage AlienStor;
 	local bool bFound;
 
-	// Changed from TAG().StrValue2 = "";
 	IntValue2(0,  true);
 	bFound = False;
 	foreach m_kRPCheckpoint.arrAlienStorage(AlienStor)
@@ -633,6 +647,7 @@ function ASCAlienHasPerk(int iPerk)
 	LogInternal("IntValue2= " $ IntValue2(), 'ASCAlienHasPerk');
 }
 
+// Assigns new perks to aliens
 function ASCAlienGivePerk(int iPerk, optional int Value)
 {
 	local TAlienStorage AlienStor, AlienStor1;
@@ -671,6 +686,7 @@ function ASCAlienGivePerk(int iPerk, optional int Value)
 	}
 }
 
+// Removes a perk from an alien
 function ASCAlienRemovePerk(int iPerk, optional int Value)
 {
 	local TAlienStorage AlienStor;
@@ -693,6 +709,7 @@ function ASCAlienRemovePerk(int iPerk, optional int Value)
 	}
 }
 
+// Counter for how long Incapacitation affects an enemy
 function IncapTimer()
 {
 	local TAlienStorage AlienStor, AlienStor1;
@@ -723,6 +740,7 @@ function IncapTimer()
 	m_kUnit = none;
 }
 
+// Function to reset perks, stats, and other bonuses from leveling up(also removes starting rookie perk)
 function ActivateAmnesia()
 {
 	local int iCount;
@@ -757,6 +775,7 @@ function ActivateAmnesia()
 	}
 }
 
+// Set/Reset/Check SoldierStates set flags to let the game know if something has happened to a specific soldier
 function SetSoldierStates(string sstate)
 {
 	local TSoldierStorage SS;
@@ -834,6 +853,7 @@ function CheckSoldierStates()
 	}
 }
 
+// Messages that appears to let the player know if Corrupt failed or succeeded
 function CurruptMessage(string strTarget)
 {
 	local XGUnit Unit, kTarget;

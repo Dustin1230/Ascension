@@ -1,6 +1,6 @@
 class RPPools extends object
 	config(RPPools);
-
+// Dummy Class for config variables used in the DefaultRPPools.ini config file
 var config array <string> SniperPerks;
 var config array <string> ScoutPerks;
 var config array <string> RocketeerPerks;
