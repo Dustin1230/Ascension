@@ -1,0 +1,180 @@
+Item Types:
+There are several different weapon types within Long War, in this file(DefaultAltTree.ini) you will find the associated eItem that reprsents each weapon.
+I have modified the weapon types slightly for my mod but will include each eItem that can be adjusted without breaking the game
+
+Item Number                             Item Name(LW)
+------------------------------------------------------------------------------------------
+WEAPONS-SOLDIERS
+1                                       Scatter Blaster(Pulse)
+2                                       Pistol(Ballistic)
+3                                       Gauss Rifle(Gauss)
+4                                       Shotgun(Ballistic)
+5                                       Autorifle(Gauss)
+6                                       Gauss Long Rifle(Gauss)
+7                                       Recoiless Rifle(Gauss)
+8                                       Laser Pistol(Beam)
+9                                       Pulse Rifle(Pulse)
+10                                      Scatter Laser(Beam)
+11                                      Pulse Autoblaster(Pulse)
+12                                      Pulse Sniper Rifle(Pulse)
+13                                      Plasma Pistol(Plasma)
+14                                      Plasma Carbine(Plasma)
+15                                      Plasma Rifle(Plasma)
+16                                      Alloy Cannon(Gauss)
+17                                      Plasma Novagun(Plasma)
+18                                      Plasma Sniper Rifle(Plasma)
+19                                      Blaster Launcher(Plasma)
+32                                      Carbine(Ballistic)
+53                                      Gauss Carbine(Gauss)
+99                                      Reflex Cannon(Plasma)
+109                                     SHIV Autocannon(Ballistic)
+110                                     SHIV Sentry Gun(Gauss)
+111                                     SHIV Superheavy Pulser(Pulse)
+112                                     SHIV Superheavy Plasma(Plasma)
+149                                     SHIV Superheavy Laser(Beam)
+212                                     Assault Rifle(Ballistic)
+213                                     Sniper Rifle(Ballistic)
+214                                     SAW-Squad Automated Weapon(Ballistic)
+215                                     Laser Rifle(Beam)
+216                                     Laser Sniper Rifle(Beam)
+217                                     Autolaser(Beam)
+218                                     Rocket Launcher(Ballistic)
+226                                     Marksman's Rifle(Ballistic)
+227                                     Laser Strike Rifle(Beam)
+228                                     Alloy Strike Rifle(Gauss)
+229                                     Blaster Rifle(Pulse)
+230                                     Reflex Rifle(Plasma)
+231                                     SMG-Submachinegun(Ballistic)
+232                                     Laser Shatteray(Beam)
+233                                     Gauss Stuttergun(Gauss)
+234                                     Pulse Stengun(Pulse)
+235                                     Plasma Stormgun(Plasma)
+236                                     Machine Pistol(Ballistic)
+237                                     Heater(Beam)
+238                                     Gauss Autopistol(Gauss)
+239                                     Blaster(Pulse)
+240                                     Plasma Mauler(Plasma)
+241                                     Battle Rifle(Ballistic)
+242                                     Heavy Laser Rifle(Beam)
+243                                     Heavy Gauss Rifle(Gauss)
+244                                     Heavy Pulse Rifle(Pulse)
+245                                     Heavy Plasma Rifle(Plasma)
+246                                     LMG-Light Machinegun(Ballistic)
+247                                     Gatling Laser(Beam)
+248                                     Gauss Machine Gun(Gauss)
+249                                     Gatling Pulser(Pulse)
+250                                     Plasma Dragon(Plasma)
+251                                     Laser Carbine(Beam)
+252                                     Pulse Carbine(Pulse)
+253                                     Arc Rifle
+254                                     Sawed-off Shotgun(Ballistic)
+------------------------------------------------------------------------------------------
+WEAPONS-MECS
+22                                      MEC Kinetic Strike Module(MEC Secondary)
+23                                      MEC Flamethrower(MEC Secondary)
+24                                      MEC Grenade Launcher(MEC Secondary)
+25                                      MEC Restorative Mist(MEC Secondary)
+26                                      MEC Electropulse(MEC Secondary)
+27                                      MEC Proximity Mine Launcher(MEC Secondary)
+28                                      MEC Minigun(Ballistic)
+29                                      MEC Laser Lance(Beam)
+30                                      MEC Particle Cannon(Plasma)
+186                                     MEC Railgun(Gauss)
+190                                     MEC Pulse Lance(Pulse)
+-----------------------------------------------------------------------------------------
+ARMORS
+57                                      Tac Vest
+58                                      Banshee Armor
+59                                      Tac Armor
+60                                      Carapace Armor
+61                                      Corsair Armor
+62                                      Titan Armor
+63                                      Archangel Armor
+64                                      Shadow Armor
+65                                      Vortex Armor
+66                                      Leather Jacket
+67                                      Seraph Armor
+68                                      Aurora Armor
+113                                     SHIV Deck 1
+114                                     SHIV Deck 2
+115                                     SHIV Deck 3
+145                                     MEC-3 Valiant
+148                                     MEC-5 Devastator
+159                                     Phalanx Armor
+160                                     Aegis Armor
+182                                     Kestrel Armor
+191                                     MEC-6 Vanguard
+193                                     MEC-1 Paladin
+194                                     MEC-2 Defender
+195                                     MEC-4 Dauntless
+210                                     MEC-7 Vindicator
+-----------------------------------------------------------------------------------------
+ITEMS-GRENADES
+81                                      HE Grenade
+82                                      Smoke Grenade
+83                                      Flashbang
+84                                      Alien Grenade
+85                                      Shadow Device
+86                                      Chem Grenade
+87                                      AP Grenade
+96                                      Psi Grenade
+-----------------------------------------------------------------------------------------
+ITEMS-CONSUMABLES
+69                                      Medkit
+70                                      Combat Stims
+73                                      Arc Thrower
+77                                      Rocket
+88                                      Mimic Beacon
+89                                      Shredder Rocket
+97                                      Battle Scanner
+-----------------------------------------------------------------------------------------
+ITEMS-AMMO
+31                                      Alloy-Jacketed Rounds
+40                                      Enhanced Beam Optics
+48                                      Plasma Stellerator
+78                                      Reaper Pack
+80                                      High-Capacity Magazines
+107                                     HEAT Ammo
+123                                     Drum Mags
+129                                     The Thumper
+197                                     Breaching Ammo
+198                                     Armor Piercing Ammo
+204                                     Shredder Ammo
+211                                     Incinerator Module
+225                                     Flak Ammo
+-----------------------------------------------------------------------------------------
+ITEMS-ARMOR
+72                                      Chitin Plating
+75                                      Alloy Plating
+94                                      Chamleeon Suit
+95                                      Ceramic Plates
+132                                     Core Armoring
+189                                     Alloy Carbide Plating
+200                                     Impact Vest
+205                                     Psi Screen
+220                                     Reinforced Armor
+-----------------------------------------------------------------------------------------
+ITEMS-MISC
+34                                      Marksman Scope
+71                                      Mind Shield
+74                                      Scope
+76                                      Respirator Implant
+79                                      Laser Sight
+90                                      Battle Computer
+98                                      Alien Trophy
+108                                     Holo-Targeter
+124                                     Smartshell Pod
+128                                     Weapon Supercooler
+130                                     Auto-Sentry Turret
+131                                     Adaptive Tracking Pod
+133                                     Damage Control Pod
+178                                     Fuel Cell
+196                                     Alloy Bipod
+199                                     Advanced Suppression Module
+201                                     Tactical Sensors
+202                                     Walker Servos
+203                                     Neural Gunlink
+209                                     Illuminator Gunsight
+219                                     Targeting Module
+221                                     Elerium Turbos
+223                                     Cognitive Enhancer
