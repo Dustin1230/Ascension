@@ -1,0 +1,150 @@
+{\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang1033\deflangfe2057{\fonttbl{\f0\fnil\fcharset0 Times New Roman;}{\f1\fnil\fcharset2 Symbol;}}
+{\colortbl ;\red0\green0\blue255;\red255\green0\blue0;}
+{\*\generator Riched20 10.0.14393}{\*\mmathPr\mdispDef1\mwrapIndent1440 }\viewkind4\uc1 
+\pard\sa200\sl276\slmult1\qc\b\f0\fs48\lang9 XCom: Ascension\par
+
+\pard\sa200\sl276\slmult1\b0\fs28 A modification for the 2012 game XCom: Enemy Unknown that has been added to the popular XCom: Long War overhaul.  This modification uses the Enemy Within version of Long War.\par
+\fs24 version Alpha2.00 * this is a preview version for an overhaul that is under development *\par
+\par
+****\tab Chief Programmer: Azxeus\par
+****\tab Chief Designer: Dethraker/Alandauron\par
+****\tab Programmer: Kababi\par
+****\tab Additional Assistance From: TheProfessional\par
+\par
+\fs28 You must have a legitimate version of Enemy Within to play this mod.\par
+We're always open to feedback from those playing our mod, please post any suggestions, bug reports, concerns on the modpage on nexusmods.\par
+
+\pard\sa200\sl276\slmult1\qc {{\field{\*\fldinst{HYPERLINK http://www.nexusmods.com/xcom/mods/690 }}{\fldrslt{http://www.nexusmods.com/xcom/mods/690\ul0\cf0}}}}\f0\fs28 ?\par
+
+\pard\sa200\sl276\slmult1 Installation: \fs26 this can also be found in the INSTALL.txt from the download\par
+
+\pard\sl276\slmult1 1. Make sure you have a fresh install of Long War 1.0.  We have not tested for compatibility with most of the other mods for Enemy Within or Long War and it's very likely with all the changes we have made that other Long War mods are incompatible with Ascension currently.\par
+\par
+2. Copy the Ascension folder(the folder downloaded) into your XCom Enemy Unknown folder.  e.g. C:\\Program Files (x86)\\Steam\\SteamApps\\Common\\XCom-Enemy-Unknown\par
+\par
+3. Run(Double Click) the AscInstall.bat file.  This is a batch fille that will open a cmd window that does all the necessary changes to your Long War install to make Ascension work.  If you're curious what it is doing right click it and select edit.\par
+\par
+\tab\cf2\b\i NOTE: This is the mod installer and will install the files necessary into the \tab appropriate locations.  It may not run properly if you do not have a fresh \tab Long War 1.0 install which will prevent the mod from working.  This \tab Creates a backup of your existing Long War files to be used for the \tab uninstall.  Also if you download Ascension from anywhere besides \tab nexusmods.com it's not advised to trust any .bat files you see inside.\cf0\b0\i0\par
+\par
+\par
+UNINSTALLATION\par
+\par
+1. Run(Double Click) the AscLWRestore.bat file.  This is a batch fille that will open a cmd window that will uninstall the Ascension mod and will restore your Long War 1.0.  If you're curious what it is doing right click it and select edit.\par
+\par
+\tab\cf2\b\i NOTE: This is the mod uninstaller and will restore all the files that our \tab installer made changes to.  Do not delete any of the backup files created, \tab these can be found in the AscBackup folder.  Before your first install this \tab folder should be empty.  Also if you download Ascension from anywhere \tab besides nexusmods.com it's not advised to trust any .bat files you see \tab inside.\par
+\cf0\b0\i0\par
+
+\pard\sa200\sl276\slmult1\qc\ul\b\fs36 New Features\par
+
+\pard\sa200\sl276\slmult1\b0\fs28 version: Alpha2.00\par
+
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-360\li720\sa200\sl276\slmult1\ulnone\fs26 Addition of new Mercenary Class, the Fury, with a pop up for you to decide if you take them over a standard Mercenary\ul\fs28\par
+{\pntext\f1\'B7\tab}\ulnone\fs26 Addition of new perks: 'Resistance'; 'Corrupt'\ul\fs28\par
+{\pntext\f1\'B7\tab}\ulnone\fs26 Addition of Rookie Perk System that gives each new Rookie a random perk\ul\fs28\par
+
+\pard\sa200\sl276\slmult1 version: Alpha1.00\b\fs32\par
+
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-360\li720\sa200\sl276\slmult1\ulnone\b0\fs26 Inclusion of Marksman Scope on all classes with weapons restrictions\par
+{\pntext\f1\'B7\tab}Removal of Squad Sight as a Class Perk\par
+{\pntext\f1\'B7\tab}Addition of an ammunition specific slot in the soldier loadout and removal of ammo type perks\par
+{\pntext\f1\'B7\tab}Addition of new perks: 'For The Cause'; 'Gun-Slinger'; 'This Is The Life'; 'Weapon Specialist'; 'Amnesia'; 'You Ain't Nuthin'; 'Xenocide'; 'Weakpoint Analysis'; 'Incapacitation'\par
+{\pntext\f1\'B7\tab}New system for Hiring Mercenaries\par
+{\pntext\f1\'B7\tab}New Soldier Class: Mercenary\par
+{\pntext\f1\'B7\tab}Modification of Icons\par
+{\pntext\f1\'B7\tab}Addition of a Checkpoint system to allow saving and transferring of new data back and forth from strategy and tactical\par
+{\pntext\f1\'B7\tab}Modification of stat values for weapons including a rework of ranges\par
+{\pntext\f1\'B7\tab}Addition of a new system for detecting enemies that are within the adjusted range values\par
+
+\pard\sa200\sl276\slmult1\par
+
+\pard\sa200\sl276\slmult1\qc\ul\b\fs36 Functions Modified\par
+
+\pard\sl276\slmult1\b0\fs28 XComGame.upk\ulnone  (33)\ul\b\fs36\par
+
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-360\li720\sl276\slmult1\ulnone\b0\fs24 XGAbility_Targeted.GraduatedOdds\par
+{\pntext\f1\'B7\tab}XGCharacter.HasUpgrade\par
+{\pntext\f1\'B7\tab}XGUnit.OnTurnBeginHook\par
+{\pntext\f1\'B7\tab}UITacticalHUD_PerkContainer.UpdatePerks\par
+{\pntext\f1\'B7\tab}XGTacticalGameCore.GetBasicKillXP\par
+{\pntext\f1\'B7\tab}XGTacticalGameCore.GetBetterAlienKillXP\par
+{\pntext\f1\'B7\tab}XGUnit.ActiveWeaponHasAmmoForShot\par
+{\pntext\f1\'B7\tab}XGAbilityTree.ApplyActionCost\par
+{\pntext\f1\'B7\tab}XGAbility.ApplyCost\par
+{\pntext\f1\'B7\tab}XGTacticalGameCore.GetOverheatIncrement\par
+{\pntext\f1\'B7\tab}XGUnit.SecondaryWeaponHasAmmoForShot\par
+{\pntext\f1\'B7\tab}UITacticalHUD_WeaponPanel.SetWeaponAndAmmo\par
+{\pntext\f1\'B7\tab}UIUtilities.GetClassLabel\par
+{\pntext\f1\'B7\tab}XGUnit.DrawRanges\par
+{\pntext\f1\'B7\tab}XGUnit.AbsorbDamage\par
+{\pntext\f1\'B7\tab}XGAbility_Targeted.GetCriticalChance\par
+{\pntext\f1\'B7\tab}XGAbility_Targeted.GetCritSummaryModFromPerks\par
+{\pntext\f1\'B7\tab}XGAbility_Targeted.GetHitChance\par
+{\pntext\f1\'B7\tab}XGAbility_Targeted.GetShotSummary\par
+{\pntext\f1\'B7\tab}XGAbility_Targeted.GetShotSummaryModFromPerks\par
+{\pntext\f1\'B7\tab}XGAbility_Targeted.TShotInfo_ToString\par
+{\pntext\f1\'B7\tab}XGBattle_SP.PutSoldiersOnDropship\par
+{\pntext\f1\'B7\tab}XGTacticalGameCore.GetInventoryStatModifiers\par
+{\pntext\f1\'B7\tab}XGUnit.OnKill\par
+{\pntext\f1\'B7\tab}XGUnit.OnTakeDamage\par
+{\pntext\f1\'B7\tab}XGUnit.OnTurnEndHook\par
+{\pntext\f1\'B7\tab}XGUnit.ApplyInventoryStatModifiers\par
+{\pntext\f1\'B7\tab}XGBattle_SP.InitPlayers\par
+{\pntext\f1\'B7\tab}XGUnit.BecomePossessed\par
+{\pntext\f1\'B7\tab}XGUnit.BecomeUnpossessed\par
+{\pntext\f1\'B7\tab}XGUnit.GetMoveModifierCost\par
+{\pntext\f1\'B7\tab}XGUnit.Panic\par
+{\pntext\f1\'B7\tab}XGUnitNativeBase.ApplyPsiEffectsToTarget\par
+
+\pard\sl276\slmult1\par
+\ul\fs28 XComStrategyGame.upk\ulnone  (46)\ul\par
+
+\pard{\pntext\f1\'B7\tab}{\*\pn\pnlvlblt\pnf1\pnindent0{\pntxtb\'B7}}\fi-360\li720\sl276\slmult1\ulnone\fs24 XGStrategySoldier.GivePerk\par
+{\pntext\f1\'B7\tab}XGStrategySoldier.HasPerk\par
+{\pntext\f1\'B7\tab}XGSoldierUI.UpdateAbilities\par
+{\pntext\f1\'B7\tab}XGSoldierUI.GetHighlightedPerkDescription\par
+{\pntext\f1\'B7\tab}XGStrategySoldier.LevelUpStats\par
+{\pntext\f1\'B7\tab}XGFacility_Barracks.DetermineTimeOut\par
+{\pntext\f1\'B7\tab}XGStorage.ClaimItem\par
+{\pntext\f1\'B7\tab}XGStorage.ReleaseItem\par
+{\pntext\f1\'B7\tab}XGFacility_Barracks.CanAwardMedalToSoldier\par
+{\pntext\f1\'B7\tab}XGBarracksUI.OnChooseMainMenuOption\par
+{\pntext\f1\'B7\tab}XGFacility_Barracks.CreateSoldier\par
+{\pntext\f1\'B7\tab}XGStrategySoldier.GetPerkInClassTree\par
+{\pntext\f1\'B7\tab}XGBarracksUI.OnAcceptHiringOrder\par
+{\pntext\f1\'B7\tab}XGSoldierUI.OnAcceptPromotion\par
+{\pntext\f1\'B7\tab}XGHeadQuarters.OrderStaff\par
+{\pntext\f1\'B7\tab}XGStrategySoldier.SetSoldierClass\par
+{\pntext\f1\'B7\tab}XGBarracksUI.UpdateHiring\par
+{\pntext\f1\'B7\tab}XGHeadQuarters.UpdateHiringOrders\par
+{\pntext\f1\'B7\tab}XGBarracksUI.UpdateMainMenu\par
+{\pntext\f1\'B7\tab}XGFacility_Lockers.GetLockerItem\par
+{\pntext\f1\'B7\tab}XGStrategySoldier.LevelUp\par
+{\pntext\f1\'B7\tab}XGHeadQuarters.PayOverhead\par
+{\pntext\f1\'B7\tab}XGHeadQuarters.GetSalaryCost\par
+{\pntext\f1\'B7\tab}XGWorld.GetNetIncome\par
+{\pntext\f1\'B7\tab}XGFinanceUI.BuildSalaryUI\par
+{\pntext\f1\'B7\tab}XGFacility_Lockers.GetLockerItems\par
+{\pntext\f1\'B7\tab}XGSoldierUI.UpdateGear\par
+{\pntext\f1\'B7\tab}XGSoldierUI.UpdateLocker\par
+{\pntext\f1\'B7\tab}UIStrategyComponent_SoldierInfo.UpdateData\par
+{\pntext\f1\'B7\tab}XGStorage.AreReaperRoundsValid\par
+{\pntext\f1\'B7\tab}XGItemTree.BuildItems\par
+{\pntext\f1\'B7\tab}XGFacility_Lockers.GetSmallInventorySlots\par
+{\pntext\f1\'B7\tab}XGSoldierUI.UpdateHeader\par
+{\pntext\f1\'B7\tab}XGStrategySoldier.ClearPerks\par
+{\pntext\f1\'B7\tab}XGFacility_Barracks.InitNewGame\par
+{\pntext\f1\'B7\tab}XGFacility_Barracks.AddNewSoldier\par
+{\pntext\f1\'B7\tab}XGTechTree.BuildOTSTech\par
+{\pntext\f1\'B7\tab}XGTechTree.BuildOTSTechs\par
+{\pntext\f1\'B7\tab}XGTechTree.HasOTSPrereqs\par
+{\pntext\f1\'B7\tab}XGTechTree.ApplyOTSTech\par
+{\pntext\f1\'B7\tab}XGTechTree.GetAvailableOTSTechs\par
+{\pntext\f1\'B7\tab}XGFacility_Barracks.UpdateOTSFlags\par
+{\pntext\f1\'B7\tab}XGOTSUI.BuildTechList\par
+{\pntext\f1\'B7\tab}XGItemTree.GetFacility\par
+{\pntext\f1\'B7\tab}XGStrategySoldier.AssignRandomPerks\par
+{\pntext\f1\'B7\tab}XGStrategySoldier.IsRandomPerkValidToAdd\par
+
+\pard\sl276\slmult1\par
+}
+ 
