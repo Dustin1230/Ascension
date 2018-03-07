@@ -1,14 +1,9 @@
-class MyScriptClass1 extends XComMod;
+class MyScriptClass1 extends XComMod within ModBridge;
 
 var int storedSeed;
 
 simulated function StartMatch()
 {
-	local string functionName;
-	local string functParas;
-
-	functionName = ModBridge(XComGameInfo(Outer).Mods[0]).functionName;
-	functParas = ModBridge(XComGameInfo(Outer).Mods[0]).functParas;
 
 	if(functionName == "TestFunct")
 	{

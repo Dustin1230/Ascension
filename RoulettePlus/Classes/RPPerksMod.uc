@@ -25,6 +25,7 @@ var config int AmnesiaWillLossAmount;
 var config int AmnesiaWillLossType;
 var string AmnesiaPerkName;
 var string AmnesiaPerkDes;
+var config bool bAMedalWait;
 var config array<TSpecPerk> specPerk;
 var XGUnit m_kUnit;
 var XGStrategySoldier m_kStratSoldier;

@@ -1,4 +1,4 @@
-class RoulettePlusMod extends ModBridge
+class RoulettePlusMod extends XComMod Within ModBridge
 	DependsOn(RoulettePlus)
 	DependsOn(RPCheckpoint)
 	config(RoulettePlus);
@@ -87,11 +87,11 @@ simulated function StartMatch()
 
 	if(functionName == "AssignRandomPerks_Overwrite")
 	{
-		GetSoldier(super.StrValue0());
+		GetSoldier(StrValue0());
 		if(UseVanillaRolls)
 			VanRandPerks();
 		else
-			GetRandomPerk();
+			GetRandomPerks();
 	}
 	
 	if(functionName == "PerkStats")
@@ -143,13 +143,11 @@ function init()
 	ChooseConfig();
 
 	m_kRPCheckpoint = WORLDINFO().Spawn(class'RPCheckpoint', PLAYERCONTROLLER());
-	m_kRPPerksMod = new (self) class<RPPerksMod>(DynamicLoadObject("RoulettePlus.RPPerksMod", class'Class'));
+	m_kRPPerksMod = new (outer) class'RPPerksMod';
 	
 	MRA = ModRecordActor("Transport", class'RPCheckpoint');
 	
 	createPerkArray();
-
-	ChooseConfig();
 
 	CC = CheckConfig();
 
@@ -171,12 +169,19 @@ function init()
 
 		ModInitError $= "PerkMod class not initalised";
 	}
+	if(arrPerk.Length == 0)
+	{
+		if(ModInitError != "")
+			ModInitError $= ", ";
+
+		ModInitError $= "Perk array not initalised";
+	}
 	if(arrAlias.Length == 0)
 	{
 		if(ModInitError != "")
 			ModInitError $= ", ";
 
-		ModInitError $= "perk array not initalised";
+		ModInitError $= "Alias array not initalised";
 	}
 	if(!MRA)
 	{
@@ -470,18 +475,24 @@ function bool CheckConfig()
 			ModError(string(biopools) @ "main perk pools missing in config");
 	}
 
-
 	if(biopools > 0 && otherpools > 10)
-		return false;
+		return true;
 
 
-	return true;
+	return false;
 
 }
 
-	
 
-function GetRandomPerk()
+
+
+
+function VanRandPerks()
+{
+	
+}	
+
+function GetRandomPerks()
 {
 
 	local string Perk;

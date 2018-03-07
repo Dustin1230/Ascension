@@ -53,13 +53,13 @@ function TMenuTest()
 	kOption.arrStrings.AddItem("Test");
 	`Log("kOption.arrStrings[0]=" @ kOption.arrStrings[0]);
 
-	ModBridge(Outer).valTMenu.arrCategories[0] = 27;
-	`Log("before change ModBridge.TMenu.arrCategories[0]=" @ string(ModBridge(Outer).TMenu().arrCategories[0]));
+	valTMenu.arrCategories[0] = 27;
+	`Log("before change ModBridge.TMenu.arrCategories[0]=" @ string(TMenu().arrCategories[0]));
 
-	ModBridge(Outer).TMenu(, true);
-	ModBridge(Outer).TMenu().arrOptions.AddItem(kOption);
-	`Log("after change ModBridge.TMenu.arrOptions[0].arrStrings[0]=" @ ModBridge(Outer).TMenu().arrOptions[0].arrStrings[0]);
-	`Log("after change ModBridge.TMenu.arrCategories[0]=" @ string(ModBridge(Outer).TMenu().arrCategories[0]));
+	TMenu(, true);
+	TMenu().arrOptions.AddItem(kOption);
+	`Log("after change ModBridge.TMenu.arrOptions[0].arrStrings[0]=" @ TMenu().arrOptions[0].arrStrings[0]);
+	`Log("after change ModBridge.TMenu.arrCategories[0]=" @ string(TMenu().arrCategories[0]));
 }
 
 DefaultProperties
