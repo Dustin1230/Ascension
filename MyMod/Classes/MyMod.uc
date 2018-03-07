@@ -1,4 +1,4 @@
-class MyMod extends XComMod
+class MyMod extends XComMod within ModBridge
 	config(MyMod);
 
 struct TStruct
@@ -10,11 +10,6 @@ var config TStruct Test;
 
 simulated function StartMatch()
 {
-	local string functionName;
-	local string functParas;
-
-	functionName = ModBridge(XComGameInfo(Outer).Mods[0]).functionName;
-	functParas = ModBridge(XComGameInfo(Outer).Mods[0]).functParas;
 
 	if(functionName == "TestFunct")
 	{
@@ -28,12 +23,45 @@ simulated function StartMatch()
 		}
 	}
 
+	if(functionName == "TMenuTest")
+	{
+		TMenuTest();
+	}
+
+	if(functionName == "WithinTest")
+	{
+		WithinTest();
+	}
+
 }
 
 function TestFunct(optional string optparas)
 {
 	`Log("Test successful, MyMod. parameter=" @ optparas);
 }
+
+function WithinTest()
+{
+	StrValue0("Test");
+	`Log("StrValue0()=" @ StrValue0());
+}
+
+function TMenuTest()
+{
+	local TTableMenuOption kOption;
+
+	kOption.arrStrings.AddItem("Test");
+	`Log("kOption.arrStrings[0]=" @ kOption.arrStrings[0]);
+
+	ModBridge(Outer).valTMenu.arrCategories[0] = 27;
+	`Log("before change ModBridge.TMenu.arrCategories[0]=" @ string(ModBridge(Outer).TMenu().arrCategories[0]));
+
+	ModBridge(Outer).TMenu(, true);
+	ModBridge(Outer).TMenu().arrOptions.AddItem(kOption);
+	`Log("after change ModBridge.TMenu.arrOptions[0].arrStrings[0]=" @ ModBridge(Outer).TMenu().arrOptions[0].arrStrings[0]);
+	`Log("after change ModBridge.TMenu.arrCategories[0]=" @ string(ModBridge(Outer).TMenu().arrCategories[0]));
+}
+
 DefaultProperties
 {
 }

@@ -16,9 +16,11 @@ var int valIntValue1;
 var int valIntValue2;
 var array<string> valArrStr;
 var array<int> valArrInt;
+var TTableMenu valTMenu;
 var string functionName;
 var string functParas;
 var string ModInitError;
+var bool bModReturn;
 var TMBMods MBMods;
 var config bool verboseLog;
 var config array<string> ModList;
@@ -43,14 +45,14 @@ simulated function StartMatch()
 		bFound = false;
 		if(InStr(ModName, "ModBridge|") != -1)
 		{
-			`Log(ModName $ "ModInit attempt", verboseLog, 'ModBridge');
+			`Log(ModName @ "ModInit attempt", verboseLog, 'ModBridge');
 
 			MBMods.arrMBMods[i].StartMatch();
 			bFound = true;
 		}
 		else if(InStr(ModName, "ModBridge|") != -1)
 		{
-			`Log(ModName $ "ModInit attempt", verboseLog, 'ModBridge');
+			`Log(ModName @ "ModInit attempt", verboseLog, 'ModBridge');
 			
 			MBMods.arrXCMods[i].StartMatch();
 			bFound = true;
@@ -68,7 +70,7 @@ simulated function StartMatch()
 			if(InStr(ModName, XComGameInfo(outer).ModNames[i]) != -1)
 			{
 				bFound = true;
-				`Log("XComGameInfo|" $ XComGameInfo(outer).ModNames[i] @ "Found as:" @ ModName @ ", skipping ModInit", true, 'ModBridge');
+				`Log("XComGameInfo|" $ XComGameInfo(outer).ModNames[i] @ "Found as:" @ ModName $ ", skipping ModInit", true, 'ModBridge');
 				break;
 			}
 		}
@@ -214,7 +216,6 @@ function AssignMods()
 	for(i=0; i<XComGameInfo(outer).ModNames.Length; i++)
 	{
 		ModName = XComGameInfo(outer).ModNames[i];
-		`Log(ModName);
 		bFound = false;
 		foreach XComGameInfo(outer).Mods(XMod)
 		{
@@ -244,17 +245,29 @@ function ModsStartMatch()
 	local string Mod;
 	local int i;
 
+	
+	bModReturn = false;
 	foreach MBMods.ModNames(Mod, i)
 	{
 		if(InStr(Mod, "ModBridge|") != -1)
 		{
 			`Log("Executing StartMatch function in" @ Chr(34) $ Mod $ Chr(34), verboseLog, 'ModBridge');
 			MBMods.arrMBMods[i].StartMatch();
+			if(bModReturn)
+			{
+				`Log("AllMods loop stopped due to bModReturn being set by:" @ Chr(34) $ Mod $ Chr(34), verboseLog, 'ModBridge');
+				break;
+			}
 		}
 		else if(InStr(Mod, "XComMod|") != -1)
 		{
 			`Log("Executing StartMatch function in" @ Chr(34) $ Mod $ Chr(34), verboseLog, 'ModBridge');
 			MBMods.arrXCMods[i].StartMatch();
+			if(bModReturn)
+			{
+				`Log("AllMods loop stopped due to bModReturn being set by:" @ Chr(34) $ Mod $ Chr(34), verboseLog, 'ModBridge');
+				break;
+			}
 		}
 	}
 
@@ -262,6 +275,12 @@ function ModsStartMatch()
 	{
 		`Log("Executing StartMatch function in" @ Chr(34) $ "XComGameInfo|" $ XComGameInfo(outer).ModNames[i] $ Chr(34), verboseLog, 'ModBridge');
 		XComGameInfo(outer).Mods[i].StartMatch();
+		if(bModReturn)
+			if(bModReturn)
+			{
+				`Log("AllMods loop stopped due to bModReturn being set by:" @ Chr(34) $ "XComGameInfo|" $ XComGameInfo(outer).ModNames[i] $ Chr(34), verboseLog, 'ModBridge');
+				break;
+			}
 	}
 
 }
@@ -434,6 +453,24 @@ function array<int> arrInts(optional array<int> arrInt, optional bool bForce)
 	}
 }
 
+//Force it to be blank by not specifying first parameter: ModBridge.TMenu(, true); /* 1B <TMenu> 0B 27 16 */
+function TTableMenu TMenu(optional TTableMenu menu, optional bool bForce)
+{
+	local TTableMenu lMenu;
+
+	if(menu == lMenu && !bForce)
+	{
+		`Log("return TMenu", verboseLog, 'ModBridge');
+		return valTMenu;
+	}
+	else
+	{
+		`Log("store TMenu", verboseLog, 'ModBridge');
+		valTMenu = menu;
+		return lMenu;
+	}
+}
+
 
 function XComMod Mods(string ModName, optional string funtName, optional string paras)
 {
@@ -443,7 +480,7 @@ function XComMod Mods(string ModName, optional string funtName, optional string 
 	local bool bFound;
 
 
-	`Log("funtName=" @ Chr(34) $ funtName $ Chr(34) $ ", paras=" @ Chr(34) $ paras $ Chr(34), verboseMod, 'ModBridge');
+	`Log("funtName=" @ Chr(34) $ funtName $ Chr(34) $ ", paras=" @ Chr(34) $ paras $ Chr(34), verboseLog, 'ModBridge');
 
 
 	if(ModName == "")
@@ -533,14 +570,14 @@ function XComMod Mods(string ModName, optional string funtName, optional string 
 					{
 						if(InStr(mod, "ModBridge|") != -1)
 						{
-							`Log("Executing" @ Chr(34) $ ModName $ Chr(34) $ ".StartMatch()", verboseLog, 'ModBridge');
+							`Log("Executing" @ Chr(34) $ mod $ Chr(34) $ ".StartMatch()", verboseLog, 'ModBridge');
 							MBMods.arrMBMods[i].StartMatch();
 							bFound = true;
 							break;
 						}
 						else if(InStr(mod, "XComMod|") != -1)
 						{
-							`Log("Executing" @ Chr(34) $ ModName $ Chr(34) $ ".StartMatch()", verboseLog, 'ModBridge');
+							`Log("Executing" @ Chr(34) $ mod $ Chr(34) $ ".StartMatch()", verboseLog, 'ModBridge');
 							MBMods.arrXCMods[i].StartMatch();
 							bFound = true;
 							break;
@@ -556,7 +593,7 @@ function XComMod Mods(string ModName, optional string funtName, optional string 
 					}
 				}
 			}
-			return returnvalue;
+			return none;
 		}
 		else
 		{

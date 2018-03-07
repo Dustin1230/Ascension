@@ -28,6 +28,50 @@ struct TLabeledText
     }
 };
 
+struct TTableMenuHeader
+{
+    var array<string> arrStrings;
+    var array<int> arrStates;
+
+    structdefaultproperties
+    {
+        arrStrings=none
+        arrStates=none
+    }
+};
+
+struct TTableMenuOption
+{
+    var array<string> arrStrings;
+    var array<int> arrStates;
+    var int iState;
+    var string strHelp;
+
+    structdefaultproperties
+    {
+        arrStrings=none
+        arrStates=none
+        iState=0
+        strHelp=""
+    }
+};
+
+struct TTableMenu
+{
+    var array<int> arrCategories;
+    var TTableMenuHeader kHeader;
+    var array<TTableMenuOption> arrOptions;
+    var bool bTakesNoInput;
+
+    structdefaultproperties
+    {
+        arrCategories=none
+        kHeader=(arrStrings=none,arrStates=none)
+        arrOptions=none
+        bTakesNoInput=false
+    }
+};
+
 
 
 DefaultProperties

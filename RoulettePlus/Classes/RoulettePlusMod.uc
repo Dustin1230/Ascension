@@ -85,9 +85,13 @@ simulated function StartMatch()
 
 	local array<string> arrStr;
 
-	if(functionName == "AssignPerks")
+	if(functionName == "AssignRandomPerks_Overwrite")
 	{
-		GetRandomPerk();
+		GetSoldier(super.StrValue0());
+		if(UseVanillaRolls)
+			VanRandPerks();
+		else
+			GetRandomPerk();
 	}
 	
 	if(functionName == "PerkStats")
@@ -315,7 +319,7 @@ function bool CheckConfig()
 	if(AssaultPerks[0] == "")
 		++ biopools;
 
-	if(InfrantryPerks[0] == "")
+	if(InfantryPerks[0] == "")
 		++ biopools;
 
 	if(AllMECPerks[0] == "")
@@ -413,7 +417,7 @@ function bool CheckConfig()
 		++ settings;
 
 
-	ModError("Test");
+
 
 	if(strMergePerkLabel == "" && strMergePerkDes == "")
 	{
@@ -1117,7 +1121,7 @@ function CreatePerkStats()
 				{
 					if(MergePerkClass[I] == -1 || MergePerkClass[I] == iClass)
 					{
-						mPerk = MergePerk2[I];
+						mPerk = SearchPerks(MergePerk2[I]);
 						break;
 					}
 				}

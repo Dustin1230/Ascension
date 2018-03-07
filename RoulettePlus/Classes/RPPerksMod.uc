@@ -403,8 +403,13 @@ function expandPerkarray()
 {
 	local XComPerkManager kPerkMan;
 	
-	kPerkMan = BARRACKS().m_kPerkManager;
-	
+	if(IsStrategy())
+		kPerkMan = BARRACKS().m_kPerkManager;
+	else if(IsTactical())
+		kPerkMan = PERKS();
+	else
+		return;	
+
 	stperkman:
 	kPerkMan.m_arrPerks.Length = 255;
 	
