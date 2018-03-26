@@ -148,6 +148,8 @@ function string GetHighlightedPerkDescription()
     local XGParamTag kTag;
     local int iPerk, iRank;
 
+	/** 
+
     iPerk = m_kSoldier.GetPerkInClassTree(GetAbilityTreeBranch(), GetAbilityTreeOption(), m_iCurrentView == 2);
     // End:0x187
     if(((m_iCurrentView == 2) && m_kSoldier.PerkLockedOut(iPerk, GetAbilityTreeBranch(), m_iCurrentView == 2)) && !m_kSoldier.HasPerk(iPerk))
@@ -1747,5 +1749,6 @@ function string GetHighlightedPerkDescription()
 		return perkMgr().GetBriefSummary(iPerk);
 	}
     //return ReturnValue;    
+    */
 }
 

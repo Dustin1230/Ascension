@@ -62,12 +62,19 @@ function int GetPerkInTree(int soldierClass, int branch, int Option, optional bo
 	return ReturnValue;
 }
 
+simulated function int GetRandomPerk() {}
+
 simulated function string GetPerkName(int iPerk, optional int perkCategory)
 {
 	return ReturnValue;
 }
 
 simulated function TPerk GetPerk(int iPerk)
+{
+	return ReturnValue;
+}
+
+simulated function bool IsFixedPerk(int Perk)
 {
 	return ReturnValue;
 }

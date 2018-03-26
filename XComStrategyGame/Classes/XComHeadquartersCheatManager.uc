@@ -11,6 +11,7 @@ exec function GivePerk(string strName)
     local XComPerkManager kPerkMan;
     local string strPerkName;
 
+	/** 
     kPerkMan = XComHeadquartersGame(class'Engine'.static.GetCurrentWorldInfo().Game).GetGameCore().GetHQ().GetBarracks().m_kPerkManager;
 	PC = XComPlayerController(Outer.GetALocalPlayerController());
 	kPres = XComHQPresentationLayer(PC.m_Pres);
@@ -877,5 +878,6 @@ exec function GivePerk(string strName)
 		}
 	}
 	
-    //return;    
+    //return;   
+    */
 }

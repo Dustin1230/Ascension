@@ -32,6 +32,7 @@ struct TSoldierStorage extends TASCStorage {
 	var array<TStatStorage> StatStorage;
 	var int SoldierSeed;
 	var bool isNewType;
+	var bool advServos;
 };
 
 // Storage of the alien "spawn" IDs - Aliens are not assigned IDs but are given a number when spawned on a map

@@ -34,9 +34,17 @@ function XGTacticalGameCoreData.ESoldierClass GetClass()
 
 function string GetName(int eType) {}
 
+function int GetStatus() {}
+
 function string GetStatusString() {}
 
 function int GetStatusUIState() {}
+
+function bool IsAugmented() {}
+
+function int GetPsiRank() {}
+
+function bool IsATank() {}
 
 function bool HasPerk(int iPerk)
 {
@@ -62,6 +70,8 @@ function bool PerkLockedOut(int Perk, int branch, optional bool isPsiPerk)
 }
 
 function bool IsReadyToLevelUp() {}
+
+function bool IsRandomPerkValidToAdd(int Perk) {}
 
 function LevelUp(optional XGTacticalGameCoreData.ESoldierClass eClass, optional out string statsString) {}
 

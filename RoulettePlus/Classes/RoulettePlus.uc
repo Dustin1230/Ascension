@@ -12,7 +12,7 @@ struct TStaticPerks
 struct TSemiStatic
 {
 	var string SPerk;
-	var int Pos;
+	var string Pos;
 	var int iClass;
 };
 

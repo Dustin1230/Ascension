@@ -336,19 +336,16 @@ function XComClassChooser(XGStrategySoldier Soldier)
 		iNum = class'XComEngine'.static.SyncRand(classWgtPer.Length + 1, "");
 		arrRandClassWgt.InsertItem(iNum, classWgtPer[i]);
 		arrRandClassNum.InsertItem(iNum, NumPos[i]);
-		arrRandClassWgt.RemoveItem(0);
-		arrRandClassNum.RemoveItem(0);
+		arrRandClassWgt.Remove(arrRandClassWgt.Find(0), 1);
+		arrRandClassNum.Remove(arrRandClassNum.Find(0), 1);
 	}
 
 	//remove any blank entries
 
-	for(i=0; i<arrRandClassNum.Length; i++)
+	if(arrRandClassNum.Find(0) != -1)
 	{
-		if(arrRandClassNum[i] == 0)
-		{
-			arrRandClassNum.Remove(i, 1);
-			arrRandClassWgt.Remove(i, 1);
-		}
+		arrRandClassNum.RemoveItem(0);
+		arrRandClassWgt.RemoveItem(0);
 	}
 
 	//use generated soldier+campaign seed to randomly detirmine which class to pick based on the percent weights given earlier

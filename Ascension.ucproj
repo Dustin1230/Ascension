@@ -65,6 +65,9 @@
     <Folder Include="MyMod\" />
     <Folder Include="MyMod\Classes\" />
     <Folder Include="LWRebalance" />
+    <Folder Include="SaveGameState\" />
+    <Folder Include="SaveGameState\classes\" />
+    <Folder Include="XComUIShell_SF" />
     <Folder Include="ObjectSort\" />
     <Folder Include="ObjectSort\Classes\" />
     <Folder Include="OnlineSubsystemGameCenter\" />
@@ -93,10 +96,12 @@
     <Folder Include="XComMutator\Classes\" />
     <Folder Include="XComStrategyGame\" />
     <Folder Include="XComStrategyGame\Classes\" />
+    <Folder Include="XComUIShell_SF\Classes" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="RoulettePlus\Classes\RPCheckpoint.uc" />
     <Compile Include="RoulettePlus\Classes\RPMisc.uc" />
+    <Compile Include="XComUIShell_SF\Classes\XComShell.uc" />
   </ItemGroup>
   <Import Condition="'$(MSBuildExtensionsPath32)' != ''" Project="$(MSBuildExtensionsPath32)\PixelMine\UnrealScript.targets" />
   <Import Condition="'$(MSBuildExtensionsPath32)' == ''" Project="$(MSBuildExtensionsPath)\PixelMine\UnrealScript.targets" />

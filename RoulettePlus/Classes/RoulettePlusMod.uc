@@ -1,7 +1,12 @@
 class RoulettePlusMod extends XComMod Within ModBridge
-	DependsOn(RoulettePlus)
-	DependsOn(RPCheckpoint)
+	DependsOn(RoulettePlus, RPCheckpoint)
 	config(RoulettePlus);
+
+struct TSemiSPerkPos
+{
+	var array<int> Poss;
+	var string perk;
+};
 
 
 var array <string> arrPerk;
@@ -49,6 +54,8 @@ var config float AugmentDiscount;
 var config int PoolPrioity;
 var config string strMergePerkLabel;
 var config string strMergePerkDes;
+var config string strMergePerkColor;
+var config bool bHideEmptyStatStr;
 var config bool UseVanillaRolls;
 var config bool MECxpLoss;
 var config bool MECChops;
@@ -56,7 +63,8 @@ var config bool MECMedalWait;
 var config bool SplitConfig;
 var RPPerksMod m_kRPPerksMod;
 var RPCheckPoint m_kRPCheckpoint;
-var XGStrategySoldier m_kSold;
+var RPCheats m_kRPCheats;
+var XGStrategySoldier m_kSold, m_kSold1;
 
 
 function WorldInfo WORLDINFO()
@@ -67,6 +75,11 @@ function WorldInfo WORLDINFO()
 function PlayerController PLAYERCONTROLLER()
 {
 	return WORLDINFO().GetALocalPlayerController();
+}
+
+function XGFacility_Barracks BARRACKS()
+{
+    return XComHeadquartersGame(WORLDINFO().Game).GetGameCore().GetHQ().m_kBarracks;
 }
 
 function XGSoldierUI SOLDIERUI()
@@ -84,47 +97,209 @@ simulated function StartMatch()
 {
 
 	local array<string> arrStr;
+	local XGStrategySoldier kSold;
 
 	if(functionName == "AssignRandomPerks_Overwrite")
 	{
 		GetSoldier(StrValue0());
 		if(UseVanillaRolls)
+		{
 			VanRandPerks();
+		}
 		else
+		{
 			GetRandomPerks();
-	}
-	
-	if(functionName == "PerkStats")
-	{
-		if(isSoldierNewType(SOLDIER()))
-		{
-			NewPerkStats(int(functParas));
 		}
+		m_kSold = none;
+		StrValue0("True");
+		bModReturn = true;
+	}
+
+	if(functionName == "GetPerkInClassTree")
+	{
+		arrStr = SplitString(functParas);
+
+		GetSoldier(StrValue0());
+
+		if(m_kSold != none)
+			kSold = m_kSold;
 		else
+			kSold = SOLDIER();
+
+		if(arrStr[2] ~= "false" && kSold.IsOptionEnabled(4) && arrStr[0] != "1")
 		{
-			OldPerkStats(int(functParas));
+			if(!kSold.IsAugmented() || IsMECRandom)
+			{
+				if(isSoldierNewType(kSold))
+					IntValue0(NewRandomTree(kSold, -1)[(3 * int(arrStr[0]) - 1) + int(arrStr[1]) - 2], true);
+				else if(m_kSold.m_arrRandomPerks.Length > 0)
+				{
+					IntValue0(m_kSold.m_arrRandomPerks[(3 * int(arrStr[0]) - 1) + int(arrStr[1]) - 2], true);
+				}
+				else
+				{
+					IntValue0(0, true);
+				}
+			}
+			bModReturn = true;
 		}
+		
+		m_kSold = none;
 	}
 
-	if(functionName == "PerkMerge")
+	if(functionName == "FireRocketPerk")
 	{
-		PerkMerge(int(functParas));
+		GetSoldier(StrValue0());
+
+		if(m_kSold != none)
+			kSold = m_kSold;
+		else
+			kSold = SOLDIER();
+		
+		if(kSold.GetClass() == 2)
+		{
+			kSold.LOCKERS().EquipLargeItem(kSold, 218, 1);
+			kSold.OnLoadoutChange();
+			
+			StrValue0("True");
+		}
+		
+		m_kSold = none;
 	}
 
-	if(functionName == "AugmentDiscount")
+	if(functionName == "CanNotAugment")
 	{
-		arrStr = SplitString(functParas, "_", false);
-		applyAugmentDiscount(int(arrStr[0]), int(arrStr[1]));
+		GetSoldier(StrValue0());
+		CanNotAugment();
+
+		m_kSold = none;
+	}
+
+	if(functionName == "CanNotAugment_skipDefaults")
+	{
+		StrValue0("True");
 	}
 
 	if(functionName == "AugmentRestriction")
 	{
+		GetSoldier(StrValue0());
 		AugmentRestriction();
+		if(m_kSold.HasAnyMedal())
+		{
+			if(MECMedalWait)
+				kSold.BARRACKS().RollStat(kSold, 0, 0);
+			else
+				GiveBackMedals();
+		}
+		
+		m_kSold = none;
 	}
 
-	if(functionName == "SetSoldier")
+	if(functionName == "BuildAugmentMenuOption")
 	{
-		GetSoldier(functparas);
+		GetSoldier(StrValue0());
+		
+		BuildAugmentMenuOption();
+		
+		m_kSold = none;
+	}
+
+	if(functionName == "UISoldierAugmentationInit_Setlabels_Overwrite")
+	{
+		if(!MECxpLoss)
+			StrValue1(Split(functParas, ". ", true), true);
+	}
+	
+	/** 
+	if(functionName == "LevelUpStats_Overwrite")
+	{
+		GetSoldier(StrValue0());
+
+		if(m_kSold != none)
+			kSold = m_kSold;
+		else
+			kSold = SOLDIER();
+		
+		if(isSoldierNewType(kSold))
+		{
+			NewPerkStats(((((int(functParas) >> 8) & 255) - 1) * 3) + (int(functParas) & 255) + 1);
+		}
+		else
+		{
+			OldPerkStats(((((int(functParas) >> 8) & 255) - 1) * 3) + (int(functParas) & 255) + 1);
+		}
+
+		m_kSold = none;
+	}
+	*/
+
+	/** 
+	if(functionName == "PerkMerge")
+	{
+		GetSoldier(StrValue0());
+		PerkMerge(int(functParas));
+		
+		m_kSold = none;
+	}*/
+
+	if(functionName == "CanAffordAugment")
+	{
+		arrStr = SplitString(functParas);
+		
+		if(BARRACKS().IsOptionEnabled(4) && IsAugmentDiscounted)
+		{
+			if(BARRACKS().GetResource(0) >= (int(arrStr[0]) * (AugmentDiscount / 100)) && BARRACKS().GetResource(7) >= (int(arrStr[1]) * (AugmentDiscount / 100)))
+				StrValue0("True");
+			else
+				StrValue0("False");
+
+			IntValue0(int(arrStr[0]) * (AugmentDiscount / 100.00), true);
+			IntValue1(int(arrStr[1]) * (AugmentDiscount / 100.00), true);
+		}	
+	} 
+
+	if(functionName == "PayAugmentCost")
+	{
+		arrStr = SplitString(functParas);
+		
+		if(BARRACKS().IsOptionEnabled(4) && IsAugmentDiscounted)
+		{
+			BARRACKS().AddResource(0, -(int(arrStr[0]) * (AugmentDiscount / 100.00)));
+			BARRACKS().AddResource(7, -(int(arrStr[1]) * (AugmentDiscount / 100.00)));
+			
+			StrValue0("True");
+		}	
+	}
+
+	if(functionName == "OnAcceptPromotion_Overwrite")
+	{
+		GetSoldier(StrValue0());
+		m_kSold1 = m_kSold;
+
+		`logd(`ShowVar(m_kSold));
+		`logd(`Showvar(m_kSold1));
+	}
+	if(functionName == "OnAcceptPromotion_After")
+	{
+		`logd(`showvar(m_kSold1));
+		m_kSold = m_kSold1;
+		`logd(`showvar(m_kSold));
+		if(m_kSold.IsOptionEnabled(4) && SOLDIERUI().m_iCurrentView != 2)
+		{
+			PerkMerge(m_kSold.GetPerkInClassTree(SOLDIERUI().GetAbilityTreeBranch(), SOLDIERUI().GetAbilityTreeOption(), false));
+	
+			`log(`showvar(m_kSold));
+			if(isSoldierNewType(m_kSold1) && SOLDIERUI().GetAbilityTreeBranch() != 1)
+			{
+				NewPerkStats(((SOLDIERUI().GetAbilityTreeBranch() - 1) * 3) + SOLDIERUI().GetAbilityTreeOption());
+			}
+			else
+			{
+				OldPerkStats(((SOLDIERUI().GetAbilityTreeBranch() - 1) * 3) + SOLDIERUI().GetAbilityTreeOption());
+			}
+		}
+		m_kSold = none;
+		m_kSold1 = none;
 	}
 
 	if(functionName == "ModInit")
@@ -144,6 +319,8 @@ function init()
 
 	m_kRPCheckpoint = WORLDINFO().Spawn(class'RPCheckpoint', PLAYERCONTROLLER());
 	m_kRPPerksMod = new (outer) class'RPPerksMod';
+	WORLDINFO().Game.SetTimer(1.0, true, 'CreateCheats', self);
+
 	
 	MRA = ModRecordActor("Transport", class'RPCheckpoint');
 	
@@ -193,6 +370,26 @@ function init()
 	if(ModInitError != "")
 		ModInitError $= ".";
 }
+
+function CreateCheats()
+{
+	`Logd("entered createcheats");
+
+	if(PLAYERCONTROLLER() != none && XComHeadquartersGame(XComGameInfo(WORLDINFO().Game)) != none)
+	{
+		`Logd("playercontroller not initalized, returning");
+		return;
+	}
+
+	WORLDINFO().Game.ClearTimer('CreateCheats', self);
+
+	PLAYERCONTROLLER().CheatClass = class'RPCheats';
+	PLAYERCONTROLLER().CheatManager = new (XComHeadquartersController(PLAYERCONTROLLER())) class'RPCheats';
+
+	`Logd("playercontroller=" @ string(PLAYERCONTROLLER()));
+	`Logd("RPCheats=" @ string(m_kRPCheats));
+}
+
 
 function ChooseConfig()
 {
@@ -297,102 +494,97 @@ function ChooseConfig()
 function bool CheckConfig()
 {
 	local int biopools, otherpools, rules, misc, settings;
-	local TStaticPerks blankstatic;
-	local TSemiStatic blanksemi;
-	local TPerkChance blankchance;
-	local TAlias blankalias;
-	local TPerkStats blankstats;
 
-	if(SniperPerks[0] == "")
+	if(SniperPerks.Length == 0)
 		++ biopools;
 
-	if(ScoutPerks[0] == "")
+	if(ScoutPerks.Length == 0)
 		++ biopools;
 	
-	if(RocketeerPerks[0] == "")
+	if(RocketeerPerks.Length == 0)
 		++ biopools;
 
-	if(GunnerPerks[0] == "")
+	if(GunnerPerks.Length == 0)
 		++ biopools;
 
-	if(MedicPerks[0] == "")
+	if(MedicPerks.Length == 0)
 		++ biopools;
 
-	if(EngineerPerks[0] == "")
+	if(EngineerPerks.Length == 0)
 		++ biopools;
 
-	if(AssaultPerks[0] == "")
+	if(AssaultPerks.Length == 0)
 		++ biopools;
 
-	if(InfantryPerks[0] == "")
+	if(InfantryPerks.Length == 0)
 		++ biopools;
 
-	if(AllMECPerks[0] == "")
+	if(AllMECPerks.Length == 0)
 		++ otherpools;
 
-	if(AllBioPerks[0] == "")
+	if(AllBioPerks.Length == 0)
 		++ otherpools;
 
-	if(AllSoldierPerks[0] == "")
+	if(AllSoldierPerks.Length == 0)
 		++ otherpools;
 
-	if(JaegerPerks[0] == "")
+	if(JaegerPerks.Length == 0)
 		++ otherpools;
 
-	if(PathfinderPerks[0] == "")
+	if(PathfinderPerks.Length == 0)
 		++ otherpools;
 
-	if(ArcherPerks[0] == "")
+	if(ArcherPerks.Length == 0)
 		++ otherpools;
 
-	if(GoliathPerks[0] == "")
+	if(GoliathPerks.Length == 0)
 		++ otherpools;
 
-	if(GuardianPerks[0] == "")
+	if(GuardianPerks.Length == 0)
 		++ otherpools;
 
-	if(ShogunPerks[0] == "")
+	if(ShogunPerks.Length == 0)
 		++ otherpools;
 
-	if(MarauderPerks[0] == "")
+	if(MarauderPerks.Length == 0)
 		++ otherpools;
 
-	if(ValkyriePerks[0] == "")
+	if(ValkyriePerks.Length == 0)
 		++ otherpools;
 
 
 
 
-	if(IncompatiblePerks1[0] == "")
+	if(IncompatiblePerks1.Length == 0)
 		++ rules;
 
-	if(ChainPerks1[0] == "")
+	if(ChainPerks1.Length == 0)
 		++ rules;
 
-	if(ChoicePerks1[0] == "")
+	if(ChoicePerks1.Length == 0)
 		++ rules;
 
-	if(RequiredPerk1[0] == "")
+	if(RequiredPerk1.Length == 0)
 		++ rules;
 
-	if(StaticPerks[0] == blankstatic)
+	if(StaticPerks.Length == 0)
 		++ rules;
 
-	if(SemiStaticPerks[0] == blanksemi)
+	if(SemiStaticPerks.Length == 0)
 		++ rules;
 
-	if(PerkChance[0] == blankchance)
+	if(PerkChance.Length == 0)
 		++ rules;
 
 
 
-	if(PerkAliases[0] == blankalias)
+	if(PerkAliases.Length == 0)
 		++ misc;
 
-	if(PerkStats[0] == blankstats)
+	if(PerkStats.Length == 0)
 		++ misc;
 
-	if(MergePerk1[0] == "")
+	if(MergePerk1.Length == 0)
 		++ misc;
 
 
@@ -427,8 +619,6 @@ function bool CheckConfig()
 	if(strMergePerkLabel == "" && strMergePerkDes == "")
 	{
 		ModError("Strings for MergePerk display not found");
-		if(settings == 8)
-			ModError("No settings have been found in config");
 	}
 	else if(strMergePerkLabel == "")
 	{
@@ -438,7 +628,9 @@ function bool CheckConfig()
 	{
 		ModError("String for merged perk description label not found");
 	}
-	else if(settings == 8)
+
+
+	if(settings == 8)
 		ModError("No settings seem to have been set in config");
 
 
@@ -461,22 +653,21 @@ function bool CheckConfig()
 
 	if(biopools == 8)
 	{
-		if(AllBioPerks[0] == "" && AllSoldierPerks[0] == "")
+		if(AllBioPerks.Length == 0 && AllSoldierPerks.Length == 0)
 			ModError("All main perk pools and both main encompassing pools missing in config");
 		else
 			ModError("No main perk pools found in config");
 	}
 	else if(biopools > 0)
 	{
-		if(AllBioPerks[0] == "" && AllSoldierPerks[0] == "")
+		if(AllBioPerks.Length == 0 && AllSoldierPerks.Length == 0)
+		{
 			ModError(string(biopools) @ "main perk pools and both main encompassing pools missing in config");
-
+			return true;
+		}
 		else
 			ModError(string(biopools) @ "main perk pools missing in config");
 	}
-
-	if(biopools > 0 && otherpools > 10)
-		return true;
 
 
 	return false;
@@ -489,16 +680,52 @@ function bool CheckConfig()
 
 function VanRandPerks()
 {
-	
+	local int I, J, Perk, iClass;
+	local XGStrategySoldier kSold;
+
+	if(m_kSold != none)
+		kSold = m_kSold;
+	else
+		kSold = SOLDIER();
+
+	if(FindSoldierInStorage(, kSold) == -1)
+	{
+		CreateSoldierStor(kSold);
+	}
+
+	FlushRandomTree(kSold);
+
+	for(I=1; I<8; I++)
+	{
+		for(J=0; J<3; J++)
+		{
+			if(kSold.GetClass() == 6 || I > 1)
+				iClass = kSold.m_iEnergy;
+			else
+				iClass = kSold.GetClass();
+			Perk = kSold.PERKS().GetPerkInTree( iClass, I, J);
+
+			if(!kSold.PERKS().IsFixedPerk(Perk))
+			{
+				perk = 0;
+				while(!kSold.IsRandomPerkValidToAdd(Perk))
+					Perk = kSold.PERKS().GetRandomPerk();
+			}
+			addPerkToTree(kSold, Perk);
+		}
+	}
 }	
 
 function GetRandomPerks()
 {
 
 	local string Perk;
-	local int I, J, K, opt, iClass;
-	local bool isMEC, bStatic;
+	local array<string> SemiSPerks;
+	local int I, J, K, L, opt, iClass;
+	local bool isMEC, bStatic, bSPFound;
 	local XGStrategySoldier kSold;
+	local array<TSemiSPerkPos> SemiSPerkPoss;
+	local TSemiSPerkPos SemiSPerkPos;
 
 	if(m_kSold != none)
 	{
@@ -509,22 +736,35 @@ function GetRandomPerks()
 		kSold = SOLDIER();
 	}
 
-	iClass = kSold.m_iEnergy;
-
-	kSold.m_arrRandomPerks.Length = 0;
-
-	isMEC = kSold.GetClass() == 6;
-
-	if(UseVanillaRolls)
+	if(FindSoldierInStorage(, kSold) == -1)
 	{
-		StrValue1("UseVanillaRolls");
-		return;
+		CreateSoldierStor(kSold);
 	}
+
+	FlushRandomTree(kSold);
+	
+	iClass = kSold.m_iEnergy;
+	
+	isMEC = kSold.GetClass() == 6;
+	
+	for(I=0; I<SemiStaticPerks.Length; I++)
+	{
+		if(SemiStaticPerks[I].iClass == iClass)
+		{
+			SemiSPerkPos.Poss = SemiSParse(I);
+			SemiSPerkPos.perk = SemiStaticPerks[I].SPerk;
+			
+			SemiSPerkPoss.AddItem(SemiSPerkPos);
+		}
+	}
+	
 	
 	for(I=1; I<8; I++)
 	{
 		for(J=0; J<3; J++)
 		{
+			bSPFound = false;
+			
 			for(K=0; K<StaticPerks.Length; K++)
 			{
 				if( (iClass == StaticPerks[K].iClass) && (I == (StaticPerks[K].Pos + 2) / 3) )
@@ -547,35 +787,26 @@ function GetRandomPerks()
 					}
 				}
 			}
-
+			
 			if(!bStatic)
 			{
-				for(K=0; K<SemiStaticPerks.Length; K++)
+				for(K=0; K<SemiSPerkPoss.Length; K++)
 				{
-					if(I == (SemiStaticPerks[K].Pos + 2) / 3)
+					SemiSPerks = GetSemiSPerks(I, J, SemiSPerkPoss[K]);
+					
+					for(L=0; !bSPFound && L<SemiSPerks.Length; L++)
 					{
-						opt = 0;
-						if((SemiStaticPerks[K].Pos + 2) / 3 == 0)
-						{
-							opt = 2;
-						}
-						if((SemiStaticPerks[K].Pos + 2) / 3 == 1)
-						{
-							opt = 1;
-						}
-
-						if(J == opt)
-						{
-							Perk = SemiStaticPerks[K].SPerk;
-						}
+						Perk = SemiSPerks[L];
+						bSPFound = CheckPerkRules(Perk);
 					}
+					
 				}
-
+				
 				if(I == 1)
 				{
-					Perk = String(EPerkType(0));
+					Perk = String(EPerkType(kSold.PERKS().GetPerkInTree(kSold.GetClass(), 1, J, false)));
 				}
-				else
+				else if(!bSPFound)
 				{
 					while(!CheckPerkRules(Perk))
 					{
@@ -583,8 +814,8 @@ function GetRandomPerks()
 					}
 				}
 			}
-
-
+			
+			
 			addPerkToTree(kSold, SearchPerks(Perk));
 			//kSold.m_arrRandomPerks.AddItem(SearchPerks(Perk));
 
@@ -592,7 +823,69 @@ function GetRandomPerks()
 	}
 	CreatePerkStats();
 	
-	m_kSold = none;
+
+}
+
+function array<int> SemiSParse(int SemiSPos)
+{
+	local int I, J, SemiSOpt, posRange;
+	local array<int> SemiSPPos;
+	local array<string> arrStr1, arrStr2;
+
+	arrStr1 = SplitString(SemiStaticPerks[SemiSPos].Pos);
+	
+	for(I=0; I<arrStr1.Length; I++)
+	{
+		posRange = 0;
+		arrStr2.Length = 0;
+
+		if(int(arrStr1[I]) != 0)
+			SemiSOpt = int(arrStr1[I]);
+				
+		if(InStr(arrStr1[I], "-") != -1)
+		{
+			arrStr2 = SplitString(arrStr1[I], "-");
+			posRange = int(arrStr2[1]);
+		}
+				
+		for(J= arrStr2.Length!=0 ? int(arrStr2[0]) : 0; J<=posRange; J++)
+		{
+			if(J != 0)
+				SemiSOpt = J;
+
+			SemiSOpt -= 1;
+				
+			if(SemiSOpt == -2)
+				SemiSOpt = (Rand(18) + 3);
+			
+			if(SemiSOpt > 2)
+				SemiSPPos.AddItem(SemiSOpt);			
+		}
+	}
+	
+	return SemiSPPos;
+}
+
+function array<string> GetSemiSPerks(int Rank, int Option, TSemiSPerkPos SemiSPerkPos)
+{
+	local int I, opt;
+	local array<string> SemiSPerks;
+
+	for(I=0; I<SemiSPerkPos.Poss.Length; I++)
+	{
+		if(Rank == (SemiSPerkPos.Poss[I] + 3) / 3)
+		{
+			opt = 0;
+			if(((SemiSPerkPos.Poss[I] + 3) % 3) == 0)
+				opt = 2;
+			if(((SemiSPerkPos.Poss[I] + 3) % 3) == 1)
+				opt = 1;
+			
+			if(opt == Option)
+				SemiSPerks.AddItem(SemiSPerkPos.perk);
+		}
+	}
+	return SemiSPerks;
 }
 
 function string GetPerkFromPool()
@@ -615,6 +908,9 @@ function string GetPerkFromPool()
 
 	iClass = kSold.m_iEnergy;
 	isMEC = kSold.GetClass() == 6;
+
+	`logd("GetPerkFromPool");
+	`logd(`ShowVar(PoolPrioity));
 
 	if(PoolPrioity == 2)
 	{
@@ -796,6 +1092,8 @@ function bool CheckPerkRules(string Perk)
 	local array<int> PerkTree;
 	local XGStrategySoldier kSold;
 
+	`Logd("CheckPerkRules start, Perk= \"" $ Perk $ "\"");
+
 	if(m_kSold != none)
 	{
 		kSold = m_kSold;
@@ -805,28 +1103,29 @@ function bool CheckPerkRules(string Perk)
 		kSold = SOLDIER();
 	}
 
+	`Logd("kSold= " $ string(kSold));
+
 	iPerk = SearchPerks(Perk);
+
+	`Logd("iPerk= " $ string(iPerk));
 
 	iClass = kSold.m_iEnergy;
 
-	if(isSoldierNewType(kSold))
-	{
-		PerkTree = NewRandomTree(kSold, -1);
-	}
-	else
-	{
-		PerkTree = OldPerkTree(kSold);
-	}
+	`Logd("iClass= " $ string(iClass));
 
-	if(Perk == string(EPerkType(0)))
+	PerkTree = NewRandomTree(kSold, -1);
+
+	if(Perk == string(EPerkType(0)) || iPerk == 0 || Perk == "")
 	{
 		return false;
 	}
+	`Logd("not 0");
 
 	if(iPerk > 255)
 	{
 		return false;
 	}
+	`Logd("not overbyte");
 
 	if(PerkTree.Find(iPerk) != -1)
 	{
@@ -836,6 +1135,7 @@ function bool CheckPerkRules(string Perk)
 	{
 		return false;
 	}
+	`Logd("not already used");
 
 	for(I=0; I<IncompatiblePerks1.Length; I++)
 	{
@@ -847,12 +1147,14 @@ function bool CheckPerkRules(string Perk)
 			case IncompatiblePerks1[I]:
 				if(PerkTree.Find(Perk2) != -1 || kSold.HasPerk(Perk2))
 				{
+					`Logd("return false in Incompat perks");
 					return false;
 				}
 				break;
 			case IncompatiblePerks2[I]:
 				if(PerkTree.Find(Perk1) != -1 || kSold.HasPerk(Perk1))
 				{
+					`Logd("return false in Incompat perks");
 					return false;
 				}
 				break;
@@ -870,20 +1172,24 @@ function bool CheckPerkRules(string Perk)
 				case 1:
 					if(Perk == ChainPerks1[I] && Perk2 == PerkTree[PerkTree.Length-1])
 					{
+						`Logd("return false in chainperks");
 						return false;
 					}
 					if(Perk == ChainPerks2[I] && Perk1 == PerkTree[PerkTree.Length-1])
 					{
+						`Logd("return false in chainperks");
 						return false;
 					}
 					break;
 				case 2:
 					if(Perk == ChainPerks1[I] && ( Perk1 == PerkTree[PerkTree.Length-1] || Perk2 == PerkTree[PerkTree.Length-2] ))
 					{
+						`Logd("return false in chainperks");
 						return false;
 					}
 					if(Perk == ChainPerks2[I] && ( Perk1 == PerkTree[PerkTree.Length-1] || Perk1 == PerkTree[PerkTree.Length-2] ))
 					{
+						`Logd("return false in chainperks");
 						return false;
 					}
 					break;
@@ -897,6 +1203,7 @@ function bool CheckPerkRules(string Perk)
 		{
 			if(kSold.m_iEnergy == StaticPerks[I].iClass && Perk == StaticPerks[I].SPerk)
 			{
+				`Logd("return false in staticperks");
 				return false;
 			}
 		}
@@ -908,29 +1215,34 @@ function bool CheckPerkRules(string Perk)
 				(PerkChance[I].Rank == -1 || PerkChance[I].Rank == (PerkTree.Length + 3) / 3) ) && (
 				PercentRoll(PerkChance[I].chance) ))
 			{
+				`Logd("return false in perkchance");
 				return false;
 			}
 		}
 		for(I=0; I<ChoicePerks1.Length; I++)
 		{
 			Perk1 = SearchPerks(ChoicePerks1[I]);
+			Perk2 = SearchPerks(ChoicePerks2[I]);
 
 			if(Perk == ChoicePerks1[I] && PerkTree.Find(Perk2) != -1)
 			{
 				switch(PerkTree.Length % 3)
 				{
 					case 0:
+						`Logd("return false in choiceperks");
 						return false;
 						break;
 					case 1:
 						if(Perk2 != PerkTree[PerkTree.Length-1])
 						{
+							`Logd("return false in choiceperks");
 							return false;
 						}
 						break;
 					case 2:
 						if(Perk2 != PerkTree[PerkTree.Length-1] && Perk2 != PerkTree[PerkTree.Length-2])
 						{
+							`Logd("return false in choiceperks");
 							return false;
 						}
 						break;
@@ -943,17 +1255,20 @@ function bool CheckPerkRules(string Perk)
 				switch(PerkTree.Length % 3)
 				{
 					case 0:
+						`Logd("return false in choiceperks");
 						return false;
 						break;
 					case 1:
 						if(Perk1 != PerkTree[PerkTree.Length-1])
 						{
+							`Logd("return false in choiceperks");
 							return false;
 						}
 						break;
 					case 2:
 						if(Perk1 != PerkTree[PerkTree.Length-1] && Perk1 != PerkTree[PerkTree.Length-2])
 						{
+							`Logd("return false in choiceperks");
 							return false;
 						}
 						break;
@@ -968,13 +1283,13 @@ function bool CheckPerkRules(string Perk)
 		{
 			Perk1 = SearchPerks(RequiredPerk1[I]);
 			bFound = false;
-			if(arrPerk.Find(RequiredPerk1[I]) != -1)
+			if( (Perk == RequiredPerk1[I]) && ( (RequiredPerkClass[I] == -1) || (RequiredPerkClass[I] == iClass) ) ) 
 			{
 				for(J=0; J<RequiredPerk2[I].Perk.Length; J++)
 				{
 					Perk2 = SearchPerks(RequiredPerk2[I].Perk[J]);
 
-					if(!SOLDIER().HasPerk(Perk2) && PerkTree.Find(Perk2) != -1 && ( ((PerkTree.Find(Perk2) + 3) / 3 != (PerkTree.Length + 3) / 3) ))
+					if(!SOLDIER().HasPerk(Perk2) && PerkTree.Find(Perk2) != -1 && ( ((PerkTree.Find(Perk2) + 3) / 3) != ((PerkTree.Length + 3) / 3) ) )
 					{
 						bFound = true;
 						break;
@@ -984,7 +1299,8 @@ function bool CheckPerkRules(string Perk)
 
 				if(!bFound)
 				{
-					 return false;
+					`Logd("return false in requiredperks");
+					return false;
 				}
 			}
 		}
@@ -996,12 +1312,14 @@ function bool CheckPerkRules(string Perk)
 
 			if( (MergePerkClass[I] == iClass) && (Perk == MergePerk2[I]) && ( (PerkTree.Find(Perk1) != -1) || (kSold.HasPerk(Perk1)) ))
 			{
+				`Logd("return false in mergeperks");
 				return false;
 			}
 		}
 
 	}
 
+	`Logd("return true");
 	return true;
 
 }
@@ -1025,21 +1343,26 @@ function int SearchPerks(string sPerk)
 			}
 		}
 	}
+
+	return 0;
 }
 
 function array<string> NewPerkPool(array<string> OldPerkPool, bool isMEC)
 {
-
 	local array<string> NewPerkPool, AppendedPool;
-	local int i;
+	local int i, j;
+
+	`logd("NewPerkPool");
 
 	for(i=0; i<OldPerkPool.Length; i++)
 	{
+		`logd(`ShowVar(OldPerkPool[i]));
 		AppendedPool.AddItem(OldPerkPool[i]);
 	}
 
 	for(i=0; i<AllSoldierPerks.Length; i++)
 	{
+		`logd(`ShowVar(AllSoldierPerks[i]));
 		AppendedPool.AddItem(AllSoldierPerks[i]);
 	}
 
@@ -1047,6 +1370,7 @@ function array<string> NewPerkPool(array<string> OldPerkPool, bool isMEC)
 	{
 		for(i=0; i<AllMECPerks.Length; i++)
 		{
+			`logd(`ShowVar(AllMECPerks[i]));
 			AppendedPool.AddItem(AllMECPerks[i]);
 		}
 	}
@@ -1054,24 +1378,31 @@ function array<string> NewPerkPool(array<string> OldPerkPool, bool isMEC)
 	{
 		for(i=0; i<AllBioPerks.Length; i++)
 		{
+			`logd(`ShowVar(AllBioPerks[i]));
 			AppendedPool.AddItem(AllBioPerks[i]);
 		}
 	}
 
+	`logd("start newperkpool array");
+	`logd(`ShowVar(AppendedPool.Length));
+
 	NewPerkPool.Add(AppendedPool.Length);
-	for(i=0; i<OldPerkPool.Length; i++)
+	`logd(`ShowVar(NewPerkPool.Length));
+	for(i=0; i<AppendedPool.Length; i++)
 	{
-		NewPerkPool.InsertItem(Rand(AppendedPool.Length), AppendedPool[i]);
+		j = Rand(AppendedPool.Length);
+		`logd(`ShowVar(j, Rand(AppendedPool.Length)));
+		`logd(`ShowVar(AppendedPool[i]));
+		NewPerkPool.InsertItem(j, AppendedPool[i]);
+		`logd("removeitem");
+		NewPerkPool.Remove(NewPerkPool.Find(""), 1);
+		`logd(`ShowVar(NewPerkPool.Length));
+	}
+
+	`logd("remove blanks");
+
+	if(NewPerkPool.Find("") != -1)
 		NewPerkPool.RemoveItem("");
-	}
-	
-	for(i=0; i<NewPerkPool.Length; i++)
-	{
-		if(NewPerkPool[i] == "")
-		{
-			NewPerkPool.Remove(i, 1);
-		}
-	}
 
 	return NewPerkPool;
 
@@ -1080,11 +1411,11 @@ function array<string> NewPerkPool(array<string> OldPerkPool, bool isMEC)
 function CreatePerkStats()
 {
 
-	local int opt, PerkS, iClass, Pos, mPerk, I;	
+	local int opt, PerkS, iClass, Pos, mPerk, I, J;	
 	local string sPerk;
-	local bool isRank1;
+	local bool isRank1, bFound;
 	local TPerkStats lPerkS;
-	local array<int> perktree;
+	local array<int> PerkTree;
 	local XGStrategySoldier kSold;
 	local TStatStorage Stats;
 
@@ -1097,72 +1428,114 @@ function CreatePerkStats()
 		kSold = SOLDIER();
 	}
 
-	perktree = NewRandomTree(kSold, -1);
+	`Logd("CreatePerkStats");
 
-	foreach PerkStats(lPerkS)
+	`Logd("kSold= " $ string(kSold));
+
+	m_kRPCheckpoint.arrSoldierStorage[FindSoldierInStorage(kSold.m_kSoldier.iID)].isNewType = true;
+
+	FlushStatStorage(kSold);
+
+	PerkTree = NewRandomTree(kSold, -1);
+
+	for(Pos=0; Pos<21; Pos++)
 	{
-
-		for(Pos=0; Pos<21; Pos++)
+		opt = ((Pos % 3) + 1);
+		if(opt == 1)
 		{
-			opt = (((Pos + 2) % 3) + 1);
-			if(opt == 1)
-			{
-				opt = 3;
-			}
-			else if(opt == 3)
-			{
-				opt = 1;
-			}
+			opt = 3;
+		}
+		else if(opt == 3)
+		{
+			opt = 1;
+		}
 
-			isRank1 = ((pos + 2) / 3) == 1;
+		isRank1 = ((pos + 3) / 3) == 1;
 
-			if(isRank1 && kSold.GetClass() != 6)
-			{
-				iClass = kSold.GetClass();
-			}
-			else
-			{
-				iClass = kSold.m_iEnergy;
-			}
+		if(isRank1 && kSold.GetClass() != 6)
+		{
+			iClass = kSold.GetClass();
+		}
+		else
+		{
+			iClass = kSold.m_iEnergy;
+		}
 
-			foreach MergePerk1(sPerk, I)
+		foreach MergePerk1(sPerk, I)
+		{
+			mPerk = 0;
+			if(SearchPerks(sPerk) == PerkTree[pos])
 			{
-				mPerk = 0;
-				if(SearchPerks(sPerk) == perktree[pos-1])
+				if(MergePerkClass[I] == -1 || MergePerkClass[I] == iClass)
 				{
-					if(MergePerkClass[I] == -1 || MergePerkClass[I] == iClass)
-					{
-						mPerk = SearchPerks(MergePerk2[I]);
-						break;
-					}
+					mPerk = SearchPerks(MergePerk2[I]);
+					break;
 				}
 			}
-					
+		}
+		
+		bFound = false;
+
+		`logd(`ShowVar(pos) $ ", " $ `ShowVar(PerkTree[pos]));
+
+		foreach PerkStats(lPerkS, J)
+		{
+
+			if(lPerkS.Stats > 0)
+			{
+				if(lPerkS.Stats / 100 == 1)
+				{
+					lPerkS.mob = 1;
+				}
+				if(lPerkS.Stats / 100 == 2)
+				{
+					lPerkS.mob = -1;
+				}
+				lPerkS.aim = (lPerkS.Stats % 100) / 10;
+				lPerkS.will = lPerkS.Stats % 10;
+			}
 
 			PerkS = -1;
-			if( (lPerkS.Rank == (Pos + 2) / 3) && ( (lPerkS.iClass == -1) || (lPerkS.iClass == iClass) ) )
+			if( (lPerkS.Perk != "0") && 
+				( (lPerkS.Rank == (Pos + 3) / 3) || (lPerkS.Rank == -1) ) && 
+				( (lPerkS.iClass == -1) || (lPerkS.iClass == iClass) ) )
 			{
 				PerkS = SearchPerks(lPerkS.Perk);
+				`Logd(`ShowVar(PerkS), J == 14);
 			}
 
-			if( (lPerkS.Option == opt) && (
-				(isRank1) && (kSold.GetClass() == lPerkS.iClass) && (lPerkS.Rank == 1) || (
-				lPerkS.Rank == (Pos + 2) / 3 ) ) )
+			if(!isRank1)
 			{
-				Stats = MakePerkStats(lPerkS.hp, lPerkS.aim, lPerkS.def, lPerkS.mob, lPerkS.will, mPerk);
-				addPerkStats(kSold, Stats);
+				if( (lPerkS.Option == opt) && 
+					(isRank1) &&
+					(lPerkS.iClass == kSold.GetClass()) &&
+					(lPerkS.Rank == 1) ) 
+				{
+					bFound = true;
+					Stats = MakePerkStats(lPerkS.hp, lPerkS.aim, lPerkS.def, lPerkS.mob, lPerkS.will, mPerk);
+					addPerkStats(kSold, Stats);
+					break;
+				}
+				else if( PerkS > -1 && PerkTree[pos] == PerkS)
+				{
+					bFound = true;
+					Stats = MakePerkStats(lPerkS.hp, lPerkS.aim, lPerkS.def, lPerkS.mob, lPerkS.will, mPerk);
+					`if(`isdefined(debug))
+						if(J == 14 && PerkTree[pos] == 94)
+						{
+							`log(`ShowVar(lPerkS.aim));
+						}
+					`endif
+					addPerkStats(kSold, Stats);
+					break;
+				}
 			}
-			else if( PerkS > -1 && perktree[pos-1] == PerkS)
-			{
-				Stats = MakePerkStats(lPerkS.hp, lPerkS.aim, lPerkS.def, lPerkS.mob, lPerkS.will, mPerk);
-				addPerkStats(kSold, Stats);
-			}
-			else
-			{
-				Stats = MakePerkStats(0, 0, 0, 0, 0, mPerk);
-				addPerkStats(kSold, Stats);
-			}
-
+		}
+		
+		if(!bFound || isRank1)
+		{
+			Stats = MakePerkStats(0, 0, 0, 0, 0, mPerk);
+			addPerkStats(kSold, Stats);
 		}
 	}
 
@@ -1185,15 +1558,17 @@ function NewPerkStats(int Pos)
 
 
 	PStats = GetPerkStats(kSold, Pos);
+	`Logd("NewPerkStats");
+	`Logd(`ShowVar(PStats.HP) $ ", " $ `ShowVar(PStats.aim) $ ", " $ `ShowVar(PStats.def) $ ", " $ `ShowVar(PStats.will) $ ", " $ `ShowVar(PStats.mob));
 
 	kSold.m_kChar.aStats[eStat_HP] += PStats.HP;
 	kSold.m_kChar.aStats[eStat_Offense] += PStats.aim;
 	kSold.m_kChar.aStats[eStat_Defense] += PStats.def;
-	kSold.m_kChar.aStats[eStat_Will] += PStats.aim;
+	kSold.m_kChar.aStats[eStat_Will] += PStats.will;
 	kSold.m_kChar.aStats[eStat_Mobility] += PStats.mob;
 
 
-	m_kSold = none;
+
 
 }
 
@@ -1203,22 +1578,29 @@ function array<int> OldPerkTree(XGStrategySoldier Sold)
 	local int I;
 	local array<int> arrInts;
 
-	for(I=0; I<Sold.m_arrRandomPerks.Length; I++)
+	if(Sold.m_arrRandomPerks.Length > 0)
 	{
-		arrInts.AddItem(Sold.m_arrRandomPerks[I]);
+		for(I=0; I<Sold.m_arrRandomPerks.Length; I++)
+		{
+			arrInts.AddItem(Sold.m_arrRandomPerks[I]);
+		}
+	}
+	else
+	{
+		arrInts.Length = 22;
 	}
 	return arrInts;
 }
 
-function OldPerkStats(int Pos)
+function OldPerkStats(int Pos, optional bool query)
 {
 	
 	local int I, opt, will, hp, mob, def, aim, perk, hpmob, PerkS, iClass;
 	local XComPerkManager kPerkMan;
 	local string mPerk;
-	local bool isRank1;
+	local bool isRank1, bFound;
 	local TPerkStats lPerkS;
-	local array<int> perktree;
+	local array<int> PerkTree, querystats;
 	local XGStrategySoldier kSold;
 
 	if(m_kSold != none)
@@ -1230,19 +1612,20 @@ function OldPerkStats(int Pos)
 		kSold = SOLDIER();
 	}
 
-	perktree = OldPerkTree(kSold);
+	PerkTree = OldPerkTree(kSold);
 
 	kPerkMan = kSold.PERKS();
 
 	/** 
 	for(I=0; I<kSold.m_arrRandomPerks.Length; I++)
 	{
-		`Log("RandomPerks=" @ string(kSold.m_arrRandomPerks[I]));
+		`Logd("RandomPerks=" @ string(kSold.m_arrRandomPerks[I]));
 	}
 	*/
 
-	isRank1 = ((pos + 2) / 3) == 1;
-	  
+	isRank1 = ((pos + 3) / 3) == 1;
+	
+	/**   
 	foreach MergePerk1(mPerk, I)
 	{
 		perk = SearchPerks(mPerk);
@@ -1258,8 +1641,9 @@ function OldPerkStats(int Pos)
 			kSold.m_arrRandomPerks[21] = 0;
 		}
 	}
+	*/
 
-	opt = (((Pos + 2) % 3) + 1);
+	opt = ((Pos % 3) + 1);
 	if(opt == 1)
 	{
 		opt = 3;
@@ -1279,6 +1663,33 @@ function OldPerkStats(int Pos)
 	}
 
 	foreach PerkStats(lPerkS)
+	{
+		bFound = false;
+
+		if( (lPerkS.Option == opt) &&
+			(isRank1) && 
+			(lPerkS.iClass == kSold.GetClass()) && 
+			(lPerkS.Rank == 1) )
+		{
+			bFound = true;
+			break;
+		}
+		else if( (lPerkS.Perk != "0") && 
+				( (lPerkS.Rank == (Pos + 3) / 3) || (lPerkS.Rank == -1) ) && 
+				( (lPerkS.iClass == -1) || (lPerkS.iClass == iClass) ) )
+		{
+			PerkS = SearchPerks(lPerkS.Perk);
+
+			if(PerkTree[pos] == PerkS)
+			{
+				bFound = true;
+				break;
+			}
+
+		}
+	}
+
+	if(bFound)
 	{
 		mob = 0;
 		will = 0;
@@ -1302,32 +1713,33 @@ function OldPerkStats(int Pos)
 		}
 		else
 		{
-			if(10 > lPerkS.aim && lPerkS.aim > 0)
-			{
+			//if(10 > lPerkS.aim && lPerkS.aim > 0)
+			//{
 				aim = lPerkS.aim;
-			}
+			//}
 
-			if(10 > lPerkS.will && lPerkS.will > 0)
-			{
+			//if(10 > lPerkS.will && lPerkS.will > 0)
+			//{
 				will = lPerkS.will;
-			}
+			//}
 
-			if(2 > lPerkS.mob && lPerkS.mob > -2)
-			{
+			//if(2 > lPerkS.mob && lPerkS.mob > -2)
+			//{
 				mob = lPerkS.mob;
-			}
+			//}
 		}
 
-		if(2 > lPerkS.hp && lPerkS.hp > -2)
-		{
+		//if(2 > lPerkS.hp && lPerkS.hp > -2)
+		//{
 			hp = lPerkS.hp;
-		}
+		//}
 
-		if(6 > lPerkS.def && lPerkS.def > -5)
-		{
+		//if(6 > lPerkS.def && lPerkS.def > -5)
+		//{
 			def = lPerkS.def;
-		}
+		//}
 
+		/** 
 		if((hp == 0) && (mob == 1))
 		{
 			hpmob = 1;
@@ -1369,36 +1781,28 @@ function OldPerkStats(int Pos)
 		{
 			def += 4;
 		}
-
-		
-		if( (lPerkS.Option == opt) && (
-			(isRank1) && (kSold.GetClass() == lPerkS.iClass) && (lPerkS.Rank == 1) || (
-			(lPerkS.Option != -1) && (lPerkS.Rank == (Pos + 2) / 3) ) ) )
-		{
-			OldAddstats(aim, will, hpmob, def);
-		}
-		else if( (lPerkS.Rank == (Pos + 2) / 3) && ( (lPerkS.iClass == -1) || (lPerkS.iClass == iClass) ) )
-		{
-			PerkS = SearchPerks(lPerkS.Perk);
-
-			if(perktree[pos-1] == PerkS)
-			{
-				OldAddstats(aim, will, hpmob, def);
-			}
-
-		}
-		else
-		{
-			OldAddstats(0, 0, 0, 0);
-		}
-
+		*/
 	}
+
+
+	if(query)
+	{
+		querystats.AddItem(aim);
+		querystats.AddItem(will);
+		querystats.AddItem(hp);
+		querystats.AddItem(mob);
+		querystats.AddItem(def);
+				
+		arrInts(querystats, true);
+	}
+	else
+		OldAddstats(aim, will, hp, mob, def); 
 	
-	m_kSold = none;
+
 
 }
 
-function OldAddstats(int aim, int will, int hpmob, int def)
+function OldAddstats(int aim, int will, int hp, int mob, int def)
 {
 
 	local XGStrategySoldier kSold;
@@ -1412,43 +1816,68 @@ function OldAddstats(int aim, int will, int hpmob, int def)
 		kSold = SOLDIER();
 	}
 
-	if(kSold.m_arrRandomPerks[2] / 100 == 1)
-	{
-		kSold.m_arrRandomPerks[2] = EPerkType(100 + (aim * 10) + will);
-	}
-	else
-	{
-		kSold.m_arrRandomPerks[2] = EPerkType((aim * 10) + will);
-	}
+	`Log("OldAddStats");
+	`Logd(`ShowVar(hp) $ ", " $ `ShowVar(aim) $ ", " $ `ShowVar(def) $ ", " $ `ShowVar(will) $ ", " $ `ShowVar(mob));
 
-	if(kSold.m_arrRandomPerks[1] / 100 == 1)
-	{
-		kSold.m_arrRandomPerks[1] = EPerkType(100 + (hpmob * 10) + def);
-	}
-	else
-	{
-		kSold.m_arrRandomPerks[1] = EPerkType((hpmob * 10) + def);
-	}
+	kSold.m_kChar.aStats[eStat_HP] += hp;
+	kSold.m_kChar.aStats[eStat_Offense] += aim;
+	kSold.m_kChar.aStats[eStat_Defense] += def;
+	kSold.m_kChar.aStats[eStat_Will] += will;
+	kSold.m_kChar.aStats[eStat_Mobility] += mob;
 }
 
-function int FindSoldierInStorage(int SoldierID)
+function int FindSoldierInStorage(optional int SoldierID = -1, optional XGStrategySoldier Sold)
 {
 	
 	local TSoldierStorage SoldStor;
 	local int I;
 
-	foreach m_kRPCheckpoint.arrSoldierStorage(SoldStor, I)
+	if(SoldierID == -1 && Sold != none)
 	{
-		if(SoldStor.SoldierID == SoldierID)
+		SoldierID = Sold.m_kSoldier.iID;
+	}
+
+	if(!(SoldierID > -1))
+	{
+		return -1;
+	}
+
+
+	if(m_kRPCheckpoint.arrSoldierStorage.Length > 0)
+	{
+		foreach m_kRPCheckpoint.arrSoldierStorage(SoldStor, I)
 		{
-			return I;
+			if(SoldStor.SoldierID == SoldierID)
+			{
+				return I;
+			}
 		}
 	}
+
+	return -1;
+}
+
+function int CreateSoldierStor(XGStrategySoldier Soldier)
+{
+	local int pos;
+
+	pos = m_kRPCheckpoint.arrSoldierStorage.Length;
+
+	m_kRPCheckpoint.arrSoldierStorage.Add(1);
+	m_kRPCheckpoint.arrSoldierStorage[pos].SoldierID = Soldier.m_kSoldier.iID;
+
+	return pos;
 }
 
 function bool isSoldierNewType(XGStrategySoldier Soldier)
 {
-	return m_kRPCheckpoint.arrSoldierStorage[FindSoldierInStorage(Soldier.m_kSoldier.iID)].isNewType;
+	if(m_kRPCheckpoint.arrSoldierStorage.Length > 0)
+	{
+		if(FindSoldierInStorage(Soldier.m_kSoldier.iID) != -1)
+			return m_kRPCheckpoint.arrSoldierStorage[FindSoldierInStorage(Soldier.m_kSoldier.iID)].isNewType;
+	}
+
+	return false;
 }
 
 function array<int> NewRandomTree(XGStrategySoldier kSold, int position, optional int value)
@@ -1465,11 +1894,28 @@ function array<int> NewRandomTree(XGStrategySoldier kSold, int position, optiona
 	{
 		return m_kRPCheckpoint.arrSoldierStorage[FindSoldierInStorage(kSold.m_kSoldier.iID)].RandomTree;
 	}
-	else
+	else if(value != 0)
 	{
 		m_kRPCheckpoint.arrSoldierStorage[FindSoldierInStorage(kSold.m_kSoldier.iID)].RandomTree[position] = value;
 		return returnvalue;
 	}
+	else
+	{
+		arrInts[0] = m_kRPCheckpoint.arrSoldierStorage[FindSoldierInStorage(kSold.m_kSoldier.iID)].RandomTree[position];
+		return arrInts;
+	}
+}
+
+function FlushRandomTree(XGStrategySoldier kSold)
+{
+	if(kSold != none)
+		m_kRPCheckpoint.arrSoldierStorage[FindSoldierInStorage(kSold.m_kSoldier.iID)].RandomTree.Length = 0;
+}
+
+function FlushStatStorage(XGStrategySoldier kSold)
+{
+	if(kSold != none)
+		m_kRPCheckpoint.arrSoldierStorage[FindSoldierInStorage(kSold.m_kSoldier.iID)].StatStorage.Length = 0;
 }
 
 function TStatStorage GetPerkStats(XGStrategySoldier kSold, int index)
@@ -1506,7 +1952,7 @@ function PerkMerge(int Perk)
 {
 
 	local int I, Perk1, Perk2;
-	local array<int> perktree;
+	local array<int> PerkTree;
 	local string mPerk;
 	local XGStrategySoldier kSold;
 
@@ -1540,11 +1986,12 @@ function PerkMerge(int Perk)
 				Perk1 = SearchPerks(mPerk);
 				Perk2 = SearchPerks(MergePerk2[I]);
 
-				if( ( (MergePerkClass[I] == -1) || (MergePerkClass[I] == SOLDIER().m_iEnergy) ) || (SOLDIERUI().GetAbilityTreeBranch() == 1) )
+				if( (MergePerkClass[I] == -1) || (SOLDIERUI().GetAbilityTreeBranch() == 1) ? (MergePerkClass[I] == kSold.GetClass()) : (MergePerkClass[I] == kSold.m_iEnergy) )
 				{
 					if(Perk1 == Perk)
 					{
 						kSold.GivePerk(Perk2);
+						break;
 					}
 				}
 			}
@@ -1553,22 +2000,8 @@ function PerkMerge(int Perk)
 
 	}
 
-	m_kSold = none;
 
-}
 
-function applyAugmentDiscount(int cashcost, int meldcost)
-{
-	if(IsAugmentDiscounted)
-	{
-		IntValue0(cashcost * (AugmentDiscount / 100.00), true);
-		IntValue1(meldcost * (AugmentDiscount / 100.00), true);
-	}
-	else
-	{
-		IntValue0(cashcost, true);
-		IntValue1(meldcost, true);
-	}
 }
 
 function createPerkArray()
@@ -1621,30 +2054,93 @@ function AugmentRestriction()
 {
 	if(MECxpLoss)
 	{
-		StrValue0("true");
+		StrValue0("True");
 	}
 	else
 	{
-		StrValue0("false");
+		StrValue0("False");
 	}
 
 	if(MECChops)
 	{
-		StrValue1("true");
+		StrValue1("True");
 	}
 	else
 	{
-		StrValue1("false");
+		StrValue1("False");
 	}
 
 	if(MECMedalWait)
 	{
-		StrValue2("true");
+		StrValue2("True");
 	}
 	else
 	{
-		StrValue2("false");
+		StrValue2("False");
 	}
+}
+
+function CanNotAugment()
+{
+	switch(m_kSold.GetStatus())
+	{
+		case 0:
+		case 6:
+		case 8:
+			if(m_kSold.m_iEnergy == 0)
+				StrValue0("True");
+			if(m_kSold.IsAugmented())          
+				StrValue0("True");
+			if((m_kSold.GetPsiRank() > 0) && !MECChops)
+				StrValue0("True");
+			if(m_kSold.IsATank())
+				StrValue0("True");
+			if((m_kSold.MedalCount() > 0) && !MECChops)
+				StrValue0("True");
+			if((m_kSold.GetRank()) < MECxpLoss ? 1 : 2)
+				StrValue0("True");
+
+			break;
+		default:
+            StrValue0("True");
+			break;
+		}
+}
+
+function GiveBackMedals()
+{
+	local int I;
+	local XGStrategySoldier kSold;
+
+	if(m_kSold != none)
+		kSold = m_kSold;
+	else
+		kSold = SOLDIER();
+
+	for(I=0; I<6; I++)
+	{
+		kSold.m_arrMedals[I] = 0;
+
+		++ kSold.BARRACKS().m_arrMedals[I].m_iAvailable;
+		-- kSold.BARRACKS().m_arrMedals[I].m_iUsed;
+	}
+}
+
+function BuildAugmentMenuOption()
+{
+	local TTableMenuOption kOption;
+
+	kOption = TMenu().arrOptions[0];
+	TMenu(, true);
+	if(!MECxpLoss && m_kSold.GetRank() == 1)
+	{
+		if(kOption.arrStrings[7] != m_kSold.GetStatusString())
+		{
+			kOption.arrStrings[7] = m_kSold.GetStatusString();
+			kOption.arrStates[7] = m_kSold.GetStatusUIState();
+		}
+	}
+	TMenu().arrOptions.AddItem(kOption);
 }
 
 function bool PercentRoll(float percent, optional bool isSynced)

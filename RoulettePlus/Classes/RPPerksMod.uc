@@ -29,6 +29,7 @@ var config bool bAMedalWait;
 var config array<TSpecPerk> specPerk;
 var XGUnit m_kUnit;
 var XGStrategySoldier m_kStratSoldier;
+var RoulettePlusMod m_kRPlus;
 var localized string m_perkNames[255];
 var localized string m_perkDesc[255];
 
@@ -66,12 +67,55 @@ function XGParamTag TAG()
 // Part of the new XComModBridge system to decide which functions to access based on ModBridge calls
 simulated function StartMatch()
 {
-	
 	local array<string> arrStr;
+	local XGStrategySoldier kSold;
 
 	if(functionName == "ModInit")
 	{
+		m_kRPlus = RoulettePlusMod(Mods("RoulettePlus.RoulettePlusMod"));
+		m_kRPCheckpoint = m_kRPlus.m_kRPCheckpoint;
+		PerkStats = m_kRPlus.PerkStats;
+		arrAlias = m_kRPlus.arrAlias;
+		arrPerk = m_kRPlus.arrPerk;
+		MergePerk1 = m_kRPlus.MergePerk1;
+		MergePerk2 = m_kRPlus.MergePerk2;
 		expandPerkarray();
+	}
+
+	if(functionName == "GHPD_Overwrite")
+	{
+		`logd(`ShowVar(SOLDIERUI().GetAbilityTreeBranch()) $ ", " $ `ShowVar(SOLDIERUI().GetAbilityTreeOption()) $ ", pos:'" $ ((SOLDIERUI().GetAbilityTreeBranch() - 1) * 3) + SOLDIERUI().GetAbilityTreeOption());
+		`logd(`ShowVar(SOLDIERUI().m_kSoldier.m_kChar.eClass));
+		ASCSetUnit(StrValue0());
+
+		if(m_kStratSoldier != none)
+			kSold = m_kStratSoldier;
+		else
+			kSold = SOLDIER();
+
+		if(kSold.IsOptionEnabled(4))
+			ASCPerkDescription();
+
+		m_kStratSoldier = none;
+	}
+
+	if(functionName == "SetAdvServos")
+	{
+		GetSoldier(StrValue0());
+		SetAdvServos();
+		m_kSold = none;
+	}
+
+	if(functionName == "ASIM")
+	{
+		ASCSetUnit(StrValue0());
+	}
+	if(functionName == "GSIM")
+	{
+		arrStr = SplitString(functParas);
+
+		ModifyStats(int(arrStr[0]), int(arrStr[1]));
+		m_kUnit = none;
 	}
 
 	if(functionName == "CheckSoldierStates")
@@ -106,7 +150,7 @@ simulated function StartMatch()
 	
 	if(functionName == "ASCPerkDescription")
 	{
-		ASCPerkDescription(int(functparas));
+		ASCPerkDescription();
 	}
 	
 	if(functionName == "ASCPerks") 
@@ -225,6 +269,33 @@ function ASCSetUnit(string UnitName)
 	}
 }
 
+function SetAdvServos()
+{
+	if(m_kRPCheckpoint.arrSoldierStorage.Length > 0 || FindSoldierInStorage(, m_kSold) == -1)
+		CreateSoldierStor(m_kSold);
+
+	m_kRPCheckpoint.arrSoldierStorage[FindSoldierInStorage(, m_kSold)].advServos = true;
+}
+
+function ModifyStats(int iStat, int iEquippedWeapon)
+{
+	local int soldID;
+
+	soldID = XGCharacter_Soldier(m_kUnit.GetCharacter()).m_kSoldier.iID;
+
+	if(iStat == 3)
+	{
+		if(m_kRPCheckpoint.arrSoldierStorage.Length > 0) 
+		{
+			if(FindSoldierInStorage(soldID) != -1)
+			{
+				if(m_kRPCheckpoint.arrSoldierStorage[FindSoldierInStorage(soldID)].advServos)
+					IntValue0(IntValue0() + 4, true);
+			}
+		}
+	}
+}
+
 // Clears all aliens' perks
 function FlushAlienPerks()
 {
@@ -233,97 +304,92 @@ function FlushAlienPerks()
 }
 
 // Allows editing of perk descriptions on the Ability Screen
-function ASCPerkDescription(int iCurrentView)
+function ASCPerkDescription()
 {
-    local int iPerk, iRank;
+    local int iPerk, iPos, Perk1, Perk2, I;
+	local string Output, mPerk;
+	local XGStrategySoldier kSold;
+	local TStatStorage StatsStor;
 
-    iPerk = SOLDIER().GetPerkInClassTree(SOLDIERUI().GetAbilityTreeBranch(), SOLDIERUI().GetAbilityTreeOption(), iCurrentView == 2);
-	LogInternal("iPerk=" @ iPerk, 'ASCPerkDescription');
-    // End:0x187
-    if(((iCurrentView == 2) && SOLDIER().PerkLockedOut(iPerk, SOLDIERUI().GetAbilityTreeBranch(), iCurrentView == 2)) && !SOLDIER().HasPerk(iPerk))
-    {
-        // End:0x127
-        if(iPerk == 73)
-        {
-            // End:0x127
-            if((SOLDIER().m_kChar.aUpgrades[71] & 254) == 0)
-            {
-				StrValue2(SOLDIERUI().m_strLockedPsiAbilityDescription);
-                //return m_strLockedPsiAbilityDescription;
-            }
-        }
-		// End:0x187
-		if(!LABS().IsResearched(PERKS().GetPerkInTreePsi(iPerk | (1 << 8), 0)))
-		{
-			StrValue2(SOLDIERUI().m_strLockedPsiAbilityDescription);
-			//return m_strLockedPsiAbilityDescription;
-		}
-    }
-	// End:0x3D4
-	if(((iCurrentView != 2) && !SOLDIERUI().IsOptionEnabled(4)))
+	if(m_kStratSoldier != none)
+		kSold = m_kStratSoldier;
+	else
+		kSold = SOLDIER();
+	
+	`Logd("ASCPerkDescription");
+
+	`Logd("kSold= " $ string(kSold));
+
+	if(SOLDIERUI().m_iCurrentView != 2)
 	{
-		if(!(SOLDIER().m_iEnergy == 26 || SOLDIER().m_iEnergy == 8 || SOLDIER().m_iEnergy == 9))
-		{
-			if((SOLDIERUI().GetAbilityTreeBranch()) > 1)
-			{
-				iRank = PERKS().GetPerkInTree(byte(SOLDIER().m_iEnergy + 4), (SOLDIERUI().GetAbilityTreeBranch()) - 0, SOLDIERUI().GetAbilityTreeOption(), false);
-				TAG().IntValue0 = 0;
-				// End:0x2EB
-				if((iRank / 100) == 2)
-				{
-					TAG().IntValue0 = -1;
-				}
-				// End:0x320
-				if((iRank / 100) == 1)
-				{
-					TAG().IntValue0 = 1;
-				}
-				TAG().IntValue1 = (iRank / 10) % 10;
-				TAG().IntValue2 = iRank % 10;
-			
-				LogInternal("before output", 'ASCPerkDescription');
-			
-				StrValue2(
-			
-				Left(class'XComLocalizer'.static.ExpandString(SOLDIERUI().m_strLockedAbilityDescription), InStr(class'XComLocalizer'.static.ExpandString(SOLDIERUI().m_strLockedAbilityDescription), ":") + 1) $ "(" @
-			
-				(TAG().IntValue1 != 0 ? class'UIStrategyComponent_SoldierStats'.default.m_strStatOffense @ TAG().IntValue1 : "")
-			
-				$ (TAG().IntValue2 != 0 ? "," @ class'UIStrategyComponent_SoldierStats'.default.m_strStatWill @ TAG().IntValue2 : "")
-			
-				$ (TAG().IntValue0 != 0 ? "," @ Left(SOLDIERUI().m_strLabelMobility, Len(SOLDIERUI().m_strLabelMobility) - 1) $ ":" @ TAG().IntValue0 : "")
-			
-				@ class'XComLocalizer'.static.ExpandString(")\\n") $ PERKS().GetBriefSummary(iPerk)
+		iPos = ((SOLDIERUI().GetAbilityTreeBranch() - 1) * 3) + SOLDIERUI().GetAbilityTreeOption();
 
-				);
+		if(isSoldierNewType(kSold) && SOLDIERUI().GetAbilityTreeBranch() != 1)
+		{
+			`Logd("IsNewType");
+
+			iPerk = NewRandomTree(kSold, -1)[iPos];
+
+			`Logd("iPerk= " $ string(iPerk));
 			
-				//return class'XComLocalizer'.static.ExpandString(m_strLockedAbilityDescription) $ PERKS().GetBriefSummary(iPerk);
-			}
-			else
-			{
-				goto otherelse;
-			}
+			StatsStor = GetPerkStats(kSold, iPos);
 		}
 		else
 		{
-			/** 
-			if(m_kASC_MercenariesMod != none)
+			if(kSold.m_arrRandomPerks.Length > 0)
+				iPerk = kSold.m_arrRandomPerks[iPos];
+			else
+				iPerk = 0;
+
+			if(SOLDIERUI().GetAbilityTreeBranch() == 1)
+				iPerk = kSold.PERKS().GetPerkInTree(kSold.GetClass() == 6 ? byte(kSold.m_iEnergy) : kSold.GetClass(), 1, SOLDIERUI().GetAbilityTreeOption(), false);
+			
+			OldPerkStats(iPos, true);
+			StatsStor.aim = arrInts()[0];
+			StatsStor.will = arrInts()[1];
+			StatsStor.hp = arrInts()[2];
+			StatsStor.mob = arrInts()[3];
+			StatsStor.def = arrInts()[4];
+			
+			foreach m_kRPlus.MergePerk1(mPerk, I)
 			{
-				LogInternal("before merc", 'ASCPerkDescription');
-				m_kASC_MercenariesMod.MercPerkDescription();
-				LogInternal("after merc", 'ASCPerkDescription');
+				Perk1 = super.SearchPerks(mPerk);
+				Perk2 = super.SearchPerks(MergePerk2[I]);
+				
+				if( (m_kRPlus.MergePerkClass[I] == -1) || (SOLDIERUI().GetAbilityTreeBranch() == 1) ? (m_kRPlus.MergePerkClass[I] == kSold.GetClass()) : (m_kRPlus.MergePerkClass[I] == kSold.m_iEnergy) )
+				{
+					if(Perk1 == iPerk)
+					{
+						StatsStor.perk = Perk2;
+						break;
+					}
+				}
 			}
-			//super.Mutate("MercPerkDescription", m_kSender);
-			*/
 		}
+
+		if((!m_kRPlus.bHideEmptyStatStr || StatsStor.def != 0 || StatsStor.HP != 0 || StatsStor.mob != 0 || StatsStor.will != 0 || StatsStor.aim != 0) && iPerk != 46)
+		{
+			Output =  Left(class'XComLocalizer'.static.ExpandString(SOLDIERUI().m_strLockedAbilityDescription), InStr(class'XComLocalizer'.static.ExpandString(SOLDIERUI().m_strLockedAbilityDescription), ":") + 1) $ "( ";
+			Output $= (StatsStor.aim != 0 ? (class'UIStrategyComponent_SoldierStats'.default.m_strStatOffense @ StatsStor.aim) : "");
+			Output $= (StatsStor.will != 0 ? ((StatsStor.aim != 0 ? ", " : "") $ class'UIStrategyComponent_SoldierStats'.default.m_strStatWill @ StatsStor.will) : "");
+			Output $= (StatsStor.mob != 0 ? (((StatsStor.will != 0 || StatsStor.aim != 0) ? ", " : "") $ Left(SOLDIERUI().m_strLabelMobility, Len(SOLDIERUI().m_strLabelMobility) - 1) $ ":" @ StatsStor.mob) : "");
+			Output $= (StatsStor.HP != 0 ? (((StatsStor.mob != 0 || StatsStor.will != 0 || StatsStor.aim != 0) ? ", " : "") $ class'UIStrategyComponent_SoldierStats'.default.m_strStatHealth @ StatsStor.HP) : "");
+			Output $= (StatsStor.def != 0 ? (((StatsStor.HP != 0 || StatsStor.mob != 0 || StatsStor.will != 0 || StatsStor.aim != 0) ? ", " : "") $ class'UIStrategyComponent_SoldierStats'.default.m_strStatDefense @ StatsStor.def) : "") @ ")";
+			Output $= class'XComLocalizer'.static.ExpandString("\\n");
+		}
+		
+		if(StatsStor.perk > 0)
+			Output $= "<font color='" $ (m_kRPlus.strMergePerkColor != "" ? m_kRPlus.strMergePerkColor : "#5CD16C") $ "'>" $ m_kRPlus.strMergePerkLabel $ ":(" @ kSold.PERKS().GetPerkName(StatsStor.perk) @ ")</font>" $ class'XComLocalizer'.static.ExpandString("\\n");
+		
+		Output $= kSold.PERKS().GetBriefSummary(iPerk);
+		
+		if(StatsStor.perk > 0)
+			Output $= class'XComLocalizer'.static.ExpandString("\\n") $ "<font color='" $ (m_kRPlus.strMergePerkColor != "" ? m_kRPlus.strMergePerkColor : "#5CD16C") $ "'>" $ m_kRPlus.strMergePerkDes $ ":(" @ kSold.PERKS().GetBriefSummary(StatsStor.perk) @ ")</font>";
+		
+			
+		StrValue0("True");
+		StrValue1(Output, true);
 	}
-	// End:0x3FE
-	else
-	{		
-		otherelse:
-		StrValue2(PERKS().GetBriefSummary(iPerk));
-		//return PERKS().GetBriefSummary(iPerk);
-	}  
 }
 
 // Checks for, Adds, or Removes new perks(perks not from Long War)
