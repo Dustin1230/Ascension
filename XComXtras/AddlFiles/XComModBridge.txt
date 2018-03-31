@@ -1,0 +1,27 @@
+UPK_FILE = XComGame.upk
+[ADD_NAME_ENTRY]
+<%u8>
+<%t "arrInts">
+<%u0x00000000>
+<%u0x00070010>
+
+
+UPK_FILE = XComStrategyGame.upk
+
+[ADD_NAME_ENTRY]
+<%u8>
+<%t "arrInts">
+<%u0x00000000>
+<%u0x00070010>
+
+[ADD_NAME_ENTRY]
+<%u5>
+<%t "Mods">
+<%u0x00000000>
+<%u0x00070010>
+
+[ADD_IMPORT_ENTRY]
+<Core>
+<ArrayProperty>
+<XComGame.XComGameInfo>
+<Mods>
