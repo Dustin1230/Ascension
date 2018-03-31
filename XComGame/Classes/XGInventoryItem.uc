@@ -1,1 +1,0 @@
-class XGInventoryItem extends XGItem;

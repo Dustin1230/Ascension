@@ -1,1 +1,0 @@
-class XComUnitPawnNativeBase extends XComPawn;

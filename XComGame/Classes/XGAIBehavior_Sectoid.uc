@@ -1,1 +1,0 @@
-class XGAIBehavior_Sectoid extends XGAIBehavior_Psi;

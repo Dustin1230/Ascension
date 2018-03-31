@@ -1,1 +1,0 @@
-class DamageFrame extends Object;

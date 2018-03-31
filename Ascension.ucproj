@@ -39,58 +39,11 @@
     <LogToFile>False</LogToFile>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="*\Classes\*.uc" />
+    <Compile Include="*\*.uc" />
     <Content Include="**\*.uci" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Ascension\" />
-    <Folder Include="Ascension\Classes\" />
-    <Folder Include="Core\" />
-    <Folder Include="Core\Classes\" />
-    <Folder Include="Engine\" />
-    <Folder Include="Engine\Classes\" />
-    <Folder Include="GameFramework\" />
-    <Folder Include="GameFramework\Classes\" />
-    <Folder Include="GFxUIEditor\" />
-    <Folder Include="GFxUIEditor\Classes\" />
-    <Folder Include="GFxUI\" />
-    <Folder Include="GFxUI\Classes\" />
-    <Folder Include="IpDrv\" />
-    <Folder Include="IpDrv\Classes\" />
-    <Folder Include="LWRebalance\Classes" />
-    <Folder Include="MercenaryAscension\" />
-    <Folder Include="MercenaryAscension\Classes\" />
-    <Folder Include="MyMod\" />
-    <Folder Include="MyMod\Classes\" />
-    <Folder Include="LWRebalance" />
-    <Folder Include="ObjectSort\" />
-    <Folder Include="ObjectSort\Classes\" />
-    <Folder Include="OnlineSubsystemGameCenter\" />
-    <Folder Include="OnlineSubsystemGameCenter\Classes\" />
-    <Folder Include="OnlineSubsystemPC\" />
-    <Folder Include="OnlineSubsystemPC\Classes\" />
-    <Folder Include="OnlineSubsystemSteamworks\" />
-    <Folder Include="OnlineSubsystemSteamworks\Classes\" />
-    <Folder Include="RoulettePlus\" />
-    <Folder Include="RoulettePlus\Classes\" />
-    <Folder Include="UDKBase\" />
-    <Folder Include="UDKBase\classes\" />
-    <Folder Include="UnrealEd\" />
-    <Folder Include="UnrealEd\Classes\" />
-    <Folder Include="UTEditor\" />
-    <Folder Include="UTEditor\Classes\" />
-    <Folder Include="UTGameContent\" />
-    <Folder Include="UTGameContent\Classes\" />
-    <Folder Include="UTGame\" />
-    <Folder Include="UTGame\Classes\" />
-    <Folder Include="XComModBridge" />
-    <Folder Include="XComModBridge\Classes" />
-    <Folder Include="XComGame\" />
-    <Folder Include="XComGame\Classes\" />
-    <Folder Include="XComMutator\" />
-    <Folder Include="XComMutator\Classes\" />
-    <Folder Include="XComStrategyGame\" />
-    <Folder Include="XComStrategyGame\Classes\" />
+    <Folder Include="*\" />
   </ItemGroup>
   <Import Condition="'$(MSBuildExtensionsPath32)' != ''" Project="$(MSBuildExtensionsPath32)\PixelMine\UnrealScript.targets" />
   <Import Condition="'$(MSBuildExtensionsPath32)' == ''" Project="$(MSBuildExtensionsPath)\PixelMine\UnrealScript.targets" />

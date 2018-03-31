@@ -1,2 +1,0 @@
-class XComLevelVolume extends Volume;
-

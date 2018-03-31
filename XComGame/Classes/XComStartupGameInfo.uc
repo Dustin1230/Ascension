@@ -1,2 +1,0 @@
-class XComStartupGameInfo extends XComGameInfo;
-
