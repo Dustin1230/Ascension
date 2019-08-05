@@ -94,6 +94,11 @@ var config array<TSoldPerkStats> PerkMob;
 var config array<TSoldPerkStats> PerkCrit;
 var config array<TSoldPerkStats> PerkDmg;
 
+function SoldierInit()
+{
+	m_kASC_ClassPicker = ASC_ClassPicker(CreateASCObj("Ascension.ASC_ClassPicker"));
+}
+
 // Assigns a random perk to rookies and new mercenary type units(currently excludes Fury and other MEC Classes)
 function GiveRandomPerk()
 {

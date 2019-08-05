@@ -1,5 +1,5 @@
-class MyScriptClass1 extends Object
-	config(Ascension);
+class ASC_ClassPicker extends ASC_SoldierMod
+	config(ASC_Soldier);
 
 struct TClassStats
 {
@@ -43,20 +43,6 @@ var TClassRankWeight classRankWeight;
 var int storedSeed;
 var int currentSeed;
 
-function XGStrategy STRATEGY()
-{
-    return XComHeadquartersGame(class'Engine'.static.GetCurrentWorldInfo().Game).GetGameCore();   
-}
-
-function XGHeadQuarters HQ()
-{
-    return STRATEGY().GetHQ();   
-}
-
-function XGFacility_Barracks BARRACKS()
-{
- 	return HQ().m_kBarracks;
-}
 
 function CreateSeed()
 {

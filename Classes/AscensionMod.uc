@@ -1,4 +1,4 @@
-Class AscensionMod extends ModBridge
+Class AscensionMod extends ModBridgeMod
 	config(Ascension);
 	
 var ASCCheckpoint m_kASCCheckpoint;
@@ -307,7 +307,8 @@ function ModInit()
 	m_kASC_SoldierMod = ASC_SoldierMod(CreateASCObj("Ascension.ASC_SoldierMod"));
 	m_kASC_ItemMod = ASC_ItemMod(CreateASCObj("Ascension.ASC_ItemMod"));
 	m_kASC_MercenariesMod = ASC_MercenariesMod(CreateASCObj("Ascension.ASC_MercenariesMod"));
-	m_kASC_PerkMod.expandPerkarray();
+	m_kASC_PerksMod.expandPerkarray();
+	m_kASC_SoldierMod.SoldierInit();
 	ModRecordActor("Transport",  class'ASCCheckpoint');
 }
 
