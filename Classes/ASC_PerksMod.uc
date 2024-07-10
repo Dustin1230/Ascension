@@ -612,7 +612,7 @@ function ResetSoldierStates()
 
 	if(isStrategy())
 	{
-		SID = m_kStratSoldier.m_kSoldier.iID
+		SID = m_kStratSoldier.m_kSoldier.iID;
 	}
 	else
 	{

@@ -106,7 +106,7 @@ function GiveRandomPerk()
 	local XGStrategySoldier kSoldier;
 	local TSoldierStorage SS;
 	
-	kSoldier = m_kStratSoldier	//BARRACKS().GetSoldierByID(SoldierID);
+	kSoldier = m_kStratSoldier;	//BARRACKS().GetSoldierByID(SoldierID);
 
 	loop:
 	perk = rookRandPerk[Rand(rookRandPerk.Length)];
